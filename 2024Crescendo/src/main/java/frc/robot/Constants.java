@@ -16,4 +16,22 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class Swerve {
+    public static final int CANANDCODER_ID = 0;
+    
+    public static final int POWER_KP  = 0; 
+    public static final int POWER_KI = 0; 
+    public static final double POWER_KD = 0.1; 
+
+    public static final int STEER_KP = 24;
+    public static final int STEER_KI = 0; 
+    public static final double STEER_KD = 0.1; 
+
+    public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = 0.5;
+
+    public static final double RPM_TO_MS = 0.5;
+
+    public static final double ANALOG_SAMPLE_DEPTH = 0;
+  }
 }
