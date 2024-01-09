@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IntakeMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeNote"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootMiddle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

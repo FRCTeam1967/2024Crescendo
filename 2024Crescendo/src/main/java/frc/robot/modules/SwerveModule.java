@@ -6,7 +6,6 @@ package frc.robot.modules;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
 import frc.robot.Constants;
 
@@ -18,9 +17,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.reduxrobotics.canand.CanandDevice;
 import com.reduxrobotics.sensors.canandcoder.Canandcoder;
-import com.reduxrobotics.canand.CanandAddress;
 
 
 
@@ -45,9 +42,9 @@ public class SwerveModule {
 
         // set up pid
         var powerPidConfig = new Slot0Configs();
-        powerPidConfig.kP = Constants.Swerve.POWER_KP; 
-        powerPidConfig.kI = Constants.Swerve.POWER_KI; 
-        powerPidConfig.kD = Constants.Swerve.POWER_KD; 
+        powerPidConfig.kP = Constants.Swerve.POWER_kP; 
+        powerPidConfig.kI = Constants.Swerve.POWER_kI; 
+        powerPidConfig.kD = Constants.Swerve.POWER_kD; 
 
         powerControllerConfig.apply(powerPidConfig);
 
@@ -67,9 +64,9 @@ public class SwerveModule {
 
         // set up pid
         var steerPidConfig = new Slot0Configs();
-        steerPidConfig.kP = Constants.Swerve.STEER_KP; 
-        steerPidConfig.kI = Constants.Swerve.STEER_KI; 
-        steerPidConfig.kD = Constants.Swerve.STEER_KD; 
+        steerPidConfig.kP = Constants.Swerve.STEER_kP; 
+        steerPidConfig.kI = Constants.Swerve.STEER_kI; 
+        steerPidConfig.kD = Constants.Swerve.STEER_kD; 
 
         steerControllerConfig.apply(steerPidConfig);
 
@@ -95,11 +92,18 @@ public class SwerveModule {
         //set up encoder
         analogEncoder = new Canandcoder(Constants.Swerve.CANANDCODER_ID);
     }
-        
+   
+    //check to make sure steerController.getPosition will give us the angle?
     public SwerveModuleState getState() {
         return new SwerveModuleState(powerController.getPosition().getValue()*Constants.Swerve.RPM_TO_MS,
         Rotation2d.fromDegrees(steerController.getPosition().getValue()));
-        }
+    }
+
+    //check to make sure this is actually getting the position of the swerve module (meters of pwr, angle of wheel)
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(
+            powerController.getPosition().getValue()*Constants.Swerve.MK4I_L1_REV_TO_METERS, getState().angle);
+    }
 
     public static double positiveModulus(double dividend, double divisor) {
         return ((dividend % divisor) + divisor) % divisor;
