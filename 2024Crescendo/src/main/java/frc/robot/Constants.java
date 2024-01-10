@@ -34,5 +34,14 @@ public final class Constants {
 
   }
 
+  public static class Shooter {
+    public static final int SHOOTER_LEFT_MOTOR_IDX = 0;
+    public static final int SHOOTER_RIGHT_MOTOR_IDX = 1;
+
+    public static final double kP = 0.55;
+    public static final double kI = 0;
+    public static final double kD = 0;
+  }
+
   
 }
