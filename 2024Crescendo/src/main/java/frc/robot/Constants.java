@@ -75,12 +75,13 @@ public final class Constants {
     public static final double kMaxAngularSpeedDegreesPerSecond = 180;
     public static final double kMaxAngularSpeedDegreesPerSecondSquared = 180;
 
-    public static final double kPXController =                       25;
+    public static final double kPXController = 25;
     public static final double kPYController = 30;
     public static final double kPThetaController = 31.65;
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
         new TrapezoidProfile.Constraints(
             kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
+    public static final double RADIANS_TO_DEGREES = 57.29578;
   }
 }

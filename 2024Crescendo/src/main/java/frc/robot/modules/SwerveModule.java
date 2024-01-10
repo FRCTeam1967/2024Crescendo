@@ -1,23 +1,24 @@
 package frc.robot.modules;
 
+import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.reduxrobotics.sensors.canandcoder.Canandcoder;
+
 // import statements
 
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import frc.robot.Constants;
-
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.configs.VoltageConfigs;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 
 
 
@@ -155,6 +156,32 @@ public class SwerveModule {
     public void stop() {
         powerController.stopMotor();
         steerController.stopMotor();
+    }
+
+    public void brakeMode() {
+
+        var powerControllerConfig = powerController.getConfigurator();
+        var steerControllerConfig = powerController.getConfigurator();
+        
+        var brakeModeConfig = new MotorOutputConfigs();
+        brakeModeConfig.NeutralMode = NeutralModeValue.Brake;
+
+        powerControllerConfig.apply(brakeModeConfig);
+        steerControllerConfig.apply(brakeModeConfig);
+        
+    }
+
+    public void coastMode() {
+
+        var powerControllerConfig = powerController.getConfigurator();
+        var steerControllerConfig = powerController.getConfigurator();
+        
+        var coastModeConfig = new MotorOutputConfigs();
+        coastModeConfig.NeutralMode = NeutralModeValue.Coast;
+
+        powerControllerConfig.apply(coastModeConfig);
+        steerControllerConfig.apply(coastModeConfig);
+        
     }
     
     public void periodic() {

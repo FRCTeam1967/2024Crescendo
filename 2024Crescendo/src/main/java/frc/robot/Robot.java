@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,6 +30,18 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    // Turn brake mode off shortly after the robot is disabled
+
+    new Trigger(this::isEnabled) // Create a trigger that is active when the robot is enabled
+      .negate() // Negate the trigger, so it is active when the robot is disabled
+      .debounce(3) // Delay action until robot has been disabled for a certain time
+      .onTrue( // Finally take action
+          new InstantCommand( // Instant command will execute our "initialize" method and finish immediately
+              () -> m_robotContainer.swerve.setNeutralMode(false), // Enable coast mode in drive train
+              m_robotContainer.swerve) // command requires subsystem
+              .ignoringDisable(true)); // This command can run when the robot is disabled
+
   }
 
   /**
@@ -58,6 +72,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+    m_robotContainer.swerve.setNeutralMode(true);
+
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -77,6 +93,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    m_robotContainer.swerve.setNeutralMode(true);
   }
 
   /** This function is called periodically during operator control. */

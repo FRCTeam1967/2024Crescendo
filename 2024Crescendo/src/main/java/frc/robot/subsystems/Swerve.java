@@ -5,9 +5,11 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -31,6 +33,8 @@ public class Swerve extends SubsystemBase{
 
     private final ADIS16470_IMU gyro;
     private final SwerveDriveOdometry odometry;
+
+    private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
 
     private Pose2d pose;
 
@@ -101,9 +105,50 @@ public class Swerve extends SubsystemBase{
         backRight.getState());
     }
 
+    public void drive(double xSpeed, double ySpeed, double rotationSpeed){
+        
+        double xSpeedCommanded;
+        double ySpeedCommanded;
+
+        xLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
+        yLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
+        rotationLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
+
+        //speed is from xsupplier joystick value and scaled down by max speed
+        double xSpeedScaled = cleanAndScaleInput(xSpeed, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+        double ySpeedScaled = cleanAndScaleInput(ySpeed, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+        double rotationSpeedScaled = cleanAndScaleInput(rotationSpeed, rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
+        //converts field relative speeds to robot relative speeds 
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, this.getRotation2d());
+        //converts new chassisspeeds to module states
+        SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
+        //ensures wheel speeds do not exceed swerve max speed
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
+        this.setModuleStates(moduleState);
+    }
+
     //finish
     public void driveRobotRelative(ChassisSpeeds speeds) {
-        
+        this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond * Constants.Auto.RADIANS_TO_DEGREES);
+    }
+
+    private double cleanAndScaleInput(double input, SlewRateLimiter limiter, double speedScaling) {
+        //lowering down to 0 if abs value of input is below deadband 
+        input = Math.abs(input) > Constants.Swerve.SWERVE_DEADBAND ? input : 0;
+        //squaring input while preserving sign
+        input = signedSquare(input);
+        //using slewratelimiter to scale input
+        input = limiter.calculate(input);
+        input *= speedScaling;
+
+        return input;
+    }
+
+    public static double signedSquare(double a) {
+        if (a < 0) {
+          return -(a * a);
+        }
+        return a * a;
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
@@ -131,5 +176,35 @@ public class Swerve extends SubsystemBase{
         backRight.setState(fixedDegree);
     }
 
+    public void defenseMode(){
+        SwerveModuleState fLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(45));
+        SwerveModuleState fRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(135));
+        SwerveModuleState bLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(45));
+        SwerveModuleState bRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(135));
+
+        frontLeft.setState(fLDefenseState);
+        frontRight.setState(fRDefenseState);
+        backLeft.setState(bLDefenseState);
+        backRight.setState(bRDefenseState);
+
+        frontLeft.brakeMode();
+        frontRight.brakeMode();
+        backLeft.brakeMode();
+        backRight.brakeMode();
+    }
+
+    public void setNeutralMode(boolean brake) {
+        if (brake){
+            frontLeft.brakeMode();
+            frontRight.brakeMode();
+            backLeft.brakeMode();
+            backRight.brakeMode();
+        } else {
+            frontLeft.coastMode();
+            frontRight.coastMode();            
+            backLeft.coastMode();
+            backRight.coastMode();    
+        }
+    }
 
 }
