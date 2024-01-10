@@ -13,7 +13,26 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class Wrist {
+    public static final double kDt = 0.02;
+    public static final int WRIST_MOTOR_IDX = 8;
+
+    public static final double kP = 0.55;
+    public static final double kI = 0;
+    public static final double kD = 0;
+
+    public static final double GEAR_RATIO = 0.1; //Mech said 75
+
+    public static final double STARTING_ANGLE = 45;
+    public static final int NEO_TICKS_PER_REVOLUTION = 42;
+    public static final double ABSOLUTE_TICKS_PER_REVOLUTION = 4096;
+
+  }
+
+  
 }
