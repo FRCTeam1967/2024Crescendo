@@ -7,15 +7,15 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.*;
 
-public class WristMove extends Command {
-  private Wrist wrist;
-  private double desiredAngle;
-  /** Creates a new WristMove. */
-  public WristMove(Wrist wrist, double angle) {
+public class MovePivot extends Command {
+  private Pivot pivot;
+  private double desiredRev;
+  /** Creates a new PivotMove. */
+  public MovePivot(Pivot pivot, double rev) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.wrist = wrist; 
-    desiredAngle = angle;
-    addRequirements(this.wrist);
+    this.pivot = pivot; 
+    desiredRev = rev;
+    addRequirements(this.pivot);
   }
 
   // Called when the command is initially scheduled.
@@ -25,7 +25,7 @@ public class WristMove extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    wrist.moveTo(desiredAngle);
+    pivot.moveTo(desiredRev);
   }
 
   // Called once the command ends or is interrupted.
@@ -35,6 +35,6 @@ public class WristMove extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return wrist.isReached();
+    return false;
   }
 }
