@@ -16,4 +16,14 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  
+  public static class Climb {
+    public static final int LEFT_MOTOR_ID = 1;
+    public static final int RIGHT_MOTOR_ID = 2;
+
+    public static final double UNWIND_FACTOR = 1.0;
+    public static final double WIND_FACTOR = -0.2;
+
+    public static final double DEADBAND = 0.05;
+  }
 }
