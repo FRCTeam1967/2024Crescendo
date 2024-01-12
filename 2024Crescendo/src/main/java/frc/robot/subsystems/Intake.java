@@ -7,11 +7,14 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   private CANSparkMax topRollerMotor, bottomRollerMotor;
+  private DigitalInput limitSwitch;
 
   /**
    * Constructor for Intake class
@@ -20,6 +23,8 @@ public class Intake extends SubsystemBase {
   public Intake() {
     topRollerMotor = new CANSparkMax(Constants.Intake.TOP_ROLLER_MOTOR_ID, MotorType.kBrushless);
     bottomRollerMotor = new CANSparkMax(Constants.Intake.BOTTOM_ROLLER_MOTOR_ID, MotorType.kBrushless);
+    
+    limitSwitch = new DigitalInput(Constants.Intake.LIMIT_SWITCH_ID);
     
     //configuration
     topRollerMotor.restoreFactoryDefaults();
@@ -35,10 +40,29 @@ public class Intake extends SubsystemBase {
     topRollerMotor.set(topSpeed);
     bottomRollerMotor.set(bottomSpeed);
   }
+
+  /**
+   * @return value of limit switch (true if triggered)
+   */
+  public boolean limitSwitchTriggered(){
+    return limitSwitch.get();
+  }
   
-  public void setMotorsToZero(){
-    topRollerMotor.set(0);
-    bottomRollerMotor.set(0);
+  /**
+   * Run intake rollers outward at high speed to shoot into amp
+   */
+  public void shootAmp(){
+    topRollerMotor.set(Constants.Intake.SHOOT_AMP_TOP_ROLLER_SPEED);
+    bottomRollerMotor.set(Constants.Intake.SHOOT_AMP_BOTTOM_ROLLER_SPEED);
+  }
+  
+  /**
+   * Run intake rollers outward at slow speed for a few seconds to eject into shooter
+   * <p> Timer functionality in {@link frc.robot.RobotContainer}
+   */
+  public void ejectIntoShooter(){
+    topRollerMotor.set(Constants.Intake.EJECT_TOP_ROLLER_SPEED);
+    bottomRollerMotor.set(Constants.Intake.EJECT_BOTTOM_ROLLER_SPEED);
   }
 
   @Override

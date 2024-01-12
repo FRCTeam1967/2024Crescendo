@@ -39,11 +39,13 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    //TODO change button
-    m_xbox.b().whileTrue(new RunCommand(() -> {
-      m_intake.runMotors(Constants.Intake.INTAKE_TOP_ROLLER_SPEED, Constants.Intake.INTAKE_BOTTOM_ROLLER_SPEED);
-    }, m_intake));
-    m_intake.setDefaultCommand(new RunCommand(() -> m_intake.setMotorsToZero(), m_intake));
+    //TODO: turn into sequential command: first pivot to intake position, then this, then pivot to speaker position
+    m_xbox.x().onTrue(new RunIntakeUntilSwitch(m_intake));
+
+    //TODO: turn into parallel command with shooter rollers
+    m_xbox.a().onTrue(new RunCommand(() -> m_intake.ejectIntoShooter()).withTimeout(Constants.Intake.EJECT_TIME));
+    
+    m_xbox.b().whileTrue(new RunCommand(() -> m_intake.shootAmp()));
   }
 
   /**

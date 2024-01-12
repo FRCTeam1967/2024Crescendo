@@ -19,8 +19,15 @@ public final class Constants {
   public static final class Intake {
     public static final int TOP_ROLLER_MOTOR_ID = 1;
     public static final int BOTTOM_ROLLER_MOTOR_ID = 2;
+    public static final int LIMIT_SWITCH_ID = 3;
     
-    public static final double INTAKE_TOP_ROLLER_SPEED = 0.25;
-    public static final double INTAKE_BOTTOM_ROLLER_SPEED = 0.25;
+    public static final double INTAKE_TOP_ROLLER_SPEED = -0.25;
+    public static final double INTAKE_BOTTOM_ROLLER_SPEED = -0.25;
+    public static final double SHOOT_AMP_TOP_ROLLER_SPEED = 0.5;
+    public static final double SHOOT_AMP_BOTTOM_ROLLER_SPEED = 0.5;
+    public static final double EJECT_TOP_ROLLER_SPEED = 0.2;
+    public static final double EJECT_BOTTOM_ROLLER_SPEED = 0.2;
+    
+    public static final double EJECT_TIME = 1.0;
   }
 }
