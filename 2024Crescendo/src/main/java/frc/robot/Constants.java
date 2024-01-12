@@ -33,44 +33,56 @@ public final class Constants {
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
 
-    public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = 0.5;
-    public static final double REV_TO_METERS = 0.319024 / 7.8;
-    public static final double MK4I_L1_REV_TO_METERS = 0.319024 / 8.14;
-    public static final double RPM_TO_MS = MK4I_L1_REV_TO_METERS / 60;
+    public static final int pigeonID = 1;
+
+    //0.319024 = circumference in meters
+    //12.8:1 = rotor to sensor ratio
+    public static final double GEAR_RATIO = 12.8;
+    public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
+    public static final double MK4I_L1_REV_TO_METERS = WHEEL_CIRCUMFERENCE / GEAR_RATIO;
+    public static final double RPM_TO_MPS = MK4I_L1_REV_TO_METERS / 60;
+    public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = GEAR_RATIO;
 
     public static final double ANALOG_SAMPLE_DEPTH = 0;
 
-    public static final int GYRO_PORT = 0;
-
     public static final int FL_POWER = 7;
-    public static final int FL_STEER = 5;
-    public static final int FR_POWER = 6;
-    public static final int FR_STEER = 4;
-    public static final int BL_POWER = 11;
-    public static final int BL_STEER = 9;
-    public static final int BR_POWER = 10;
-    public static final int BR_STEER = 8;
+    public static final int FL_STEER = 8;
+    public static final int FL_ENCODER = 4;
+
+    public static final int FR_POWER = 1;
+    public static final int FR_STEER = 2;
+    public static final int FR_ENCODER = 1;
+
+    public static final int BL_POWER = 5;
+    public static final int BL_STEER = 6;
+    public static final int BL_ENCODER = 3;
+
+    public static final int BR_POWER = 3;
+    public static final int BR_STEER = 4;
+    public static final int BR_ENCODER = 2;
 
     public static final double SWERVE_MAX_SPEED = 3.87096;
     public static final double SWERVE_ROTATION_MAX_SPEED = 10;
     public static final double SWERVE_DEADBAND = 0.05;
 
-    //need to check on new chassis
-    public static final double WIDTH = Units.inchesToMeters(24);
-    public static final double LENGTH = Units.inchesToMeters(24);
-
-    public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(3.94) * Math.PI;
+    //based on santyswerve
+    public static final double WIDTH = Units.inchesToMeters(24.75);
+    public static final double LENGTH = Units.inchesToMeters(24.75);
 
     public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = new SwerveDriveKinematics(
-        new Translation2d(-LENGTH / 2, WIDTH / 2),
+      //fl
         new Translation2d(LENGTH / 2, WIDTH / 2),
-        new Translation2d(-LENGTH / 2, -WIDTH / 2),
+      //fr
+        new Translation2d(LENGTH / 2, -WIDTH / 2),
+      //bl
+        new Translation2d(-LENGTH / 2, WIDTH / 2),
+      //br
         new Translation2d(LENGTH / 2, -WIDTH / 2)
     );
   }
 
   public static class Auto {
-    public static final double kMaxSpeedMetersPerSecond = 1;
+    public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedDegreesPerSecond = 180;
     public static final double kMaxAngularSpeedDegreesPerSecondSquared = 180;

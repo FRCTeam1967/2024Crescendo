@@ -4,13 +4,14 @@ import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 
 // import statements
 
@@ -18,6 +19,8 @@ import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.robot.Constants;
 
 
@@ -26,16 +29,15 @@ public class SwerveModule {
     
     private TalonFX powerController;
     private TalonFX steerController;
-    private Canandcoder analogEncoder;
-    
+    private CANcoder analogEncoder = new CANcoder(Constants.Swerve.CANANDCODER_ID, "Canivore");
 
     String name;
 
-    public SwerveModule(String name, int powerIdx, int steerIdx) {
+    public SwerveModule(String name, int powerIdx, int steerIdx, int encoderIdx, ShuffleboardLayout container) {
         this.name = name;
 
         // power controller set up
-        powerController = new TalonFX(powerIdx);
+        powerController = new TalonFX(powerIdx, "Canivore");
 
         var powerControllerConfig = powerController.getConfigurator();
 
@@ -51,13 +53,13 @@ public class SwerveModule {
 
         // set max output range
         var voltageConfig = new VoltageConfigs();
-        voltageConfig.PeakForwardVoltage = 7;
-        voltageConfig.PeakReverseVoltage =-7;
+        voltageConfig.PeakForwardVoltage = 7; //should probably make these constants
+        voltageConfig.PeakReverseVoltage =-7;//should probably make these constants
 
         powerControllerConfig.apply(voltageConfig);
         
         // steer controller set up
-        steerController = new TalonFX(steerIdx);
+        steerController = new TalonFX(steerIdx, "Canivore");
 
         var steerControllerConfig = steerController.getConfigurator();
 
@@ -73,8 +75,8 @@ public class SwerveModule {
 
         // set max output range
         var steerVoltageConfig = new VoltageConfigs();
-        steerVoltageConfig.PeakForwardVoltage = 7;
-        steerVoltageConfig.PeakReverseVoltage =-7;
+        steerVoltageConfig.PeakForwardVoltage = 7; //should probably make these constants
+        steerVoltageConfig.PeakReverseVoltage =-7; //should probably make these constants
 
         steerControllerConfig.apply(steerVoltageConfig);
 
@@ -87,16 +89,18 @@ public class SwerveModule {
         var feedbackConfig = new FeedbackConfigs();
         feedbackConfig.SensorToMechanismRatio = Constants.Swerve.SENSOR_ROTATION_TO_MOTOR_RATIO;
 
+        TalonFXConfigurator config = steerController.getConfigurator();
+        config.setPosition(analogEncoder.getAbsolutePosition().getValue());
+
         powerController.stopMotor();
         steerController.stopMotor();
 
-        //set up encoder
-        analogEncoder = new Canandcoder(Constants.Swerve.CANANDCODER_ID);
+        addDashboardEntries(container);
     }
    
     //check to make sure steerController.getPosition will give us the angle?
     public SwerveModuleState getState() {
-        return new SwerveModuleState(powerController.getPosition().getValue()*Constants.Swerve.RPM_TO_MS,
+        return new SwerveModuleState(powerController.getPosition().getValue()*Constants.Swerve.RPM_TO_MPS,
         Rotation2d.fromDegrees(steerController.getPosition().getValue()));
     }
 
@@ -106,10 +110,20 @@ public class SwerveModule {
             powerController.getPosition().getValue()*Constants.Swerve.MK4I_L1_REV_TO_METERS, getState().angle);
     }
 
-    public static double positiveModulus(double dividend, double divisor) {
-        return ((dividend % divisor) + divisor) % divisor;
+    //set steer controller method
+    public void setSteerController(double newAngle){
+        steerController.setPosition(newAngle);
     }
-    
+
+    //
+    private void addDashboardEntries(ShuffleboardContainer container) {
+        container.addNumber("Absolute Encoder Angle", () -> Math.toDegrees(analogEncoder.getAbsolutePosition().getValueAsDouble()));
+        container.addNumber("Current Angle", () -> this.getState().angle.getDegrees());
+        container.addNumber("Current Velocity", () -> this.getState().speedMetersPerSecond);
+        container.addNumber("Falcon Encoder Angle", () -> this.steerController.getPosition().getValueAsDouble());
+    }
+
+
     // not needed if continuous wrapping works
     public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle){
         double delta = (desiredState.angle.getDegrees() - currentAngle.getDegrees()) % 360;
@@ -144,7 +158,7 @@ public class SwerveModule {
         // create a velocity closed-loop request, voltage output, slot 0 configs
         final VelocityVoltage setPwrRef = new VelocityVoltage(0).withSlot(0);
         // set velocity to 8 rps, add 0.5 V to overcome gravity
-        powerController.setControl(setPwrRef.withVelocity(optimizedState.speedMetersPerSecond / Constants.Swerve.RPM_TO_MS));
+        powerController.setControl(setPwrRef.withVelocity(optimizedState.speedMetersPerSecond / Constants.Swerve.RPM_TO_MPS));
 
 
         // create a position closed-loop request, voltage output, slot 0 configs

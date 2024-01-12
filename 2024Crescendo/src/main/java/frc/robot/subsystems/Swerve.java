@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -13,11 +15,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
@@ -31,25 +30,52 @@ public class Swerve extends SubsystemBase{
     public final SwerveModule backLeft;
     public final SwerveModule backRight;
 
-    private final ADIS16470_IMU gyro;
+    private final Pigeon2 gyro;
     private final SwerveDriveOdometry odometry;
 
     private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
 
     private Pose2d pose;
 
-    private Field2d field = new Field2d();
+    public CANcoder analogEncoder = new CANcoder(Constants.Swerve.CANANDCODER_ID, "Canivore");
     
     public Swerve() {
-        ShuffleboardTab controlBoardTab = Shuffleboard.getTab("Tuning");
-        controlBoardTab.add("field", field).withSize(11, 5).withPosition(1, 1);
+
+        ShuffleboardTab driveTrainTab = Shuffleboard.getTab("Drivetrain");
+
+        frontLeft = new SwerveModule("FrontLeft", Constants.Swerve.FL_POWER, Constants.Swerve.FL_STEER, Constants.Swerve.FL_ENCODER, driveTrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+        .withSize(2, 4)
+        .withPosition(0, 0));
+
+        frontRight = new SwerveModule("FrontRight", Constants.Swerve.FR_POWER, Constants.Swerve.FR_STEER, Constants.Swerve.FR_ENCODER, driveTrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+        .withSize(2, 4)
+        .withPosition(2, 0));
+
+        backLeft = new SwerveModule("BackLeft", Constants.Swerve.BL_POWER, Constants.Swerve.BL_STEER, Constants.Swerve.BL_ENCODER, driveTrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+        .withSize(2, 4)
+        .withPosition(4, 0));
+
+        backRight = new SwerveModule("BackRight", Constants.Swerve.BR_POWER, Constants.Swerve.BR_STEER, Constants.Swerve.BR_ENCODER, driveTrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+        .withSize(2, 4)
+        .withPosition(6, 0));
         
-        frontLeft = new SwerveModule("FrontLeft", Constants.Swerve.FL_POWER, Constants.Swerve.FL_STEER);
-        frontRight = new SwerveModule("FrontRight", Constants.Swerve.FR_POWER, Constants.Swerve.FR_STEER);
-        backLeft = new SwerveModule("BackLeft", Constants.Swerve.BL_POWER, Constants.Swerve.BL_STEER);
-        backRight = new SwerveModule("BackRight", Constants.Swerve.BR_POWER, Constants.Swerve.BR_STEER);
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, "Canivore");
+
+        driveTrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0);
+
+        driveTrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(2, 0);
+
+        driveTrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(2, 0);
+
         
-        gyro = new ADIS16470_IMU();
+        driveTrainTab.addDouble("Falcon Gyro Angle", () -> gyro.getAngle());
+        driveTrainTab.addDouble("CANCoder Angle", () -> analogEncoder.getAbsolutePosition().getValueAsDouble());
         
         odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
         new SwerveModulePosition[] {
@@ -81,12 +107,21 @@ public class Swerve extends SubsystemBase{
 
     //takes in degrees and returns rotation object with desired angle
     public Rotation2d getRotation2d() {
-        var degrees = -gyro.getAngle(gyro.getYawAxis());
-        return Rotation2d.fromDegrees(degrees);
+        //adis16470 version
+        //var degrees = gyro.getAngle(gyro.getYawAxis());
+        //return Rotation2d.fromDegrees(degrees);
+
+        //pigeon version
+        return Rotation2d.fromDegrees(gyro.getAngle());
+    
     }
 
     public double getYaw() {
-        return -gyro.getAngle(gyro.getYawAxis());
+        //adis16470 version
+        //return gyro.getAngle(gyro.getYawAxis());
+
+        //pigeon version
+        return gyro.getAngle();
     }
     
     public SwerveModuleState[] getModuleStates() {
@@ -106,20 +141,16 @@ public class Swerve extends SubsystemBase{
     }
 
     public void drive(double xSpeed, double ySpeed, double rotationSpeed){
-        
-        double xSpeedCommanded;
-        double ySpeedCommanded;
-
         xLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
         yLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
         rotationLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
 
-        //speed is from xsupplier joystick value and scaled down by max speed
+        //speed is from xsupplier  value and scaled down by max speed
         double xSpeedScaled = cleanAndScaleInput(xSpeed, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
         double ySpeedScaled = cleanAndScaleInput(ySpeed, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
         double rotationSpeedScaled = cleanAndScaleInput(rotationSpeed, rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
         //converts field relative speeds to robot relative speeds 
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, this.getRotation2d());
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedScaled, ySpeedScaled, rotationSpeedScaled, this.getRotation2d());
         //converts new chassisspeeds to module states
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
         //ensures wheel speeds do not exceed swerve max speed
