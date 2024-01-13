@@ -37,8 +37,6 @@ public class Swerve extends SubsystemBase{
 
     private Pose2d pose;
 
-    public CANcoder analogEncoder = new CANcoder(Constants.Swerve.CANANDCODER_ID, "Canivore");
-    
     public Swerve() {
 
         ShuffleboardTab driveTrainTab = Shuffleboard.getTab("Drivetrain");
@@ -61,21 +59,7 @@ public class Swerve extends SubsystemBase{
         
         gyro = new Pigeon2(Constants.Swerve.pigeonID, "Canivore");
 
-        driveTrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
-            .withSize(2, 4)
-            .withPosition(0, 0);
-
-        driveTrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
-            .withSize(2, 4)
-            .withPosition(2, 0);
-
-        driveTrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
-            .withSize(2, 4)
-            .withPosition(2, 0);
-
-        
         driveTrainTab.addDouble("Falcon Gyro Angle", () -> gyro.getAngle());
-        driveTrainTab.addDouble("CANCoder Angle", () -> analogEncoder.getAbsolutePosition().getValueAsDouble());
         
         odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
         new SwerveModulePosition[] {

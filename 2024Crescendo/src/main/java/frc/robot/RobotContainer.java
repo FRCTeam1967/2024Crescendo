@@ -40,8 +40,8 @@ public class RobotContainer {
     m_driverController.button(4).onTrue(turnToAngle);
     m_driverController.button(2).onTrue(goToDefenseMode);
 
-    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -m_driverController.getRawAxis(1),
-      () -> m_driverController.getRawAxis(0), () -> -m_driverController.getRawAxis(4)));
+    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> m_driverController.getRawAxis(1),
+      () -> m_driverController.getRawAxis(0), () -> m_driverController.getRawAxis(4)));
     
   }
 

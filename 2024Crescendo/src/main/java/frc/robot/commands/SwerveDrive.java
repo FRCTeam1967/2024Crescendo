@@ -22,7 +22,6 @@ public class SwerveDrive extends Command {
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.rotationSupplier = rotationSupplier;
-
         //ramp up speed at a rate limit of swerve max * 2 per second
         xLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
         yLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
@@ -48,16 +47,27 @@ public class SwerveDrive extends Command {
     public void execute() {
         //speed is from xsupplier joystick value and scaled down by max speed
         double xSpeed = cleanAndScaleInput(xSupplier.getAsDouble(), xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+        // System.out.println("XSPEED before CAS: " + xSupplier.getAsDouble());
+        // System.out.println("XSPEED after CAS: " + xSpeed);
         double ySpeed = cleanAndScaleInput(ySupplier.getAsDouble(), yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+        // System.out.println("YSPEED before CAS: " + ySupplier.getAsDouble());
+        // System.out.println("YSPEED after CAS: " + ySpeed);
         double rotationSpeed = cleanAndScaleInput(rotationSupplier.getAsDouble(), rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
+        // System.out.println("R_SPEED before CAS: " + rotationSupplier.getAsDouble());
+        // System.out.println("R_SPEED after CAS: " + rotationSpeed);
         //converts field relative speeds to robot relative speeds 
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, swerve.getRotation2d());
+        //System.out.println("chassis speeds: " + chassisSpeeds.toString());
         //converts new chassisspeeds to module states
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
+        //System.out.println("module state: " + moduleState[0].toString());
         //ensures wheel speeds do not exceed swerve max speed
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
+        //System.out.println(moduleState[0].toString());
         swerve.setModuleStates(moduleState);
+        
     }
+
 
     @Override
     public void end (boolean interrupted) {

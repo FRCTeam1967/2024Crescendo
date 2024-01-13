@@ -23,8 +23,6 @@ public final class Constants {
   }
 
   public static class Swerve {
-    public static final int CANANDCODER_ID = 0;
-    
     public static final double POWER_kP = 0.0001;
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
