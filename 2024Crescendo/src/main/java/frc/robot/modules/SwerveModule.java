@@ -8,19 +8,15 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 
 // import statements
-
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -36,11 +32,7 @@ public class SwerveModule {
     private TalonFX steerController;
     public CANcoder analogEncoder;
 
-    private PositionVoltage m_angleSetter = new PositionVoltage(0);
-    private VelocityTorqueCurrentFOC m_velocitySetter = new VelocityTorqueCurrentFOC(0);
-
     private SwerveModulePosition m_internalState = new SwerveModulePosition();
-    private double m_driveRotationsPerMeter = 0;
 
 
     String name;
@@ -48,74 +40,57 @@ public class SwerveModule {
     public SwerveModule(String name, int powerIdx, int steerIdx, int encoderIdx, ShuffleboardLayout container) {
         this.name = name;
 
-        // power controller set up
+        // instantiate
         powerController = new TalonFX(powerIdx, "Canivore");
+        steerController = new TalonFX(steerIdx, "Canivore");
         analogEncoder = new CANcoder(encoderIdx, "Canivore");
 
+        //configure cancoder
+        CANcoderConfiguration ccdConfigs = new CANcoderConfiguration();
+        var cancoderConfig = analogEncoder.getConfigurator();
+
+        ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+        cancoderConfig.apply(ccdConfigs);
+
+        //configure power
+        TalonFXConfiguration powerConfig = new TalonFXConfiguration();
         var powerControllerConfig = powerController.getConfigurator();
-
-        powerControllerConfig.apply(new TalonFXConfiguration());
-
-        // set up pid
-        var powerPidConfig = new Slot0Configs();
-        powerPidConfig.kP = Constants.Swerve.POWER_kP; 
-        powerPidConfig.kI = Constants.Swerve.POWER_kI; 
-        powerPidConfig.kD = Constants.Swerve.POWER_kD; 
-
-        powerControllerConfig.apply(powerPidConfig);
-
-        // set max output range
-        var voltageConfig = new VoltageConfigs();
-        voltageConfig.PeakForwardVoltage = 7; //should probably make these constants
-        voltageConfig.PeakReverseVoltage =-7;//should probably make these constants
-
-        powerControllerConfig.apply(voltageConfig);
         
-        // steer controller set up
-        steerController = new TalonFX(steerIdx, "Canivore");
+        powerConfig.Slot0.kP = Constants.Swerve.POWER_kP; 
+        powerConfig.Slot0.kI = Constants.Swerve.POWER_kI; 
+        powerConfig.Slot0.kD = Constants.Swerve.POWER_kD; 
 
+        powerConfig.Voltage.PeakForwardVoltage = 7; //should probably make these constants
+        powerConfig.Voltage.PeakReverseVoltage =-7;//should probably make these constants
+
+        powerControllerConfig.apply(powerConfig);
+
+        //configure steer
+        TalonFXConfiguration steerConfig = new TalonFXConfiguration();
         var steerControllerConfig = steerController.getConfigurator();
 
-        steerControllerConfig.apply(new TalonFXConfiguration());
+        steerConfig.Slot0.kP = Constants.Swerve.STEER_kP; 
+        steerConfig.Slot0.kI = Constants.Swerve.STEER_kI; 
+        steerConfig.Slot0.kD = Constants.Swerve.STEER_kD; 
 
-        // set up pid
-        var steerPidConfig = new Slot0Configs();
-        steerPidConfig.kP = Constants.Swerve.STEER_kP; 
-        steerPidConfig.kI = Constants.Swerve.STEER_kI; 
-        steerPidConfig.kD = Constants.Swerve.STEER_kD; 
+        steerConfig.Voltage.PeakForwardVoltage = 7; //should probably make these constants
+        steerConfig.Voltage.PeakReverseVoltage =-7;//should probably make these constants
 
-        steerControllerConfig.apply(steerPidConfig);
+        steerConfig.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID(); 
+        steerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        steerConfig.Feedback.SensorToMechanismRatio = 1;
+        steerConfig.Feedback.RotorToSensorRatio = Constants.Swerve.GEAR_RATIO;
 
-        // set max output range
-        var steerVoltageConfig = new VoltageConfigs();
-        steerVoltageConfig.PeakForwardVoltage = 7; //should probably make these constants
-        steerVoltageConfig.PeakReverseVoltage =-7; //should probably make these constants
+        steerConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
-        steerControllerConfig.apply(steerVoltageConfig);
+        steerControllerConfig.apply(steerConfig);
 
-        CANcoderConfiguration cancoderConfigs = new CANcoderConfiguration();
-        cancoderConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-        analogEncoder.getConfigurator().apply(cancoderConfigs);
-
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID(); 
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        config.Feedback.SensorToMechanismRatio = 1;
-        config.Feedback.RotorToSensorRatio = Constants.Swerve.GEAR_RATIO;
-    
-        steerController.getConfigurator().apply(config);
-
+        //print out initial positions
         steerController.getPosition().refresh();
         analogEncoder.getAbsolutePosition().refresh();
 
         System.out.println("FX Position: " + steerController.getPosition().toString());
         System.out.println("CANcoder Position: " + analogEncoder.getAbsolutePosition().toString());
-
-        //set wrapping config
-        var wrappingConfig = new ClosedLoopGeneralConfigs();
-        wrappingConfig.ContinuousWrap = true;
-
-        steerControllerConfig.apply(wrappingConfig);
 
         powerController.stopMotor();
         steerController.stopMotor();
@@ -144,40 +119,38 @@ public class SwerveModule {
     }
 
 
-    // not needed if continuous wrapping works
-    // public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle){
-    //     double delta = (desiredState.angle.getDegrees() - currentAngle.getDegrees()) % 360;
-    //     if (delta > 180.0) {
-    //         delta -= 360.0;
-    //     } else if (delta < -180.0) {
-    //         delta += 360.0;
-    //     }
+    public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle){
+        double delta = (desiredState.angle.getDegrees() - currentAngle.getDegrees()) % 360;
+        if (delta > 180.0) {
+            delta -= 360.0;
+        } else if (delta < -180.0) {
+            delta += 360.0;
+        }
 
-    //     double targetAngle_deg = currentAngle.getDegrees() + delta;
+        double targetAngle_deg = currentAngle.getDegrees() + delta;
 
-    //     double targetSpeed_mps = desiredState.speedMetersPerSecond;
+        double targetSpeed_mps = desiredState.speedMetersPerSecond;
 
-    //     if (delta > 90.0) {
-    //         targetSpeed_mps = -targetSpeed_mps;
-    //         targetAngle_deg -= 180.0;
-    //     } else if (delta < -90.0) {
-    //         targetSpeed_mps = -targetSpeed_mps;
-    //         targetAngle_deg += 180.0;
-    //     }
+        if (delta > 90.0) {
+            targetSpeed_mps = -targetSpeed_mps;
+            targetAngle_deg -= 180.0;
+        } else if (delta < -90.0) {
+            targetSpeed_mps = -targetSpeed_mps;
+            targetAngle_deg += 180.0;
+        }
 
-    //     return new SwerveModuleState(targetSpeed_mps, Rotation2d.fromDegrees(targetAngle_deg));
-    // }
+        return new SwerveModuleState(targetSpeed_mps, Rotation2d.fromDegrees(targetAngle_deg));
+    }
 
     public void setState(SwerveModuleState state) {
 
+        //our old optimize state code (wcp cc)
         // state.angle = Rotation2d.fromDegrees((state.angle.getDegrees() + 360) % 360);
         // SwerveModuleState optimizedState = optimize(state, getState().angle);
 
-        //if no optimize: just use state as optimized state
+        var optimized = optimize(state, m_internalState.angle);
 
-        var optimized = SwerveModuleState.optimize(state, m_internalState.angle);
-
-        //our version
+        //our old version (wcp cc) - only backwards movement
         // create a velocity closed-loop request, voltage output, slot 0 configs
         //final VelocityVoltage setPwrRef = new VelocityVoltage(optimizedState.speedMetersPerSecond / Constants.Swerve.RPM_TO_MPS);
         // set velocity to 8 rps, add 0.5 V to overcome gravity
@@ -194,9 +167,9 @@ public class SwerveModule {
 
         //ctre's version
         double angleToSetDeg = optimized.angle.getRotations();
-        steerController.setControl(m_angleSetter.withPosition(angleToSetDeg));
-        double velocityToSet = optimized.speedMetersPerSecond * m_driveRotationsPerMeter;
-        powerController.setControl(m_velocitySetter.withVelocity(velocityToSet));
+        steerController.setControl(new PositionVoltage(angleToSetDeg, 0.0, false, 0.0, 0, false, false, false));
+        double velocityToSet = optimized.speedMetersPerSecond / Constants.Swerve.RPM_TO_MPS;
+        powerController.setControl(new VelocityVoltage(velocityToSet, 0.0, false, 0.0, 0, false, false, false));
     }
 
     public void stop() {

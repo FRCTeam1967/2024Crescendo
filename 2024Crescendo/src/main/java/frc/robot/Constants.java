@@ -23,11 +23,11 @@ public final class Constants {
   }
 
   public static class Swerve {
-    public static final double POWER_kP = 0.0001;
+    public static final double POWER_kP = 0.2;
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
-    public static final double STEER_kP = 0.03;
+    public static final double STEER_kP = 1.2;
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
 
