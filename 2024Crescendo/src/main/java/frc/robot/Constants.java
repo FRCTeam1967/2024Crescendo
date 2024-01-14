@@ -13,31 +13,28 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
 
   public static class Pivot {
-    public static final double kDt = 0.02;
     public static final int PIVOT_ID = 11;
-
     public static final int ENCODER_ID = 0;
 
     public static final double kP = 0.85;
     public static final double kI = 0;
     public static final double kD = 0;
+    public static final double kD_TIME = 0.02;
 
     public static final double GEAR_RATIO = 1; //Mech said 75
 
     public static final double STARTING_ANGLE = 45;
-    public static final int NEO_TICKS_PER_REVOLUTION = 42;
-    public static final double ABSOLUTE_TICKS_PER_REVOLUTION = 4096;
-
-    public static final double CONVERSION_FACTOR = 1.0/360.0;
 
     public static final int OFFSET = 0;
-
+    public static final int NEO_TICKS_PER_REVOLUTION = 42;
+    
+    public static final double ABSOLUTE_TICKS_PER_REVOLUTION = 4096;
+    public static final double CONVERSION_FACTOR = 1.0/360.0;
   }
 
   public static class Shooter {
@@ -48,6 +45,4 @@ public final class Constants {
     public static final double kI = 0;
     public static final double kD = 0;
   }
-
-  
 }

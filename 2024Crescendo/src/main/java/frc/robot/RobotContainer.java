@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -24,13 +25,18 @@ public class RobotContainer {
   private final Pivot pivot = new Pivot();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
+  private final CommandXboxController m_xbox =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    pivot.pivotHoming();
+  }
+
+  public void refreshSensor(){
+    pivot.pivotHoming();
   }
 
   /**
@@ -48,10 +54,12 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_driverController.rightTrigger().whileTrue(new RunShooter(shooter, 2.0));
-    m_driverController.rightTrigger().whileTrue(new MovePivot(pivot, 90*Constants.Pivot.CONVERSION_FACTOR)); 
-    m_driverController.leftTrigger().whileTrue(new MovePivot(pivot, 180*Constants.Pivot.CONVERSION_FACTOR));
+    m_xbox.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    //m_driverController.rightTrigger().whileTrue(new RunShooter(shooter, 2.0));
+    m_xbox.rightTrigger().whileTrue(new MovePivot(pivot, 90*Constants.Pivot.CONVERSION_FACTOR)); 
+    m_xbox.leftTrigger().whileTrue(new MovePivot(pivot, 180*Constants.Pivot.CONVERSION_FACTOR));
+    m_xbox.a().whileTrue(new MovePivot(pivot, 0*Constants.Pivot.CONVERSION_FACTOR));
+    m_xbox.start().whileTrue(new HomePivot(pivot));
   }
 
   /**
