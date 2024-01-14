@@ -16,4 +16,46 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  
+  public static class Shooter {
+    public static final int TOP_MOTOR_ID = 6;
+    public static final int BOTTOM_MOTOR_ID = 7;
+
+    public static final double SHOOTER_INTAKE = 0.5;
+    public static final double SHOOTER_EJECT = -0.5;
+  }
+
+  public static class Chassis{
+    //joystick sensitivity
+    public static final int JOYSTICK_EXP = 1;
+    public static final double JOYSTICK_DEADBAND = 0.1;
+
+    //chassis motor ids wide
+    public static final int LEFT_LEADER_ID = 4; 
+    public static final int LEFT_FOLLOWER_ID = 5; 
+    public static final int RIGHT_LEADER_ID = 3; 
+    public static final int RIGHT_FOLLOWER_ID = 2;
+
+    //chassis motor ids long
+    /*public static final int LEFT_LEADER_ID = 5; 
+    public static final int LEFT_FOLLOWER_ID = 3; 
+    public static final int RIGHT_LEADER_ID = 4; 
+    public static final int RIGHT_FOLLOWER_ID = 6;*/
+
+    //pid
+    public static final int kPIDLoopIdx = 0;
+    public static final int K_TIMEOUT_MS = 75;
+    public static final double kP = 0.0; //jankybot- 0.061574, compbot 0.031812, 0.7
+    public static final double kI = 0.0; 
+    public static final double kD = 0.0; //0.2, 0.155
+    public static final double kF = 0.15; //0.05
+
+    //speed factor
+    public static final double SLOW_MODE_FACTOR = 0.5;
+
+    //conversion factor
+    public static final double MAX_RPM_NORMAL = 2000.0;
+    public static final double MAX_RPM_SLOW = 1000.0;
+        //600 is for conversion to per 100ms
+  }
 }

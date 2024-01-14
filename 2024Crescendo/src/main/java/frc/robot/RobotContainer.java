@@ -6,11 +6,16 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import edu.wpi.first.math.MathUtil;
+
+import frc.robot.subsystems.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,16 +24,19 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final Shooter m_shooter = new Shooter();
+  private final Chassis m_chassis = new Chassis();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
+  private final CommandXboxController m_xbox =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  
+  private CommandJoystick leftJoystick = new CommandJoystick(0);
+  private CommandJoystick rightJoystick = new CommandJoystick(1);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the trigger bindings
     configureBindings();
   }
 
@@ -42,13 +50,20 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    m_xbox.leftTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_INTAKE)));
+    m_xbox.rightTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_EJECT)));
+    
+    leftJoystick.button(1).or(rightJoystick.button(1)).whileTrue(new RunCommand(() -> m_chassis.driveStraight(
+      () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
+      () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
+    
+    leftJoystick.button(2).or(rightJoystick.button(2)).whileTrue(new RunCommand(() -> m_chassis.driveSlow(
+      () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
+      () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
+    
+    m_chassis.setDefaultCommand(new RunCommand(() -> m_chassis.drive(
+      () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
+      () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
   }
 
   /**
