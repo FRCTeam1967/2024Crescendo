@@ -49,14 +49,6 @@ public class Intake extends SubsystemBase {
   }
   
   /**
-   * Run intake rollers outward at high speed to shoot into amp
-   */
-  public void shootAmp(){
-    topRollerMotor.set(Constants.Intake.SHOOT_AMP_TOP_ROLLER_SPEED);
-    bottomRollerMotor.set(Constants.Intake.SHOOT_AMP_BOTTOM_ROLLER_SPEED);
-  }
-  
-  /**
    * Run intake rollers outward at slow speed for a few seconds to eject into shooter
    * <p> Timer functionality in {@link frc.robot.RobotContainer}
    */
