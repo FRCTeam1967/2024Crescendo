@@ -5,15 +5,19 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
-import frc.robot.Constants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +26,6 @@ import frc.robot.Constants;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Climb m_climb = new Climb();
 
@@ -30,8 +33,14 @@ public class RobotContainer {
   private final CommandXboxController m_xbox =
     new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  public ShuffleboardTab m_matchTab;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    //shuffleboard
+    m_matchTab = Shuffleboard.getTab("Match");
+    m_climb.configDashboard(m_matchTab);
+
     configureBindings();
   }
 

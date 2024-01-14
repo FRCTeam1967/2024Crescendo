@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
@@ -51,6 +51,15 @@ public class Climb extends SubsystemBase {
     factor = newFactor;
   }
 
+  /**
+   * Displays current winch factor and boolean showing if climb is winding on Shuffleboard
+   * @param tab - ShuffleboardTab to add values to 
+   */
+  public void configDashboard(ShuffleboardTab tab) {
+    tab.addDouble("Current Winch Factor", () -> factor);
+    tab.addBoolean("Is Winch Winding?", () -> (factor == Constants.Climb.WIND_FACTOR));
+  }
+  
   @Override
   public void periodic() {}
 }
