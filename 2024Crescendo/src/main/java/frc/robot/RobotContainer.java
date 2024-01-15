@@ -50,20 +50,32 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_xbox.leftTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_INTAKE)));
-    m_xbox.rightTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_EJECT)));
+    /**
+     * hint: first parameter of RunCommand goes into the execute function of command file
+     * second parameter goes into the addRequirements method
+     */
+    m_xbox.leftTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_INTAKE), m_shooter));
+    m_xbox.rightTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_EJECT), m_shooter));
     
-    leftJoystick.button(1).or(rightJoystick.button(1)).whileTrue(new RunCommand(() -> m_chassis.driveStraight(
+    leftJoystick.button(1).or(rightJoystick.button(1)).whileTrue(new RunCommand(() -> m_chassis.driveStraight( //DriveStraight - Tara
       () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
       () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
     
-    leftJoystick.button(2).or(rightJoystick.button(2)).whileTrue(new RunCommand(() -> m_chassis.driveSlow(
+    leftJoystick.button(2).or(rightJoystick.button(2)).whileTrue(new RunCommand(() -> m_chassis.driveSlow( //DriveSlow - Kathya
       () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
       () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
     
-    m_chassis.setDefaultCommand(new RunCommand(() -> m_chassis.drive(
+    m_chassis.setDefaultCommand(new RunCommand(() -> m_chassis.drive( //Drive - Cerisa
       () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
       () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
+
+    // WITH COMMAND FILES
+    // m_xbox.leftTrigger().whileTrue(new RunIntake(m_shooter));
+    // m_xbox.rightTrigger().whileTrue(new RunEject(m_shooter));
+
+    // leftJoystick.button(1).or(rightJoystick.button(1)).whileTrue(new DriveStraight(()->leftJoystick.getY(), ()->rightJoystick.getY(), m_chassis));
+    // leftJoystick.button(2).or(rightJoystick.button(2)).whileTrue(new DriveSlow(()->leftJoystick.getY(), ()->rightJoystick.getY(), m_chassis));
+    // m_chassis.setDefaultCommand(new Drive(()->leftJoystick.getY(), ()->rightJoystick.getY(), m_chassis));
   }
 
   /**

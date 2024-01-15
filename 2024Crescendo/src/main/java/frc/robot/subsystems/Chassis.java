@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+// import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
 import java.util.function.DoubleSupplier;
 
@@ -18,7 +18,7 @@ import frc.robot.Constants;
 
 public class Chassis extends SubsystemBase {
   private WPI_TalonSRX leftLeader, leftFollower, rightLeader, rightFollower;
-  private MotorControllerGroup leftMotorControllerGroup, rightMotorControllerGroup;
+  // private MotorControllerGroup leftMotorControllerGroup, rightMotorControllerGroup;
   private DifferentialDrive differentialDrive;
 
   /** Creates a new Chassis. */
@@ -36,10 +36,13 @@ public class Chassis extends SubsystemBase {
     leftLeader.setInverted(true);
     leftFollower.setInverted(true);
     
-    leftMotorControllerGroup = new MotorControllerGroup(leftLeader, leftFollower);
-    rightMotorControllerGroup = new MotorControllerGroup(rightLeader, rightFollower);
+    // leftMotorControllerGroup = new MotorControllerGroup(leftLeader, leftFollower);
+    // rightMotorControllerGroup = new MotorControllerGroup(rightLeader, rightFollower);
+    // differentialDrive = new DifferentialDrive(leftMotorControllerGroup, rightMotorControllerGroup);
 
-    differentialDrive = new DifferentialDrive(leftMotorControllerGroup, rightMotorControllerGroup);
+    leftFollower.follow(leftLeader);
+    rightFollower.follow(rightLeader);
+    differentialDrive = new DifferentialDrive(leftLeader, rightLeader);
   }
 
   public void drive(DoubleSupplier leftJoystick, DoubleSupplier rightJoystick){
