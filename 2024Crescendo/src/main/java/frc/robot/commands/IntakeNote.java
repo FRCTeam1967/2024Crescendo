@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Intake;
 
-public class RunIntakeUntilSwitch extends Command {
+public class IntakeNote extends Command {
   private Intake intake;
 
   /** Creates a new RunIntakeUntilSwitch. */
-  public RunIntakeUntilSwitch(Intake _intake) {
+  public IntakeNote(Intake _intake) {
     intake = _intake;
     addRequirements(intake);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -25,10 +25,7 @@ public class RunIntakeUntilSwitch extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.runMotors(
-      Constants.Intake.INTAKE_TOP_ROLLER_SPEED,
-      Constants.Intake.INTAKE_BOTTOM_ROLLER_SPEED
-    );
+    intake.runMotors(Constants.Intake.INTAKE_TOP_ROLLER_SPEED,Constants.Intake.INTAKE_BOTTOM_ROLLER_SPEED);
   }
 
   // Called once the command ends or is interrupted.

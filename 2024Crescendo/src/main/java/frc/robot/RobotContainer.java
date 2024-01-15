@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -39,13 +40,11 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    //TODO: fix button mapping
-    
     //TODO: turn into sequential command: first pivot to intake position, then this, then pivot to speaker position
-    m_xbox.x().onTrue(new RunIntakeUntilSwitch(m_intake));
-
+    m_xbox.x().onTrue(new IntakeNote(m_intake));
+    
     //TODO: turn into parallel command with shooter rollers
-    m_xbox.a().onTrue(new RunCommand(() -> m_intake.ejectIntoShooter()).withTimeout(Constants.Intake.EJECT_TIME));
+    m_xbox.a().onTrue(new RunCommand(() -> m_intake.ejectIntoShooter(), m_intake).withTimeout(Constants.Intake.EJECT_TIME));    
   }
 
   /**
