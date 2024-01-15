@@ -4,18 +4,20 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import edu.wpi.first.math.MathUtil;
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.subsystems.*;
+import frc.robot.commands.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,14 +31,17 @@ public class RobotContainer {
   private final Chassis m_chassis = new Chassis();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_xbox =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_xbox = new CommandXboxController(2);
   
   private CommandJoystick leftJoystick = new CommandJoystick(0);
   private CommandJoystick rightJoystick = new CommandJoystick(1);
 
+  private ShuffleboardTab tab;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    tab = Shuffleboard.getTab("tab");
+    tab.add(CommandScheduler.getInstance());
     configureBindings();
   }
 
@@ -50,22 +55,20 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    /**
-     * hint: first parameter of RunCommand goes into the execute function of command file
-     * second parameter goes into the addRequirements method
-     */
     m_xbox.leftTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_INTAKE), m_shooter));
-    m_xbox.rightTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_EJECT), m_shooter));
-    
-    leftJoystick.button(1).or(rightJoystick.button(1)).whileTrue(new RunCommand(() -> m_chassis.driveStraight( //DriveStraight - Tara
+    //m_xbox.rightTrigger().whileTrue(new RunCommand(() -> m_shooter.runMotors(Constants.Shooter.SHOOTER_EJECT), m_shooter));
+    m_xbox.rightTrigger().whileTrue(new RunEject(m_shooter));
+    m_shooter.setDefaultCommand(new RunCommand(()-> m_shooter.runMotors(0.0), m_shooter));
+
+    leftJoystick.button(1).or(rightJoystick.button(1)).whileTrue(new RunCommand(() -> m_chassis.driveStraight(
       () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
       () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
     
-    leftJoystick.button(2).or(rightJoystick.button(2)).whileTrue(new RunCommand(() -> m_chassis.driveSlow( //DriveSlow - Kathya
+    leftJoystick.button(2).or(rightJoystick.button(2)).whileTrue(new RunCommand(() -> m_chassis.driveSlow(
       () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
       () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
     
-    m_chassis.setDefaultCommand(new RunCommand(() -> m_chassis.drive( //Drive - Cerisa
+    m_chassis.setDefaultCommand(new RunCommand(() -> m_chassis.drive(
       () -> MathUtil.applyDeadband(leftJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND),
       () -> MathUtil.applyDeadband(rightJoystick.getY(), Constants.Chassis.JOYSTICK_DEADBAND)), m_chassis));
 

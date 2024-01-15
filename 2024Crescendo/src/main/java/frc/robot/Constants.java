@@ -19,10 +19,12 @@ public final class Constants {
   
   public static class Shooter {
     public static final int TOP_MOTOR_ID = 6;
-    public static final int BOTTOM_MOTOR_ID = 7;
+    public static final int BOTTOM_MOTOR_ID = 1;
 
-    public static final double SHOOTER_INTAKE = 0.5;
-    public static final double SHOOTER_EJECT = -0.5;
+    public static final double SHOOTER_INTAKE = -0.5;
+    public static final double SHOOTER_EJECT = 1.0;
+
+    public static final double TIME = 1.0;
   }
 
   public static class Chassis{
