@@ -37,7 +37,10 @@ public class RobotContainer {
   private void configureBindings() {
 
     //Testing if it will move to specific angle
+    //y button
     m_driverController.button(4).onTrue(turnToAngle);
+
+    //b button
     m_driverController.button(2).onTrue(goToDefenseMode);
 
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> m_driverController.getRawAxis(1),

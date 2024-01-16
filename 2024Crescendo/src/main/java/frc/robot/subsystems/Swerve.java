@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -30,7 +31,7 @@ public class Swerve extends SubsystemBase{
     public final SwerveModule backLeft;
     public final SwerveModule backRight;
 
-    private final Pigeon2 gyro;
+    private final ADIS16470_IMU gyro;
     private final SwerveDriveOdometry odometry;
 
     private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
@@ -57,9 +58,9 @@ public class Swerve extends SubsystemBase{
         .withSize(2, 4)
         .withPosition(6, 0));
         
-        gyro = new Pigeon2(Constants.Swerve.pigeonID, "Canivore");
+        gyro = new ADIS16470_IMU();
 
-        driveTrainTab.addDouble("Falcon Gyro Angle", () -> gyro.getAngle());
+        driveTrainTab.addDouble("Falcon Gyro Angle", () -> gyro.getAngle(gyro.getYawAxis()));
         
         odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
         new SwerveModulePosition[] {
@@ -96,7 +97,7 @@ public class Swerve extends SubsystemBase{
         //return Rotation2d.fromDegrees(degrees);
 
         //pigeon version
-        return Rotation2d.fromDegrees(gyro.getAngle());
+        return Rotation2d.fromDegrees(gyro.getAngle(gyro.getYawAxis()));
     
     }
 
@@ -105,7 +106,7 @@ public class Swerve extends SubsystemBase{
         //return gyro.getAngle(gyro.getYawAxis());
 
         //pigeon version
-        return gyro.getAngle();
+        return gyro.getAngle(gyro.getYawAxis());
     }
     
     public SwerveModuleState[] getModuleStates() {
@@ -134,11 +135,11 @@ public class Swerve extends SubsystemBase{
         double ySpeedScaled = cleanAndScaleInput(ySpeed, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
         double rotationSpeedScaled = cleanAndScaleInput(rotationSpeed, rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
         //converts field relative speeds to robot relative speeds 
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedScaled, ySpeedScaled, rotationSpeedScaled, this.getRotation2d());
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, this.getRotation2d());
         //converts new chassisspeeds to module states
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
         //ensures wheel speeds do not exceed swerve max speed
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
+        //SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
         this.setModuleStates(moduleState);
     }
 
@@ -192,10 +193,10 @@ public class Swerve extends SubsystemBase{
     }
 
     public void defenseMode(){
-        SwerveModuleState fLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(45));
-        SwerveModuleState fRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(135));
-        SwerveModuleState bLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(45));
-        SwerveModuleState bRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(135));
+        SwerveModuleState fLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
+        SwerveModuleState fRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(-135));
+        SwerveModuleState bLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(-135));
+        SwerveModuleState bRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
 
         frontLeft.setState(fLDefenseState);
         frontRight.setState(fRDefenseState);

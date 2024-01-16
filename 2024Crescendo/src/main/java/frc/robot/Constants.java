@@ -23,11 +23,17 @@ public final class Constants {
   }
 
   public static class Swerve {
-    public static final double POWER_kP = 0.2;
+    public static final double POWER_kS = 0.14; //0.14 best
+    public static final double POWER_kV = 0.9; //1.8, 1., 0.8 //in volts
+    public static final double POWER_kA = 0.1; 
+    public static final double POWER_kP = 0.01; //0.2 //in rotations
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
-    public static final double STEER_kP = 1.2;
+    public static final double STEER_kS = 0.13; // 0.6, 0.8, 0.7, 0.15 (still moving)
+    public static final double STEER_kV = 2; // 0.5, 0, 0.1, 1
+    public static final double STEER_kA = 0.1; //typically small (Ryan)
+    public static final double STEER_kP = 3; // 1.2, 0.8, 0.1 (1868: 2.4)
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
 
@@ -35,11 +41,12 @@ public final class Constants {
 
     //0.319024 = circumference in meters
     //12.8:1 = rotor to sensor ratio
-    public static final double GEAR_RATIO = 12.8;
+    public static final double STEER_GEAR_RATIO = 150/7;
+    public static final double DRIVE_GEAR_RATIO = 8.14;
     public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
-    public static final double MK4I_L1_REV_TO_METERS = WHEEL_CIRCUMFERENCE / GEAR_RATIO;
+    public static final double MK4I_L1_REV_TO_METERS = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
     public static final double RPM_TO_MPS = MK4I_L1_REV_TO_METERS / 60;
-    public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = GEAR_RATIO;
+    public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = STEER_GEAR_RATIO;
 
     public static final double ANALOG_SAMPLE_DEPTH = 0;
 
@@ -59,13 +66,13 @@ public final class Constants {
     public static final int BR_STEER = 4;
     public static final int BR_ENCODER = 2;
 
-    public static final double SWERVE_MAX_SPEED = 3.87096;
-    public static final double SWERVE_ROTATION_MAX_SPEED = 10;
+    public static final double SWERVE_MAX_SPEED = 2; //3.87096
+    public static final double SWERVE_ROTATION_MAX_SPEED = 300;
     public static final double SWERVE_DEADBAND = 0.05;
 
     //based on santyswerve
-    public static final double WIDTH = Units.inchesToMeters(24.75);
-    public static final double LENGTH = Units.inchesToMeters(24.75);
+    public static final double WIDTH = Units.inchesToMeters(23);
+    public static final double LENGTH = Units.inchesToMeters(23);
 
     public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = new SwerveDriveKinematics(
       //fl
@@ -75,7 +82,7 @@ public final class Constants {
       //bl
         new Translation2d(-LENGTH / 2, WIDTH / 2),
       //br
-        new Translation2d(LENGTH / 2, -WIDTH / 2)
+        new Translation2d(-LENGTH / 2, -WIDTH / 2)
     );
   }
 

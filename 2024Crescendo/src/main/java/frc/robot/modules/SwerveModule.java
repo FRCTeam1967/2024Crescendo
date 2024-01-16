@@ -7,22 +7,27 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.configs.VoltageConfigs;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 
 // import statements
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.robot.Constants;
+import frc.robot.commands.SwerveDrive;
 
 
 
@@ -32,7 +37,13 @@ public class SwerveModule {
     private TalonFX steerController;
     public CANcoder analogEncoder;
 
-    private SwerveModulePosition m_internalState = new SwerveModulePosition();
+    private SwerveModuleState initialState;
+    private MotionMagicVoltage positionRequest;
+    private MotionMagicVelocityVoltage velocityRequest;
+
+    private double angleInRot = 0.0;
+    private double lastAngleRot = 0.0;
+    private static double lastAngleDeg = 0.0;
 
 
     String name;
@@ -50,18 +61,45 @@ public class SwerveModule {
         var cancoderConfig = analogEncoder.getConfigurator();
 
         ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+
+        if (name == "FrontLeft") {
+            ccdConfigs.MagnetSensor.MagnetOffset = 170.156/360;
+        }
+
+        if (name == "FrontRight") {
+            ccdConfigs.MagnetSensor.MagnetOffset = -59.062/360;
+        }
+
+        if (name == "BackLeft") {
+            ccdConfigs.MagnetSensor.MagnetOffset = 121.115/360;
+        }
+
+        if (name == "BackRight") {
+            ccdConfigs.MagnetSensor.MagnetOffset = -152.841/360;
+        }
+
         cancoderConfig.apply(ccdConfigs);
 
         //configure power
         TalonFXConfiguration powerConfig = new TalonFXConfiguration();
         var powerControllerConfig = powerController.getConfigurator();
         
+        powerConfig.Slot0.kS = Constants.Swerve.POWER_kS; 
+        powerConfig.Slot0.kV = Constants.Swerve.POWER_kV; 
+        powerConfig.Slot0.kA = Constants.Swerve.POWER_kA; 
         powerConfig.Slot0.kP = Constants.Swerve.POWER_kP; 
         powerConfig.Slot0.kI = Constants.Swerve.POWER_kI; 
         powerConfig.Slot0.kD = Constants.Swerve.POWER_kD; 
 
-        powerConfig.Voltage.PeakForwardVoltage = 7; //should probably make these constants
-        powerConfig.Voltage.PeakReverseVoltage =-7;//should probably make these constants
+        //powerConfig.MotionMagic.MotionMagicCruiseVelocity = 2; //rps (4)
+        powerConfig.MotionMagic.MotionMagicAcceleration = 4; //rps/s
+        powerConfig.MotionMagic.MotionMagicJerk = 9999; //rps/s/s
+
+        powerConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.DRIVE_GEAR_RATIO ; // * Constants.Swerve.WHEEL_CIRCUMFERENCE
+        powerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        // powerConfig.Voltage.PeakForwardVoltage = 12; //should probably make these constants (commented out 1/15)
+        // powerConfig.Voltage.PeakReverseVoltage = -12;//should probably make these constants
 
         powerControllerConfig.apply(powerConfig);
 
@@ -69,17 +107,26 @@ public class SwerveModule {
         TalonFXConfiguration steerConfig = new TalonFXConfiguration();
         var steerControllerConfig = steerController.getConfigurator();
 
+        steerConfig.Slot0.kS = Constants.Swerve.STEER_kS;
+        steerConfig.Slot0.kV = Constants.Swerve.STEER_kV;
+        steerConfig.Slot0.kA = Constants.Swerve.STEER_kA;
         steerConfig.Slot0.kP = Constants.Swerve.STEER_kP; 
         steerConfig.Slot0.kI = Constants.Swerve.STEER_kI; 
         steerConfig.Slot0.kD = Constants.Swerve.STEER_kD; 
 
-        steerConfig.Voltage.PeakForwardVoltage = 7; //should probably make these constants
-        steerConfig.Voltage.PeakReverseVoltage =-7;//should probably make these constants
+        steerConfig.MotionMagic.MotionMagicCruiseVelocity = 2; //rps (4)
+        steerConfig.MotionMagic.MotionMagicAcceleration = 3; //rps/s
+        steerConfig.MotionMagic.MotionMagicJerk = 9999; //rps/s/s
+        steerConfig.Feedback.SensorToMechanismRatio = 1;
+        steerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        // steerConfig.Voltage.PeakForwardVoltage = 12; //should probably make these constants
+        // steerConfig.Voltage.PeakReverseVoltage =-12;//should probably make these constants
 
         steerConfig.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID(); 
         steerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         steerConfig.Feedback.SensorToMechanismRatio = 1;
-        steerConfig.Feedback.RotorToSensorRatio = Constants.Swerve.GEAR_RATIO;
+        //steerConfig.Feedback.RotorToSensorRatio = Constants.Swerve.STEER_GEAR_RATIO;
 
         steerConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
@@ -91,6 +138,12 @@ public class SwerveModule {
 
         System.out.println("FX Position: " + steerController.getPosition().toString());
         System.out.println("CANcoder Position: " + analogEncoder.getAbsolutePosition().toString());
+
+        //steerController.setControl(new PositionVoltage(0, 0.0, false, 0.0, 0, false, false, false));
+
+        Rotation2d initialStartingAngle = new Rotation2d(0);
+        initialState = new SwerveModuleState(0, initialStartingAngle);
+        this.setState(initialState);
 
         powerController.stopMotor();
         steerController.stopMotor();
@@ -113,42 +166,56 @@ public class SwerveModule {
 
     //
     private void addDashboardEntries(ShuffleboardContainer container) {
-        container.addNumber("Encoder Position in Rotations", () -> analogEncoder.getAbsolutePosition().getValueAsDouble());
-        container.addNumber("Falcon Position in Rotations", () -> steerController.getPosition().getValueAsDouble());
+        container.addNumber("Encoder Position in Degrees", () -> analogEncoder.getAbsolutePosition().getValueAsDouble() * 360);
+        container.addNumber("Falcon Position in Rotations", () -> steerController.getPosition().getValueAsDouble() * 360 % 360);
         container.addNumber("Current Velocity", () -> this.getState().speedMetersPerSecond);
+
     }
 
 
-    public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle){
-        double delta = (desiredState.angle.getDegrees() - currentAngle.getDegrees()) % 360;
-        if (delta > 180.0) {
-            delta -= 360.0;
-        } else if (delta < -180.0) {
-            delta += 360.0;
+    public static SwerveModuleState optimize(SwerveModuleState desiredState){
+        double target = desiredState.angle.getDegrees();
+        double current = lastAngleDeg;
+        double delta = (target - current) % 180;
+        double finalAngle = 0;
+        if (delta > 90.0) {
+            double addVar = 180 - delta;
+            finalAngle = current - addVar;
+        } else {
+            finalAngle = current + delta;
         }
-
-        double targetAngle_deg = currentAngle.getDegrees() + delta;
+        
+        System.out.println("Target Angle: " + target);
+        System.out.println("Current: " + current);
+        System.out.println("Final: " + finalAngle);
 
         double targetSpeed_mps = desiredState.speedMetersPerSecond;
 
-        if (delta > 90.0) {
+        if ((target - current) >= 90 && (target- current) <= 180) {
             targetSpeed_mps = -targetSpeed_mps;
-            targetAngle_deg -= 180.0;
-        } else if (delta < -90.0) {
+            System.out.println("Speed Switched");
+            //targetAngle_deg -= 180.0;
+        } else if ((target - current) <= -90 && (target- current) >= -180) {
             targetSpeed_mps = -targetSpeed_mps;
-            targetAngle_deg += 180.0;
+            System.out.println("Speed Switched");
+            
+            //targetAngle_deg += 180.0;
         }
-
-        return new SwerveModuleState(targetSpeed_mps, Rotation2d.fromDegrees(targetAngle_deg));
+        lastAngleDeg = finalAngle;
+        return new SwerveModuleState(targetSpeed_mps, Rotation2d.fromDegrees(finalAngle));
     }
 
     public void setState(SwerveModuleState state) {
 
-        //our old optimize state code (wcp cc)
-        // state.angle = Rotation2d.fromDegrees((state.angle.getDegrees() + 360) % 360);
-        // SwerveModuleState optimizedState = optimize(state, getState().angle);
+        //our optimize state code
+        //var optimized = optimize(state);
+        
+       // SDS optimize code 
+        var optimized = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(lastAngleDeg));
+        lastAngleDeg = optimized.angle.getDegrees();
 
-        var optimized = optimize(state, m_internalState.angle);
+        angleInRot = Math.abs(optimized.speedMetersPerSecond) <= (Constants.Swerve.SWERVE_MAX_SPEED * 0.01) ? lastAngleRot : optimized.angle.getRotations() ;
+
 
         //our old version (wcp cc) - only backwards movement
         // create a velocity closed-loop request, voltage output, slot 0 configs
@@ -166,12 +233,27 @@ public class SwerveModule {
         // steerController.setPosition(optimized.angle.getDegrees());
 
         //ctre's version
-        double angleToSetDeg = optimized.angle.getRotations();
-        steerController.setControl(new PositionVoltage(angleToSetDeg, 0.0, false, 0.0, 0, false, false, false));
+        lastAngleRot = angleInRot;
         double velocityToSet = optimized.speedMetersPerSecond / Constants.Swerve.RPM_TO_MPS;
-        powerController.setControl(new VelocityVoltage(velocityToSet, 0.0, false, 0.0, 0, false, false, false));
+        
+        //old
+        //powerController.setControl(new VelocityVoltage(velocityToSet, 0.0, false, 0.0, 0, false, false, false));
+        //powerController.set((optimized.speedMetersPerSecond / Constants.Swerve.RPM_TO_MPS)/20);
+        //steerController.setControl(new PositionVoltage(angleInRot, 0.0, false, 0.3, 0, false, false, false));
+        
+        //motion magic
+        velocityRequest = new MotionMagicVelocityVoltage(0);
+        velocityRequest.Acceleration = 0;
+        powerController.setControl(velocityRequest.withVelocity(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE)); //in rps
+       
+        positionRequest = new MotionMagicVoltage(0);
+        steerController.setControl(positionRequest.withPosition(angleInRot));
+        
+
+
     }
 
+    
     public void stop() {
         powerController.stopMotor();
         steerController.stopMotor();
@@ -202,7 +284,7 @@ public class SwerveModule {
         steerControllerConfig.apply(coastModeConfig);
         
     }
-    
+   
     public void periodic() {
         
     }
