@@ -7,10 +7,14 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import com.reduxrobotics.canand.CanandEventLoop;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,6 +37,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     pivot.pivotHoming();
+    CanandEventLoop.getInstance();
   }
 
   public void refreshSensor(){
@@ -58,8 +63,10 @@ public class RobotContainer {
     //m_driverController.rightTrigger().whileTrue(new RunShooter(shooter, 2.0));
     m_xbox.rightTrigger().whileTrue(new MovePivot(pivot, 90*Constants.Pivot.CONVERSION_FACTOR)); 
     m_xbox.leftTrigger().whileTrue(new MovePivot(pivot, 180*Constants.Pivot.CONVERSION_FACTOR));
-    m_xbox.a().whileTrue(new MovePivot(pivot, 0*Constants.Pivot.CONVERSION_FACTOR));
-    m_xbox.start().whileTrue(new HomePivot(pivot));
+    m_xbox.a().whileTrue(new MovePivot(pivot, 0));
+    m_xbox.b().whileTrue(new MovePivot(pivot, 10*Constants.Pivot.CONVERSION_FACTOR));
+    //m_xbox.start().whileTrue(new HomePivot(pivot));
+    m_xbox.start().whileTrue(new SequentialCommandGroup(new HomePivot(pivot), new MovePivot(pivot, 0)));
   }
 
   /**

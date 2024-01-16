@@ -4,7 +4,11 @@
 
 package frc.robot.commands;
 
+import com.revrobotics.CANSparkBase;
+import com.revrobotics.SparkPIDController;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.*;
 
 public class MovePivot extends Command {
@@ -26,15 +30,18 @@ public class MovePivot extends Command {
   @Override
   public void execute() {
     pivot.moveTo(desiredRev);
+    //pivot.pidController.setReference(pivot.revsToMove, CANSparkBase.ControlType.kPosition);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return pivot.isReached();
   }
 }

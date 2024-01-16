@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.*;
 
 public class HomePivot extends Command {
-  /** Creates a new HomePivot. */
   private Pivot pivot;
+  /** Creates a new HomePivot. */
   public HomePivot(Pivot pivot) {
     this.pivot = pivot;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(this.pivot);
+    addRequirements(pivot);
   }
 
   // Called when the command is initially scheduled.
@@ -24,6 +24,7 @@ public class HomePivot extends Command {
   @Override
   public void execute() {
     pivot.pivotHoming();
+    //pivot.moveTo(0);
   }
 
   // Called once the command ends or is interrupted.
@@ -33,6 +34,6 @@ public class HomePivot extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return pivot.isReached();
   }
 }
