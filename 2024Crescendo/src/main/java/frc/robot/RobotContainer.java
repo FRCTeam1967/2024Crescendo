@@ -54,13 +54,15 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_xbox.b().onTrue(new RunCommand(() -> m_climb.changeFactor(Constants.Climb.UNWIND_FACTOR)));
-    m_xbox.a().onTrue(new RunCommand(() -> m_climb.changeFactor(Constants.Climb.WIND_FACTOR)));
+    m_xbox.b().onTrue(new RunCommand(() -> m_climb.changeFactor(Constants.Climb.UNWIND_FACTOR), m_climb));
+    m_xbox.a().onTrue(new RunCommand(() -> m_climb.changeFactor(Constants.Climb.WIND_FACTOR), m_climb));
     
     m_climb.setDefaultCommand(new RunCommand(() -> m_climb.moveWinch(
       () -> MathUtil.applyDeadband(m_xbox.getLeftY(), Constants.Climb.DEADBAND),
       () -> MathUtil.applyDeadband(m_xbox.getRightY(), Constants.Climb.DEADBAND)
     ), m_climb));
+
+    m_xbox.x().onTrue(new RunCommand(() -> m_climb.winchToChainHeight(), m_climb));
 
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)

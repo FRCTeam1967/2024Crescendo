@@ -25,5 +25,11 @@ public final class Constants {
     public static final double WIND_FACTOR = -0.2;
 
     public static final double DEADBAND = 0.05;
+
+    //automatically shooting rods up to chain height
+    public static final double CHAIN_HEIGHT = 1; //in meters
+    public static final double SHAFT_RADIUS = 0.01; //in meters, NEO shaft radius is 0.004 but also need to account for string
+    public static final double MAX_WINCH_ROTATIONS = CHAIN_HEIGHT/(2*Math.PI*SHAFT_RADIUS);
+    public static final double MAX_WINCH_SPEED = 1; //same direction/sign as unwinding factor
   }
 }
