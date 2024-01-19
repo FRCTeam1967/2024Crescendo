@@ -21,6 +21,7 @@ public class Climb extends SubsystemBase {
   private CANSparkMax leftMotor, rightMotor;
   private double factor;
   private RelativeEncoder leftEncoder, rightEncoder;
+  private GenericEntry factorEntry;
   
   /**
    * Constructor for Climb class
@@ -45,15 +46,15 @@ public class Climb extends SubsystemBase {
     leftEncoder.setPosition(0);
     rightEncoder.setPosition(0);
   }
-
+  
   /** 
    * Sets speed of leftMotor and rightMotor to speeds of inputs multiplied by factor
    * @param leftSpeed - left motor speed
    * @param rightSpeed - right motor speed
    */
   public void moveWinch(DoubleSupplier leftSpeed, DoubleSupplier rightSpeed){
-    leftMotor.set(leftSpeed.getAsDouble() * factor);
-    rightMotor.set(rightSpeed.getAsDouble() * factor);
+    leftMotor.set(leftSpeed.getAsDouble() * getFactor());
+    rightMotor.set(rightSpeed.getAsDouble() * getFactor());
   }
 
   /** 
@@ -62,6 +63,11 @@ public class Climb extends SubsystemBase {
    */
   public void changeFactor(double newFactor){
     factor = newFactor;
+  }
+
+  public double getFactor(){
+    factor = factorEntry.getDouble(factor);
+    return factor;
   }
 
   /**
@@ -78,18 +84,34 @@ public class Climb extends SubsystemBase {
   // }
 
   /**
+   * Set both motors to opposite of MAX_WINCH_SPEED to unwind when encoder position is at maximum to reach chain height
+   * <p> Otherwise set to 0
+   * <p> Each motor functions independently
+   */
+  public void lowerClimb(){
+    if(leftEncoder.getPosition() >= Constants.Climb.MAX_WINCH_ROTATIONS) leftMotor.set(Constants.Climb.MAX_WINCH_SPEED*-1.0);
+    else leftMotor.set(0);
+
+    if(rightEncoder.getPosition() >= Constants.Climb.MAX_WINCH_ROTATIONS) rightMotor.set(Constants.Climb.MAX_WINCH_SPEED*-1.0);
+    else rightMotor.set(0);
+  }
+
+  /**
    * Displays current winch factor and boolean showing if climb is winding on Shuffleboard
    * @param tab - ShuffleboardTab to add values to 
    */
   public void configDashboard(ShuffleboardTab tab) {
-    tab.addDouble("Current Winch Factor", () -> factor);
+    //tab.addDouble("Current Winch Factor", () -> factor);
     tab.addBoolean("Is Winch Winding?", () -> (factor == Constants.Climb.WIND_FACTOR));
+    factorEntry = tab.add("Winch Factor", factor).getEntry();
     
     //untested: update values from Shuffleboard
-    GenericEntry factorEntry = tab.add("Unwind Factor", Constants.Climb.UNWIND_FACTOR).getEntry();
-    factorEntry.setDouble(factor);
+    //GenericEntry factorEntry = tab.add("Unwind Factor", Constants.Climb.UNWIND_FACTOR).getEntry();
+    //factorEntry.setDouble(factor);
   }
   
   @Override
-  public void periodic() {}
+  public void periodic() {
+    
+  }
 }

@@ -28,8 +28,12 @@ public final class Constants {
 
     //automatically shooting rods up to chain height
     public static final double CHAIN_HEIGHT = 1; //in meters
-    public static final double SHAFT_RADIUS = 0.01; //in meters, NEO shaft radius is 0.004 but also need to account for string
-    public static final double MAX_WINCH_ROTATIONS = CHAIN_HEIGHT/(2*Math.PI*SHAFT_RADIUS);
+    //public static final double SHAFT_RADIUS = 0.01; //in meters, NEO shaft radius is 0.004 but also need to account for string
+    //public static final double MAX_WINCH_ROTATIONS = CHAIN_HEIGHT/(2*Math.PI*SHAFT_RADIUS);
     public static final double MAX_WINCH_SPEED = 1; //same direction/sign as unwinding factor
+    public static final double CLIMB_GEAR_RATIO = 18;
+    public static final double SHAFT_RADIUS = 0.0254; // spool is 1 inch in diameters
+    public static final double STAGE_HEIGHT = 0.7366;// in meters, 29 inches accounts for 2in overlap
+    public static final double MAX_WINCH_ROTATIONS = STAGE_HEIGHT/(SHAFT_RADIUS*Math.PI)*CLIMB_GEAR_RATIO;
   }
 }

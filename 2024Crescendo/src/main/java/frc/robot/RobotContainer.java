@@ -9,6 +9,7 @@ import frc.robot.Constants;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -62,7 +63,12 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(m_xbox.getRightY(), Constants.Climb.DEADBAND)
     ), m_climb));
 
+<<<<<<< Updated upstream
     //m_xbox.x().onTrue(new RunCommand(() -> m_climb.winchToChainHeight(), m_climb));
+=======
+    m_xbox.x().onTrue(new InstantCommand(() -> m_climb.winchToChainHeight(), m_climb));
+    m_xbox.y().onTrue(new InstantCommand(() -> m_climb.lowerClimb(), m_climb));
+>>>>>>> Stashed changes
 
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
