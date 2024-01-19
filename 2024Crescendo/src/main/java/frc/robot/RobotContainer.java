@@ -62,7 +62,7 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(m_xbox.getRightY(), Constants.Climb.DEADBAND)
     ), m_climb));
 
-    m_xbox.x().onTrue(new RunCommand(() -> m_climb.winchToChainHeight(), m_climb));
+    //m_xbox.x().onTrue(new RunCommand(() -> m_climb.winchToChainHeight(), m_climb));
 
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)

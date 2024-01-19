@@ -69,13 +69,13 @@ public class Climb extends SubsystemBase {
    * <p> Otherwise, set it to 0
    * <p> Each motor functions independently
    */
-  public void winchToChainHeight(){
-    if (leftEncoder.getPosition() < Constants.Climb.MAX_WINCH_ROTATIONS) leftMotor.set(Constants.Climb.MAX_WINCH_SPEED);
-    else leftMotor.set(0);
+  // public void winchToChainHeight(){
+  //   if (leftEncoder.getPosition() < Constants.Climb.MAX_WINCH_ROTATIONS) leftMotor.set(Constants.Climb.MAX_WINCH_SPEED);
+  //   else leftMotor.set(0);
     
-    if (rightEncoder.getPosition() < Constants.Climb.MAX_WINCH_ROTATIONS) rightMotor.set(Constants.Climb.MAX_WINCH_SPEED);
-    else rightMotor.set(0);
-  }
+  //   if (rightEncoder.getPosition() < Constants.Climb.MAX_WINCH_ROTATIONS) rightMotor.set(Constants.Climb.MAX_WINCH_SPEED);
+  //   else rightMotor.set(0);
+  // }
 
   /**
    * Displays current winch factor and boolean showing if climb is winding on Shuffleboard
