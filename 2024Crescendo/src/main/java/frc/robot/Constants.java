@@ -35,6 +35,11 @@ public final class Constants {
     
     public static final double ABSOLUTE_TICKS_PER_REVOLUTION = 4096;
     public static final double CONVERSION_FACTOR = 1.0/360.0;
+
+    public static final double DEGREE_180 = 180 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double DEGREE_90 = 90 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double DEGREE_10 = 10 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double DEGREE_0 = 0;
   }
 
   public static class Shooter {

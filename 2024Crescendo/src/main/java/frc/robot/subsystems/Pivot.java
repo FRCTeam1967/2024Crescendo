@@ -21,17 +21,14 @@ public class Pivot extends SubsystemBase {
   private CANSparkMax pivotMotor;
   
   private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(1.00,0.55);
-  private TrapezoidProfile.State goal = new TrapezoidProfile.State();
-  private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
+  public TrapezoidProfile.State goal = new TrapezoidProfile.State();
+  public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
 
   public SparkPIDController pidController;
   public double revsToMove;
   private RelativeEncoder relativeEncoder;
 
   private Canandcoder absEncoder;
-
-  public boolean shouldFollow = true;
-  public boolean shouldHold = false;
 
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
   /** Creates a new Pivot. */
@@ -46,7 +43,7 @@ public class Pivot extends SubsystemBase {
 
     relativeEncoder = pivotMotor.getEncoder();
     
-    absEncoder = new Canandcoder(10);
+    absEncoder = new Canandcoder(Constants.Pivot.ENCODER_ID);
     pidController.setFeedbackDevice(relativeEncoder);
   }
 
@@ -67,20 +64,9 @@ public class Pivot extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
-  public void holdPosition(){
-    moveTo(getRelPos());
-  }
-
   public void moveTo(double revolutions) {
     goal = new TrapezoidProfile.State(revolutions, 0);
   }
-
-  public void followProfile(){
-    setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
-    double revs = (setpoint.position) * Constants.Pivot.GEAR_RATIO;
-    pidController.setReference(revs, CANSparkBase.ControlType.kPosition); 
-  }
-
 
   public boolean isReached(){
     return(profile.isFinished(profile.timeLeftUntil(goal.position)));
@@ -88,13 +74,10 @@ public class Pivot extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if ((shouldFollow == true) && (shouldHold == false)){
-      followProfile();
-    }else if ((shouldHold == true) && (shouldFollow == false)){
-      holdPosition();
-    } else{
-      SmartDashboard.putString("NOT WORKING", "YES");
-    }
+    setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
+    double revs = (setpoint.position) * Constants.Pivot.GEAR_RATIO;
+    pidController.setReference(revs, CANSparkBase.ControlType.kPosition);
+
     SmartDashboard.putNumber("Rel Pos", relativeEncoder.getPosition());
     SmartDashboard.putNumber("Abs Encoder", absEncoder.getAbsPosition());
     // This method will be called once per scheduler run

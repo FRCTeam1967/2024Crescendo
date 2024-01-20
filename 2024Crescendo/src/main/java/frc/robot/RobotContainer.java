@@ -36,8 +36,18 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    //pivot.pivotHoming();
+    pivot.pivotHoming();
     CanandEventLoop.getInstance();
+    
+    maintainPosition();
+  }
+
+  public void maintainPosition(){
+    pivot.setpoint.velocity = 0;
+    pivot.setpoint.position = pivot.getRelPos();
+    pivot.goal.velocity = 0;
+    pivot.goal.position = pivot.getRelPos();
+
   }
 
   public void refreshSensor(){
@@ -64,11 +74,11 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_xbox.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    //m_driverController.rightTrigger().whileTrue(new RunShooter(shooter, 2.0));
-    m_xbox.rightTrigger().onTrue(new MovePivot(pivot, 90*Constants.Pivot.CONVERSION_FACTOR)); 
-    m_xbox.leftTrigger().onTrue(new MovePivot(pivot, 180*Constants.Pivot.CONVERSION_FACTOR));
-    m_xbox.a().onTrue(new MovePivot(pivot, 0));
-    m_xbox.b().onTrue(new MovePivot(pivot, 10*Constants.Pivot.CONVERSION_FACTOR));
+    //m_xbox.rightTrigger().whileTrue(new RunShooter(shooter, 2.0));
+    m_xbox.rightTrigger().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_90)); 
+    m_xbox.leftTrigger().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_180));
+    m_xbox.a().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_0));
+    m_xbox.b().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_10));
     m_xbox.start().onTrue(new HomePivot(pivot));
   }
 

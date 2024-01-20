@@ -29,7 +29,7 @@ public class HomePivot extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    pivot.moveTo(pivot.getAbsPos());
+    //pivot.moveTo(pivot.getAbsPos());
   }
 
   // Returns true when the command should end.
