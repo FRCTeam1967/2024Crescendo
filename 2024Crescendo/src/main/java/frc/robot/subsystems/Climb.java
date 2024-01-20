@@ -7,12 +7,11 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import java.util.function.DoubleSupplier;
@@ -20,7 +19,7 @@ import java.util.function.DoubleSupplier;
 public class Climb extends SubsystemBase {
   private CANSparkMax leftMotor, rightMotor;
   private double factor;
-  private RelativeEncoder leftEncoder, rightEncoder;
+  private DutyCycleEncoder encoder;
   private GenericEntry factorEntry;
   
   /**
@@ -40,11 +39,7 @@ public class Climb extends SubsystemBase {
 
     factor = 0.0;
 
-    leftEncoder = leftMotor.getEncoder();
-    rightEncoder = rightMotor.getEncoder();
-
-    leftEncoder.setPosition(0);
-    rightEncoder.setPosition(0);
+    encoder = new DutyCycleEncoder(Constants.Climb.ENCODER_ID);
   }
   
   /** 
@@ -53,8 +48,13 @@ public class Climb extends SubsystemBase {
    * @param rightSpeed - right motor speed
    */
   public void moveWinch(DoubleSupplier leftSpeed, DoubleSupplier rightSpeed){
-    leftMotor.set(leftSpeed.getAsDouble() * getFactor());
-    rightMotor.set(rightSpeed.getAsDouble() * getFactor());
+    //TODO: replace factorEntry.getDouble() with factorEntry with factor field after tuning
+    leftMotor.set(leftSpeed.getAsDouble() * factorEntry.getDouble(factor));
+    rightMotor.set(rightSpeed.getAsDouble() * factorEntry.getDouble(factor));
+  }
+
+  public boolean encoderCheck(){
+    return encoder.getAbsolutePosition() >= Constants.Climb.MAX_WINCH_ROTATIONS;
   }
 
   /** 
@@ -65,37 +65,6 @@ public class Climb extends SubsystemBase {
     factor = newFactor;
   }
 
-  public double getFactor(){
-    factor = factorEntry.getDouble(factor);
-    return factor;
-  }
-
-  /**
-   * Set either motors to MAX_WINCH_SPEED if its encoder position is below the maximum to reach the chain's height
-   * <p> Otherwise, set it to 0
-   * <p> Each motor functions independently
-   */
-  // public void winchToChainHeight(){
-  //   if (leftEncoder.getPosition() < Constants.Climb.MAX_WINCH_ROTATIONS) leftMotor.set(Constants.Climb.MAX_WINCH_SPEED);
-  //   else leftMotor.set(0);
-    
-  //   if (rightEncoder.getPosition() < Constants.Climb.MAX_WINCH_ROTATIONS) rightMotor.set(Constants.Climb.MAX_WINCH_SPEED);
-  //   else rightMotor.set(0);
-  // }
-
-  /**
-   * Set both motors to opposite of MAX_WINCH_SPEED to unwind when encoder position is at maximum to reach chain height
-   * <p> Otherwise set to 0
-   * <p> Each motor functions independently
-   */
-  public void lowerClimb(){
-    if(leftEncoder.getPosition() >= Constants.Climb.MAX_WINCH_ROTATIONS) leftMotor.set(Constants.Climb.MAX_WINCH_SPEED*-1.0);
-    else leftMotor.set(0);
-
-    if(rightEncoder.getPosition() >= Constants.Climb.MAX_WINCH_ROTATIONS) rightMotor.set(Constants.Climb.MAX_WINCH_SPEED*-1.0);
-    else rightMotor.set(0);
-  }
-
   /**
    * Displays current winch factor and boolean showing if climb is winding on Shuffleboard
    * @param tab - ShuffleboardTab to add values to 
@@ -104,10 +73,6 @@ public class Climb extends SubsystemBase {
     //tab.addDouble("Current Winch Factor", () -> factor);
     tab.addBoolean("Is Winch Winding?", () -> (factor == Constants.Climb.WIND_FACTOR));
     factorEntry = tab.add("Winch Factor", factor).getEntry();
-    
-    //untested: update values from Shuffleboard
-    //GenericEntry factorEntry = tab.add("Unwind Factor", Constants.Climb.UNWIND_FACTOR).getEntry();
-    //factorEntry.setDouble(factor);
   }
   
   @Override

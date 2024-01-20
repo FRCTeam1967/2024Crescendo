@@ -1,16 +1,15 @@
 // Copyright (c) FIRST and other WPILib contributors.
+
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants;
+//import frc.robot.Constants;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -55,24 +54,25 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_xbox.b().onTrue(new RunCommand(() -> m_climb.changeFactor(Constants.Climb.UNWIND_FACTOR), m_climb));
-    m_xbox.a().onTrue(new RunCommand(() -> m_climb.changeFactor(Constants.Climb.WIND_FACTOR), m_climb));
+    m_xbox.b().onTrue(new InstantCommand(() -> m_climb.changeFactor(Constants.Climb.UNWIND_FACTOR), m_climb));
+    m_xbox.a().onTrue(new InstantCommand(() -> m_climb.changeFactor(Constants.Climb.WIND_FACTOR), m_climb));
+    m_xbox.x().onTrue(new GoToMaxHeight(m_climb));
+
+    /* physically, climb is too tall so we need to temporarily stop it from expanding through code */
+    m_climb.setDefaultCommand(new FunctionalCommand(
+      () -> {}, 
+      () -> m_climb.moveWinch(() -> MathUtil.applyDeadband(m_xbox.getLeftY(),Constants.Climb.DEADBAND),
+                              () -> MathUtil.applyDeadband(m_xbox.getRightY(),Constants.Climb.DEADBAND)),
+      interrupted -> m_climb.moveWinch(() -> 0.0, () -> 0.0),
+      () -> m_climb.encoderCheck(),
+      m_climb
+    ));
     
-    m_climb.setDefaultCommand(new RunCommand(() -> m_climb.moveWinch(
-      () -> MathUtil.applyDeadband(m_xbox.getLeftY(), Constants.Climb.DEADBAND),
-      () -> MathUtil.applyDeadband(m_xbox.getRightY(), Constants.Climb.DEADBAND)
-    ), m_climb));
-
-<<<<<<< Updated upstream
-    //m_xbox.x().onTrue(new RunCommand(() -> m_climb.winchToChainHeight(), m_climb));
-=======
-    m_xbox.x().onTrue(new InstantCommand(() -> m_climb.winchToChainHeight(), m_climb));
-    m_xbox.y().onTrue(new InstantCommand(() -> m_climb.lowerClimb(), m_climb));
->>>>>>> Stashed changes
-
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+    /* default climb without checks, for use with comp bot */
+    // m_climb.setDefaultCommand(new RunCommand(() -> m_climb.moveWinch(
+    //   () -> MathUtil.applyDeadband(m_xbox.getLeftY(), Constants.Climb.DEADBAND),
+    //   () -> MathUtil.applyDeadband(m_xbox.getRightY(), Constants.Climb.DEADBAND)
+    // ), m_climb));
   }
 
   /**
