@@ -24,12 +24,13 @@ public class HomePivot extends Command {
   @Override
   public void execute() {
     pivot.pivotHoming();
-    //pivot.moveTo(0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    pivot.moveTo(pivot.getAbsPos());
+  }
 
   // Returns true when the command should end.
   @Override

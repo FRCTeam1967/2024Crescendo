@@ -19,7 +19,7 @@ public final class Constants {
 
   public static class Pivot {
     public static final int PIVOT_ID = 11;
-    public static final int ENCODER_ID = 0;
+    public static final int ENCODER_ID = 10;
 
     public static final double kP = 0.85;
     public static final double kI = 0;

@@ -36,12 +36,16 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    pivot.pivotHoming();
+    //pivot.pivotHoming();
     CanandEventLoop.getInstance();
   }
 
   public void refreshSensor(){
-    pivot.pivotHoming();
+    pivot.moveTo(pivot.getRelPos());
+  }
+
+  public void stopMotor(){
+    pivot.stop();
   }
 
   /**
@@ -61,12 +65,11 @@ public class RobotContainer {
     // cancelling on release.
     m_xbox.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     //m_driverController.rightTrigger().whileTrue(new RunShooter(shooter, 2.0));
-    m_xbox.rightTrigger().whileTrue(new MovePivot(pivot, 90*Constants.Pivot.CONVERSION_FACTOR)); 
-    m_xbox.leftTrigger().whileTrue(new MovePivot(pivot, 180*Constants.Pivot.CONVERSION_FACTOR));
-    m_xbox.a().whileTrue(new MovePivot(pivot, 0));
-    m_xbox.b().whileTrue(new MovePivot(pivot, 10*Constants.Pivot.CONVERSION_FACTOR));
-    //m_xbox.start().whileTrue(new HomePivot(pivot));
-    m_xbox.start().whileTrue(new SequentialCommandGroup(new HomePivot(pivot), new MovePivot(pivot, 0)));
+    m_xbox.rightTrigger().onTrue(new MovePivot(pivot, 90*Constants.Pivot.CONVERSION_FACTOR)); 
+    m_xbox.leftTrigger().onTrue(new MovePivot(pivot, 180*Constants.Pivot.CONVERSION_FACTOR));
+    m_xbox.a().onTrue(new MovePivot(pivot, 0));
+    m_xbox.b().onTrue(new MovePivot(pivot, 10*Constants.Pivot.CONVERSION_FACTOR));
+    m_xbox.start().onTrue(new HomePivot(pivot));
   }
 
   /**
