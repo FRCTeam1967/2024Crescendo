@@ -17,8 +17,19 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static class Feeder{
+    public static final int FEEDER_ID = 11;
+
+    public static final double kP = 0.05;
+    public static final double kI = 0.2;
+    public static final double kD = 0.3;
+    //public static final double kD_TIME = 0.02;
+
+    public static final double FEED_TIME = 5.0;
+  }
+
   public static class Pivot {
-    public static final int PIVOT_ID = 11;
+    public static final int PIVOT_ID = 164;//11
     public static final int ENCODER_ID = 10;
 
     public static final double kP = 0.85;

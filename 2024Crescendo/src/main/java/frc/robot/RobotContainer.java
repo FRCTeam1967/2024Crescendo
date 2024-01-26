@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,6 +28,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Shooter shooter = new Shooter();
   private final Pivot pivot = new Pivot();
+  private final Feeder feeder = new Feeder();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_xbox =
@@ -73,13 +75,16 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_xbox.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    //m_xbox.rightTrigger().whileTrue(new RunShooter(shooter, 2.0));
+    //m_xbox.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     m_xbox.rightTrigger().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_90)); 
     m_xbox.leftTrigger().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_180));
     m_xbox.a().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_0));
     m_xbox.b().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_10));
     m_xbox.start().onTrue(new HomePivot(pivot));
+
+    //m_xbox.x().onTrue(new SequentialCommandGroup(new RunCommand(() -> new RunFeeder(feeder, 1), feeder).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, 1)));   
+    m_xbox.x().onTrue(new RunFeeder(feeder, 0.3).withTimeout(Constants.Feeder.FEED_TIME));
+    feeder.setDefaultCommand(new RunFeeder(feeder, 0));
   }
 
   /**
