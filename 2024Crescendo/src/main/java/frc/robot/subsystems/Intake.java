@@ -7,57 +7,29 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
-  private CANSparkMax topRollerMotor, bottomRollerMotor;
-  private DigitalInput limitSwitch;
+  private CANSparkMax motor;
 
   /**
    * Constructor for Intake class
    * <p> Initializing and configuring motors
    */
   public Intake() {
-    topRollerMotor = new CANSparkMax(Constants.Intake.TOP_ROLLER_MOTOR_ID, MotorType.kBrushless);
-    bottomRollerMotor = new CANSparkMax(Constants.Intake.BOTTOM_ROLLER_MOTOR_ID, MotorType.kBrushless);
-    
-    limitSwitch = new DigitalInput(Constants.Intake.LIMIT_SWITCH_ID);
-    
-    //configuration
-    topRollerMotor.restoreFactoryDefaults();
-    bottomRollerMotor.restoreFactoryDefaults();
+    motor = new CANSparkMax(Constants.Intake.MOTOR_ID, MotorType.kBrushless);
+    motor.restoreFactoryDefaults();
   }
 
   /**
-   * Sets speed of topRollerMotor and bottomRollerMotor to speed of inputs
-   * @param topSpeed - top roller motor speed
-   * @param bottomSpeed - bottom roller motor speed
+   * Sets speed of motor to speed of input
+   * @param speed - motor speed
    */
-  public void runMotors(double topSpeed, double bottomSpeed){
-    topRollerMotor.set(topSpeed);
-    bottomRollerMotor.set(bottomSpeed);
-  }
-
-  /**
-   * @return value of limit switch (true if triggered)
-   */
-  public boolean limitSwitchTriggered(){
-    return limitSwitch.get();
-  }
-  
-  /**
-   * Run intake rollers outward at slow speed for a few seconds to eject into shooter
-   * <p> Timer functionality in {@link frc.robot.RobotContainer}
-   */
-  public void ejectIntoShooter(){
-    topRollerMotor.set(Constants.Intake.EJECT_TOP_ROLLER_SPEED);
-    bottomRollerMotor.set(Constants.Intake.EJECT_BOTTOM_ROLLER_SPEED);
+  public void runMotors(double speed){
+    motor.set(speed);
   }
 
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+  public void periodic() {}
 }

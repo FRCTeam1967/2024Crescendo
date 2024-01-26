@@ -21,9 +21,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final Intake m_intake = new Intake();
+  private final Intake intake = new Intake();
 
-  private final CommandXboxController m_xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -40,11 +40,11 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    //TODO: turn into sequential command: first pivot to intake position, then this, then pivot to speaker position
-    m_xbox.x().onTrue(new IntakeNote(m_intake));
+    //TODO: turn both of these into parallel command with pivot down
+    xbox.leftTrigger().whileTrue(new RunCommand (() -> intake.runMotors(Constants.Intake.EJECT_ROLLER_SPEED), intake));
+    xbox.rightTrigger().whileTrue(new RunCommand (() -> intake.runMotors(Constants.Intake.INTAKE_ROLLER_SPEED), intake));
     
-    //TODO: turn into parallel command with shooter rollers
-    m_xbox.a().onTrue(new RunCommand(() -> m_intake.ejectIntoShooter(), m_intake).withTimeout(Constants.Intake.EJECT_TIME));    
+    intake.setDefaultCommand(new RunCommand (() -> intake.runMotors(0), intake));
   }
 
   /**
