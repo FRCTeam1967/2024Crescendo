@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
@@ -33,9 +34,7 @@ public class RobotContainer {
 
   private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController xbox =
-    new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   public ShuffleboardTab matchTab;
 
@@ -50,8 +49,10 @@ public class RobotContainer {
     leftArm.home();
     rightArm.home();
     
-    matchTab.addDouble("Left PDH Current", () -> powerDistribution.getCurrent(Constants.TelescopingArm.LEFT_MOTOR_PDH_PORT));
-    matchTab.addDouble("Right PDH Current", () -> powerDistribution.getCurrent(Constants.TelescopingArm.RIGHT_MOTOR_PDH_PORT));
+    matchTab.addDouble("Left PDH Current",
+      () -> powerDistribution.getCurrent(Constants.TelescopingArm.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
+    matchTab.addDouble("Right PDH Current",
+      () -> powerDistribution.getCurrent(Constants.TelescopingArm.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
   }
 
   //TODO: combine with pivot's maintainPosition

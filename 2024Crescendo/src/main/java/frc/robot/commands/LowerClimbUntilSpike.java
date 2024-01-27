@@ -18,7 +18,7 @@ public class LowerClimbUntilSpike extends Command {
    * Creates objects for arm and current fields 
    * @param arm - TelescopingArm object
    * @param current - DoubleSupplier for updating current value
-   */  
+   */
   public LowerClimbUntilSpike(TelescopingArm _arm, DoubleSupplier _current) {
     arm = _arm;
     current = _current.getAsDouble();
