@@ -49,7 +49,6 @@ public class RobotContainer {
     pivot.setpoint.position = pivot.getRelPos();
     pivot.goal.velocity = 0;
     pivot.goal.position = pivot.getRelPos();
-
   }
 
   public void refreshSensor(){

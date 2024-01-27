@@ -18,32 +18,26 @@ import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
 
-  private CANSparkMax leftMotor; 
-  //rightMotor;
-  //private SparkPIDController pidController;
+  private CANSparkMax leftMotor, rightMotor;
 
   /** Creates a new Shooter. */
   public Shooter() {
     leftMotor = new CANSparkMax(Constants.Shooter.SHOOTER_LEFT_MOTOR_IDX,MotorType.kBrushless);
-    //rightMotor = new CANSparkMax (Constants.Shooter.SHOOTER_RIGHT_MOTOR_IDX, MotorType.kBrushless);
-    /*pidController = leftMotor.getPIDController();
-    pidController.setP (Constants.Shooter.kP); //make constants later
-    pidController.setI (Constants.Shooter.kI);
-    pidController.setD (Constants.Shooter.kD);
-    pidController.setOutputRange(-0.2, 0.2);*/
+    rightMotor = new CANSparkMax (Constants.Shooter.SHOOTER_RIGHT_MOTOR_IDX, MotorType.kBrushless);
     leftMotor.setSmartCurrentLimit(40);
-
-    //rightMotor.follow(leftMotor);
+    rightMotor.setSmartCurrentLimit(40);
+    rightMotor.follow(leftMotor);
 
   }
 
   public void runShooter (double speed){
     leftMotor.set(speed);
+    rightMotor.set(speed);
   }
 
   public void stopMotors () {
     leftMotor.stopMotor();
-    //rightMotor.stopMotor();
+    rightMotor.stopMotor();
   }
 
   @Override

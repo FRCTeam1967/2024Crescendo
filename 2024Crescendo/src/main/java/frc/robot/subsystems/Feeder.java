@@ -20,16 +20,10 @@ public class Feeder extends SubsystemBase {
   /** Creates a new Feeder. */
   public Feeder() {
     feederMotor = new CANSparkMax (Constants.Feeder.FEEDER_ID, MotorType.kBrushless); //make constant later
-    /*pidController = feederMotor.getPIDController();
-    pidController.setP (Constants.Feeder.kP); //make constants later
-    pidController.setI (Constants.Feeder.kI);
-    pidController.setD (Constants.Feeder.kD);
-    pidController.setOutputRange(-0.2, 0.2);*/
     feederMotor.setSmartCurrentLimit(40);
   }
   
   public void feedFeeder (double speed){
-    //pidController.setReference (speed, CANSparkBase.ControlType.kVelocity);
     feederMotor.set(speed);
   }
 
