@@ -59,11 +59,13 @@ public class RobotContainer {
 
   private void registerAutonomousCommands() { //call someplace in bootup sequence like after config b    /* --- Intake Commands --- */
     // prep
-    AutonomousAction.registerAutonomousAction(
-        "prepGroundIntake", //name of path
-        GroundIntakeCommands.autonPrep(
-            _claw, _elevator, _controlboard, _ledController, GamePieceType.CUBE_GAME_PIECE
-        )
-    );
+
+    // AutonomousAction.registerAutonomousAction(
+    //     "prepGroundIntake", //name of path
+    //     GroundIntakeCommands.autonPrep(
+    //         _claw, _elevator, _controlboard, _ledController, GamePieceType.CUBE_GAME_PIECE
+    //     )
+    // );
+    
   }
 }

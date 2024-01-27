@@ -1,6 +1,11 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.path.PathPlannerPath;
+//import com.pathplanner.lib.*;
+
+import java.util.Vector;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +21,8 @@ public enum AutonomousRoutines {
   public final String shuffleboardName;
   public final String trajectoryName;
   public final boolean buildable;
+
+  private PathLegs[] pathOne; //scorePreloadIntakeMiddle + intakemiddle
 
 //   public pathplanner
 
@@ -46,8 +53,14 @@ public enum AutonomousRoutines {
     trajectoryName = null;
   }
 
-  public void build(Swerve drivetrain) {
+  public void build(Swerve swerve) {
     if (buildable) {
+      Vector<PathPlannerTrajectory> pathSet = new Vector<PathPlannerTrajectory>();
+      for (PathLegs p : pathOne){
+        if (p.currentlyExists){
+          //pathSet.add(PathPlannerPath.registerHotReloadPath​(p.name, )); //Hot reload: paths and autos can be updated and regenerated on the robot without redeploying code
+        }
+      }
       // Add path planner initialization
       // builtCommand = PathPlanner.()
       // This is also the place to add other configuration and "set up" or "clean up" options
@@ -55,4 +68,35 @@ public enum AutonomousRoutines {
       builtCommand = command;
     }
   }
+
+  public enum PathLegs {
+    IntakeMiddle(true, "IntakeMiddle"), //path
+    ShootMiddle(true, "ShootMiddle"), //path
+    
+    scorePreloadIntakeMiddle(true, "scorePreloadIntake"), //auto
+    scorePreloadScoreMiddle(true, "scorePreloadScoreMiddle"); //auto
+    
+
+    public final boolean currentlyExists;
+    public final String name;
+
+    PathLegs (boolean currentlyExists, String name) {
+      this.currentlyExists = currentlyExists;
+      this.name = name;
+    }
+
+    public boolean currentlyExists (boolean currentlyExists){
+      return currentlyExists;
+    }
+
+    public String name(String name){
+      return name;
+    }
+
+    
+  }
+  
+
+  
+
 }
