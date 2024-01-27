@@ -10,11 +10,12 @@ import frc.robot.subsystems.Shooter;
 
 public class RunShooter extends Command {
   private Shooter shooter;
-  private double speed;
+  private double frontSpeed, backSpeed;
   /** Creates a new RunShooter. */
-  public RunShooter(Shooter shooter, double speed) {
+  public RunShooter(Shooter shooter, double frontSpeed, double backSpeed) {
     this.shooter = shooter;
-    this.speed = speed;
+    this.frontSpeed = frontSpeed;
+    this.backSpeed = backSpeed;
     addRequirements(this.shooter);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -26,7 +27,7 @@ public class RunShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.runShooter(speed);
+    shooter.runShooter(frontSpeed, backSpeed);
   }
 
   // Called once the command ends or is interrupted.

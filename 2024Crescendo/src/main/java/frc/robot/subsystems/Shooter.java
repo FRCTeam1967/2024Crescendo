@@ -18,26 +18,34 @@ import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
 
-  private CANSparkMax leftMotor, rightMotor;
+  private CANSparkMax frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
 
   /** Creates a new Shooter. */
   public Shooter() {
-    leftMotor = new CANSparkMax(Constants.Shooter.SHOOTER_LEFT_MOTOR_IDX,MotorType.kBrushless);
-    rightMotor = new CANSparkMax (Constants.Shooter.SHOOTER_RIGHT_MOTOR_IDX, MotorType.kBrushless);
-    leftMotor.setSmartCurrentLimit(40);
-    rightMotor.setSmartCurrentLimit(40);
-    rightMotor.follow(leftMotor);
+    frontLeftMotor = new CANSparkMax(Constants.Shooter.FRONT_LEFT_MOTOR_IDX,MotorType.kBrushless);
+    frontRightMotor = new CANSparkMax (Constants.Shooter.FRONT_RIGHT_MOTOR_IDX, MotorType.kBrushless);
+    backLeftMotor = new CANSparkMax (Constants.Shooter.BACK_LEFT_MOTOR_IDX, MotorType.kBrushless);
+    backRightMotor = new CANSparkMax (Constants.Shooter.BACK_RIGHT_MOTOR_IDX, MotorType.kBrushless);
 
+    
+    frontLeftMotor.setSmartCurrentLimit(40);
+    frontRightMotor.setSmartCurrentLimit(40);
+    backLeftMotor.setSmartCurrentLimit(40);
+    backRightMotor.setSmartCurrentLimit(40);
   }
 
-  public void runShooter (double speed){
-    leftMotor.set(speed);
-    rightMotor.set(speed);
+  public void runShooter (double frontSpeed, double backSpeed){
+    frontLeftMotor.set(frontSpeed);
+    frontRightMotor.set(frontSpeed);
+    backLeftMotor.set(backSpeed);
+    backRightMotor.set(backSpeed);
   }
 
   public void stopMotors () {
-    leftMotor.stopMotor();
-    rightMotor.stopMotor();
+    frontLeftMotor.stopMotor();
+    frontRightMotor.stopMotor();
+    backLeftMotor.stopMotor();
+    backRightMotor.stopMotor();
   }
 
   @Override

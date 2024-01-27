@@ -5,11 +5,17 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import edu.wpi.first.units.Power;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.*;
@@ -26,9 +32,15 @@ import com.reduxrobotics.canand.CanandEventLoop;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  
+  //private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
+  
   private final Shooter shooter = new Shooter();
   private final Pivot pivot = new Pivot();
   private final Feeder feeder = new Feeder();
+  
+  public ShuffleboardTab limelightTab = Shuffleboard.getTab("limelight tab");
+  public Limelight limelight;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_xbox =
@@ -40,6 +52,8 @@ public class RobotContainer {
     configureBindings();
     pivot.pivotHoming();
     CanandEventLoop.getInstance();
+    limelight = new Limelight(limelightTab);
+    //powerDistribution.setSwitchableChannel(true);
     
     maintainPosition();
   }
@@ -81,11 +95,8 @@ public class RobotContainer {
     m_xbox.b().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_10));
     m_xbox.start().onTrue(new HomePivot(pivot));
 
-
-    //m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, 1), feeder).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, 1));   
-    //m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, 0.3).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, 0.3) ));
-    m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, 0.3).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, 0.3).withTimeout(Constants.Feeder.FEED_TIME)));
-    shooter.setDefaultCommand(new RunShooter(shooter, 0.0));
+    m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, Constants.Shooter.FRONT_SPEED, Constants.Shooter.BACK_SPEED).withTimeout(Constants.Shooter.SHOOT_TIME)));
+    shooter.setDefaultCommand(new RunShooter(shooter, 0.0, 0.0));
     feeder.setDefaultCommand(new RunFeeder(feeder, 0));
   }
 

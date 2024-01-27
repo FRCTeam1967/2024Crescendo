@@ -19,13 +19,10 @@ public final class Constants {
 
   public static class Feeder{
     public static final int FEEDER_ID = 11;
-
-    public static final double kP = 0.05;
-    public static final double kI = 0.2;
-    public static final double kD = 0.3;
     //public static final double kD_TIME = 0.02;
 
     public static final double FEED_TIME = 5.0;
+    public static final double FEED_SPEED = 0.3;
   }
 
   public static class Pivot {
@@ -54,11 +51,15 @@ public final class Constants {
   }
 
   public static class Shooter {
-    public static final int SHOOTER_LEFT_MOTOR_IDX = 9;
-    public static final int SHOOTER_RIGHT_MOTOR_IDX = 1;
+    public static final int FRONT_LEFT_MOTOR_IDX = 1; //tbd
+    public static final int FRONT_RIGHT_MOTOR_IDX = 2; //tbd
 
-    public static final double kP = 0.55;
-    public static final double kI = 0;
-    public static final double kD = 0;
+    public static final int BACK_LEFT_MOTOR_IDX = 3; //tbd
+    public static final int BACK_RIGHT_MOTOR_IDX = 4; //tbd
+
+    public static final double FRONT_SPEED = 0.3;
+    public static final double BACK_SPEED = 0.3;
+
+    public static final double SHOOT_TIME = 5.0;
   }
 }
