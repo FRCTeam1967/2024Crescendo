@@ -31,7 +31,7 @@ public final class Constants {
     public static final double POWER_kD = 0;
 
     public static final double STEER_kS = 0.13; // 0.6, 0.8, 0.7, 0.15 (still moving)
-    public static final double STEER_kV = 2; // 0.5, 0, 0.1, 1
+    public static final double STEER_kV = 2.1; // 0.5, 0, 0.1, 1
     public static final double STEER_kA = 0.1; //typically small (Ryan)
     public static final double STEER_kP = 3; // 1.2, 0.8, 0.1 (1868: 2.4)
     public static final double STEER_kI = 0;
@@ -66,24 +66,39 @@ public final class Constants {
     public static final int BR_STEER = 4;
     public static final int BR_ENCODER = 2;
 
-    public static final double SWERVE_MAX_SPEED = 2; //3.87096
-    public static final double SWERVE_ROTATION_MAX_SPEED = 300;
-    public static final double SWERVE_DEADBAND = 0.05;
-
-    //based on santyswerve
+    public static final double SWERVE_MAX_SPEED = 2.085; //4.1695 mps
     public static final double WIDTH = Units.inchesToMeters(23);
     public static final double LENGTH = Units.inchesToMeters(23);
 
+    public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
+
+    public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = SWERVE_MAX_SPEED/ROTATION_CIRCLE_CIRCUMFERENCE; 
+    public static final double SWERVE_DEADBAND = 0.05;
+
+    public static Translation2d m_frontLeftLocation = new Translation2d(LENGTH / 2, WIDTH / 2);
+    public static Translation2d m_frontRightLocation = new Translation2d(LENGTH / 2, -WIDTH / 2);
+    public static Translation2d m_backLeftLocation = new Translation2d(-LENGTH / 2, WIDTH / 2);
+    public static Translation2d m_backRightLocation = new Translation2d(-LENGTH / 2, -WIDTH / 2);
+
+
     public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = new SwerveDriveKinematics(
       //fl
-        new Translation2d(LENGTH / 2, WIDTH / 2),
+        m_frontLeftLocation,
       //fr
-        new Translation2d(LENGTH / 2, -WIDTH / 2),
+        m_frontRightLocation,
       //bl
-        new Translation2d(-LENGTH / 2, WIDTH / 2),
+        m_backLeftLocation,
       //br
-        new Translation2d(-LENGTH / 2, -WIDTH / 2)
+        m_backRightLocation
     );
+
+    SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+      m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
+    );
+
+
+
+
   }
 
   public static class Auto {

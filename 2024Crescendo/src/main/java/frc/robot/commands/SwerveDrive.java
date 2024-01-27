@@ -23,9 +23,9 @@ public class SwerveDrive extends Command {
         this.ySupplier = ySupplier;
         this.rotationSupplier = rotationSupplier;
         //ramp up speed at a rate limit of swerve max * 2 per second
-        xLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
-        yLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
-        rotationLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
+        //xLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 400);
+        //yLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 400);
+        //rotationLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_ROTATION_MAX_SPEED * 400);
         //command uses the swerve subsystem
         addRequirements(swerve);
     }
@@ -36,7 +36,7 @@ public class SwerveDrive extends Command {
         //squaring input while preserving sign
         input = signedSquare(input);
         //using slewratelimiter to scale input
-        input = limiter.calculate(input);
+        //input = limiter.calculate(input);
         input *= speedScaling;
 
         return input;
@@ -52,7 +52,7 @@ public class SwerveDrive extends Command {
         double ySpeed = cleanAndScaleInput(ySupplier.getAsDouble(), yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
         // System.out.println("YSPEED before CAS: " + ySupplier.getAsDouble());
         // System.out.println("YSPEED after CAS: " + ySpeed);
-        double rotationSpeed = cleanAndScaleInput(rotationSupplier.getAsDouble(), rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
+        double rotationSpeed = cleanAndScaleInput(rotationSupplier.getAsDouble(), rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED_IN_RAD);
         // System.out.println("R_SPEED before CAS: " + rotationSupplier.getAsDouble());
         // System.out.println("R_SPEED after CAS: " + rotationSpeed);
         //converts field relative speeds to robot relative speeds 

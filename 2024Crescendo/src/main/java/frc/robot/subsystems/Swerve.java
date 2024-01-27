@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -11,7 +9,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -20,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Constants;
 import frc.robot.modules.SwerveModule;
 
@@ -33,6 +30,7 @@ public class Swerve extends SubsystemBase{
 
     private final ADIS16470_IMU gyro;
     private final SwerveDriveOdometry odometry;
+    private Field2d field = new Field2d();
 
     private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
 
@@ -62,6 +60,10 @@ public class Swerve extends SubsystemBase{
 
         driveTrainTab.addDouble("Falcon Gyro Angle", () -> gyro.getAngle(gyro.getYawAxis()));
         
+        driveTrainTab.add("field", field).withSize(11, 5).withPosition(1, 1);
+
+
+
         odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
         new SwerveModulePosition[] {
             frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
@@ -128,12 +130,12 @@ public class Swerve extends SubsystemBase{
     public void drive(double xSpeed, double ySpeed, double rotationSpeed){
         xLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
         yLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
-        rotationLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
+        rotationLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_ROTATION_MAX_SPEED_IN_RAD);
 
         //speed is from xsupplier  value and scaled down by max speed
         double xSpeedScaled = cleanAndScaleInput(xSpeed, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
         double ySpeedScaled = cleanAndScaleInput(ySpeed, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-        double rotationSpeedScaled = cleanAndScaleInput(rotationSpeed, rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED);
+        double rotationSpeedScaled = cleanAndScaleInput(rotationSpeed, rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED_IN_RAD);
         //converts field relative speeds to robot relative speeds 
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, this.getRotation2d());
         //converts new chassisspeeds to module states
@@ -154,7 +156,7 @@ public class Swerve extends SubsystemBase{
         //squaring input while preserving sign
         input = signedSquare(input);
         //using slewratelimiter to scale input
-        input = limiter.calculate(input);
+        //input = limiter.calculate(input);
         input *= speedScaling;
 
         return input;
@@ -221,6 +223,26 @@ public class Swerve extends SubsystemBase{
             backLeft.coastMode();
             backRight.coastMode();    
         }
+    }
+
+
+    @Override
+    public void periodic() {
+        frontLeft.periodic();
+        frontRight.periodic();
+        backLeft.periodic();
+        backRight.periodic();
+
+        var gyroAngle = getRotation2d();
+
+        pose = odometry.update(gyroAngle,
+            new SwerveModulePosition[] {
+            frontLeft.getPosition(), frontRight.getPosition(),
+            backLeft.getPosition(), backRight.getPosition()
+        });
+
+        field.setRobotPose(pose);
+
     }
 
 }
