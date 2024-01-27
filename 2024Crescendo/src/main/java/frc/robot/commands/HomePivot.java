@@ -29,6 +29,10 @@ public class HomePivot extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    pivot.setpoint.velocity = 0;
+    pivot.setpoint.position = pivot.getRelPos();
+    pivot.goal.velocity = 0;
+    pivot.goal.position = pivot.getRelPos();
     //pivot.moveTo(pivot.getAbsPos());
   }
 
