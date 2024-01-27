@@ -12,7 +12,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
@@ -30,6 +31,8 @@ public class RobotContainer {
   private final TelescopingArm leftArm = new TelescopingArm(Constants.TelescopingArm.LEFT_MOTOR_ID);
   private final TelescopingArm rightArm = new TelescopingArm(Constants.TelescopingArm.RIGHT_MOTOR_ID);
 
+  private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController xbox =
     new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -38,19 +41,20 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    //shuffleboard
     matchTab = Shuffleboard.getTab("Match");
-    leftArm.configDashboard(matchTab);
-    rightArm.configDashboard(matchTab);
+    leftArm.configDashboard(matchTab); //when testing, do one arm at a time?
 
     configureBindings();
 
     maintainPosition();
     leftArm.home();
     rightArm.home();
+    
+    matchTab.addDouble("Left PDH Current", () -> powerDistribution.getCurrent(Constants.TelescopingArm.LEFT_MOTOR_PDH_PORT));
+    matchTab.addDouble("Right PDH Current", () -> powerDistribution.getCurrent(Constants.TelescopingArm.RIGHT_MOTOR_PDH_PORT));
   }
-  
-  //TODO: combine with pivot's maintainPosition?
+
+  //TODO: combine with pivot's maintainPosition
   public void maintainPosition(){
     leftArm.setpoint.velocity = 0;
     leftArm.setpoint.position = leftArm.getRelPos();
@@ -62,15 +66,6 @@ public class RobotContainer {
     rightArm.goal.velocity = 0;
     rightArm.goal.position = rightArm.getRelPos();
   }
-  // public void refreshSensor(){
-  //   leftArm.moveTo(leftArm.getRelPos());
-  //   rightArm.moveTo(rightArm.getRelPos());
-  // }
-
-  // public void stopMotor(){
-  //   leftArm.stop();
-  //   rightArm.stop();
-  // }
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -90,7 +85,12 @@ public class RobotContainer {
       new InstantCommand(() -> leftArm.changeFactor(Constants.TelescopingArm.WIND_FACTOR), leftArm), 
       new InstantCommand(() -> rightArm.changeFactor(Constants.TelescopingArm.WIND_FACTOR), rightArm)));
     
-    xbox.x().onTrue(new ParallelCommandGroup(new GoToMaxHeight(leftArm), new GoToMaxHeight(rightArm)));
+    xbox.x().onTrue(new ParallelCommandGroup(new ClimbToMaxHeight(leftArm), new ClimbToMaxHeight(rightArm)));
+    xbox.rightBumper().onTrue(new ParallelCommandGroup(new ClimbToMidHeight(leftArm), new ClimbToMidHeight(rightArm)));
+    
+    xbox.y().onTrue(new ParallelCommandGroup(
+      new LowerClimbUntilSpike(leftArm, () -> powerDistribution.getCurrent(Constants.TelescopingArm.LEFT_MOTOR_PDH_PORT)), 
+      new LowerClimbUntilSpike(rightArm, () -> powerDistribution.getCurrent(Constants.TelescopingArm.RIGHT_MOTOR_PDH_PORT))));
     
     leftArm.setDefaultCommand(new RunCommand(() -> leftArm.moveWinch(
       () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.TelescopingArm.DEADBAND)), leftArm));
@@ -101,7 +101,6 @@ public class RobotContainer {
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {

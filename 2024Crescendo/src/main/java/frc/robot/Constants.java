@@ -22,18 +22,23 @@ public final class Constants {
     public static final int RIGHT_MOTOR_ID = 2;
     public static final int ENCODER_ID = 3;
 
+    public static final int LEFT_MOTOR_PDH_PORT = 7;
+    public static final int RIGHT_MOTOR_PDH_PORT = 8;
+    
     public static final double UNWIND_FACTOR = 1.0;
     public static final double WIND_FACTOR = -0.2;
 
     public static final double DEADBAND = 0.05;
 
     /* automatic climb */
-    //public static final double CHAIN_HEIGHT = 1; //in meters
-    public static final double MAX_WINCH_SPEED = 1; //same direction/sign as unwinding factor
+    public static final double MAX_WINCH_SPEED = 1; //should be same direction/sign as unwinding factor
     public static final double CLIMB_GEAR_RATIO = 18;
     public static final double SHAFT_DIAMETER = 0.0254; //in meters, = 1"
     public static final double TOTAL_STAGE_HEIGHT = 0.7366;// in meters, = 15+16-2 (overlap) = 29"
-    public static final double MAX_WINCH_ROTATIONS = (TOTAL_STAGE_HEIGHT*CLIMB_GEAR_RATIO)/(SHAFT_DIAMETER*Math.PI); // need to check in w/ climb
+    public static final double MAX_WINCH_ROTATIONS = (TOTAL_STAGE_HEIGHT*CLIMB_GEAR_RATIO)/(SHAFT_DIAMETER*Math.PI);
+    public static final double AUTOMATIC_LOWER_SPEED = 0.25;
+    
+    public static final double MID_WINCH_ROTATIONS = ((TOTAL_STAGE_HEIGHT/2)*CLIMB_GEAR_RATIO)/(SHAFT_DIAMETER*Math.PI);
 
     //TODO: tune values and replace
     public static final double MAX_VELOCITY = 1.00;
@@ -47,5 +52,7 @@ public final class Constants {
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kD_TIME = 0.02; 
+
+    public static final double SPIKE_CURRENT = 20;
   }
 }

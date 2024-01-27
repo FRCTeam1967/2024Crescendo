@@ -8,32 +8,31 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.TelescopingArm;
 
-public class GoToMaxHeight extends Command {
+public class ClimbToMidHeight extends Command {
   private TelescopingArm arm;
-  
-  /** Creates a new GoToMaxHeight. */
-  public GoToMaxHeight(TelescopingArm _arm) {
+
+  /** 
+   * Creates new ClimbToMidHeight object
+   * @param arm - TelescopingArm object
+   */
+  public ClimbToMidHeight(TelescopingArm _arm) {
     arm = _arm;
     addRequirements(arm);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.moveTo(Constants.TelescopingArm.MAX_WINCH_ROTATIONS);
+    arm.moveTo(Constants.TelescopingArm.MID_WINCH_ROTATIONS);
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {}
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     arm.stop();
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return arm.isReached();

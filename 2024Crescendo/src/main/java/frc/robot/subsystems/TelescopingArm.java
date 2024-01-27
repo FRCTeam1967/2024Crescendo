@@ -27,6 +27,7 @@ public class TelescopingArm extends SubsystemBase {
   private CANSparkMax motor;
   private RelativeEncoder relEncoder;
   private Canandcoder absEncoder;
+  public SparkPIDController PIDController;
 
   private double factor;
   private GenericEntry factorEntry;
@@ -35,8 +36,6 @@ public class TelescopingArm extends SubsystemBase {
       Constants.TelescopingArm.MAX_VELOCITY, Constants.TelescopingArm.MAX_ACCELERATION);
   public TrapezoidProfile.State goal = new TrapezoidProfile.State();
   public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-
-  public SparkPIDController PIDController;
 
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
 
@@ -66,31 +65,46 @@ public class TelescopingArm extends SubsystemBase {
 
     factor = 0.0;
   }
-
+  
+  /**
+   * Sets zero position of relative encoder to position of absolute encoder
+   */
   public void home() {
     relEncoder.setPosition(absEncoder.getAbsPosition());
   }
 
+  /**
+   * Stops motor movement
+   */
   public void stop() {
     motor.stopMotor();
   }
 
+  /**
+   * @return relative encoder's position
+   */
   public double getRelPos() {
     return relEncoder.getPosition();
   }
-
+  
+  /**
+   * Assigns new position for robot to move to based on current state
+   * @param revolutions - number of revolutions to move
+   */
   public void moveTo(double revolutions) {
     goal = new TrapezoidProfile.State(revolutions, 0);
   }
 
+  /**
+   * @return true if the trapezoid profile reaches its goal
+   */
   public boolean isReached() {
     return (profile.isFinished(profile.timeLeftUntil(goal.position)));
   }
 
   /**
-   * Sets speed of leftMotor and rightMotor to speeds of inputs multiplied by factor
-   * @param leftSpeed  - left motor speed
-   * @param rightSpeed - right motor speed
+   * Sets speed of motor to input multiplied by factor
+   * @param speed - speed of motor needed in order to
    */
   public void moveWinch(DoubleSupplier speed) {
     // TODO: replace factorEntry.getDouble() with factorEntry with factor field after tuning
@@ -99,7 +113,6 @@ public class TelescopingArm extends SubsystemBase {
 
   /**
    * Change factor for winch speed
-   * 
    * @param newFactor - new value to mutiply to speed for different points in match
    */
   public void changeFactor(double newFactor) {
@@ -107,13 +120,11 @@ public class TelescopingArm extends SubsystemBase {
   }
 
   /**
-   * Displays current winch factor and boolean showing if climb is winding on
-   * Shuffleboard
-   * 
+   * Displays current winch factor, takes in entered factor, and boolean showing if climb is winding on Shuffleboard
+   * <p> Also displays values of relaive and absolute encoders
    * @param tab - ShuffleboardTab to add values to
    */
   public void configDashboard(ShuffleboardTab tab) {
-    // tab.addDouble("Current Winch Factor", () -> factor);
     tab.addBoolean("Is Winch Winding?", () -> (factor == Constants.TelescopingArm.WIND_FACTOR));
     factorEntry = tab.add("Winch Factor", factor).getEntry();
 
@@ -121,7 +132,7 @@ public class TelescopingArm extends SubsystemBase {
     tab.addDouble("Absolute Encoder", () -> absEncoder.getAbsPosition());
   }
 
-  @Override
+ @Override
   public void periodic() {
     setpoint = profile.calculate(Constants.TelescopingArm.kD_TIME, setpoint, goal);
     PIDController.setReference((setpoint.position) * Constants.TelescopingArm.CLIMB_GEAR_RATIO,CANSparkBase.ControlType.kPosition);
