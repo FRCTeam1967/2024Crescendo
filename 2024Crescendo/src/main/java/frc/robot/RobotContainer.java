@@ -27,22 +27,50 @@ import frc.robot.commands.*;
  */
 public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final Climb m_climb = new Climb();
+  private final TelescopingArm leftArm = new TelescopingArm(Constants.TelescopingArm.LEFT_MOTOR_ID);
+  private final TelescopingArm rightArm = new TelescopingArm(Constants.TelescopingArm.RIGHT_MOTOR_ID);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_xbox =
+  private final CommandXboxController xbox =
     new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-  public ShuffleboardTab m_matchTab;
+  public ShuffleboardTab matchTab;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     //shuffleboard
-    m_matchTab = Shuffleboard.getTab("Match");
-    m_climb.configDashboard(m_matchTab);
+    matchTab = Shuffleboard.getTab("Match");
+    leftArm.configDashboard(matchTab);
+    rightArm.configDashboard(matchTab);
 
     configureBindings();
+
+    maintainPosition();
+    leftArm.home();
+    rightArm.home();
   }
+  
+  //TODO: combine with pivot's maintainPosition?
+  public void maintainPosition(){
+    leftArm.setpoint.velocity = 0;
+    leftArm.setpoint.position = leftArm.getRelPos();
+    leftArm.goal.velocity = 0;
+    leftArm.goal.position = leftArm.getRelPos();
+
+    rightArm.setpoint.velocity = 0;
+    rightArm.setpoint.position = rightArm.getRelPos();
+    rightArm.goal.velocity = 0;
+    rightArm.goal.position = rightArm.getRelPos();
+  }
+  // public void refreshSensor(){
+  //   leftArm.moveTo(leftArm.getRelPos());
+  //   rightArm.moveTo(rightArm.getRelPos());
+  // }
+
+  // public void stopMotor(){
+  //   leftArm.stop();
+  //   rightArm.stop();
+  // }
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -54,25 +82,21 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_xbox.b().onTrue(new InstantCommand(() -> m_climb.changeFactor(Constants.Climb.UNWIND_FACTOR), m_climb));
-    m_xbox.a().onTrue(new InstantCommand(() -> m_climb.changeFactor(Constants.Climb.WIND_FACTOR), m_climb));
-    m_xbox.x().onTrue(new GoToMaxHeight(m_climb));
-
-    /* physically, climb is too tall so we need to temporarily stop it from expanding through code */
-    m_climb.setDefaultCommand(new FunctionalCommand(
-      () -> {}, 
-      () -> m_climb.moveWinch(() -> MathUtil.applyDeadband(m_xbox.getLeftY(),Constants.Climb.DEADBAND),
-                              () -> MathUtil.applyDeadband(m_xbox.getRightY(),Constants.Climb.DEADBAND)),
-      interrupted -> m_climb.moveWinch(() -> 0.0, () -> 0.0),
-      () -> m_climb.encoderCheck(),
-      m_climb
-    ));
+    xbox.b().onTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> leftArm.changeFactor(Constants.TelescopingArm.UNWIND_FACTOR), leftArm), 
+      new InstantCommand(() -> rightArm.changeFactor(Constants.TelescopingArm.UNWIND_FACTOR), rightArm)));
     
-    /* default climb without checks, for use with comp bot */
-    // m_climb.setDefaultCommand(new RunCommand(() -> m_climb.moveWinch(
-    //   () -> MathUtil.applyDeadband(m_xbox.getLeftY(), Constants.Climb.DEADBAND),
-    //   () -> MathUtil.applyDeadband(m_xbox.getRightY(), Constants.Climb.DEADBAND)
-    // ), m_climb));
+    xbox.a().onTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> leftArm.changeFactor(Constants.TelescopingArm.WIND_FACTOR), leftArm), 
+      new InstantCommand(() -> rightArm.changeFactor(Constants.TelescopingArm.WIND_FACTOR), rightArm)));
+    
+    xbox.x().onTrue(new ParallelCommandGroup(new GoToMaxHeight(leftArm), new GoToMaxHeight(rightArm)));
+    
+    leftArm.setDefaultCommand(new RunCommand(() -> leftArm.moveWinch(
+      () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.TelescopingArm.DEADBAND)), leftArm));
+
+    rightArm.setDefaultCommand(new RunCommand(() -> rightArm.moveWinch(
+      () -> MathUtil.applyDeadband(xbox.getRightY(), Constants.TelescopingArm.DEADBAND)), rightArm));
   }
 
   /**
