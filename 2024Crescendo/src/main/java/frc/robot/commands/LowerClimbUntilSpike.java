@@ -26,9 +26,7 @@ public class LowerClimbUntilSpike extends Command {
   }
 
   @Override
-  public void initialize() {
-    arm.changeFactor(Constants.TelescopingArm.WIND_FACTOR);
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {

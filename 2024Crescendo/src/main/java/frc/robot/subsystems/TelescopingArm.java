@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,7 +29,6 @@ public class TelescopingArm extends SubsystemBase {
   public SparkPIDController PIDController;
 
   private double factor;
-  private GenericEntry factorEntry;
 
   private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(
       Constants.TelescopingArm.MAX_VELOCITY, Constants.TelescopingArm.MAX_ACCELERATION);
@@ -43,8 +41,6 @@ public class TelescopingArm extends SubsystemBase {
    * Constructor for TelescopingArm class
    * <p>
    * Initializing and configuring motors for telescoping arms
-   * <p>
-   * Initializing moveWinch factor for changing speed of arm
    */
   public TelescopingArm(int motorID) {
     motor = new CANSparkMax(motorID, MotorType.kBrushless);
@@ -62,8 +58,6 @@ public class TelescopingArm extends SubsystemBase {
     PIDController.setI(Constants.TelescopingArm.kI);
     PIDController.setD(Constants.TelescopingArm.kD);
     PIDController.setOutputRange(Constants.TelescopingArm.MIN_OUTPUT_RANGE, Constants.TelescopingArm.MAX_OUTPUT_RANGE);
-
-    factor = 0.0;
   }
   
   /**
@@ -107,16 +101,10 @@ public class TelescopingArm extends SubsystemBase {
    * @param speed - speed of motor needed in order to
    */
   public void moveWinch(DoubleSupplier speed) {
-    // TODO: replace factorEntry.getDouble() with factorEntry with factor field after tuning
-    motor.set(speed.getAsDouble() * factorEntry.getDouble(factor));
-  }
+    if(speed.getAsDouble()>0) factor = Constants.TelescopingArm.UNWIND_FACTOR;
+    else factor = Constants.TelescopingArm.WIND_FACTOR;
 
-  /**
-   * Change factor for winch speed
-   * @param newFactor - new value to mutiply to speed for different points in match
-   */
-  public void changeFactor(double newFactor) {
-    factor = newFactor;
+    motor.set(speed.getAsDouble() * factor);
   }
 
   /**
@@ -126,7 +114,6 @@ public class TelescopingArm extends SubsystemBase {
    */
   public void configDashboard(ShuffleboardTab tab) {
     tab.addBoolean("Is Winch Winding?", () -> (factor == Constants.TelescopingArm.WIND_FACTOR));
-    factorEntry = tab.add("Winch Factor", factor).getEntry();
 
     tab.addDouble("Relative Encoder", () -> relEncoder.getPosition());
     tab.addDouble("Absolute Encoder", () -> absEncoder.getAbsPosition());

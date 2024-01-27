@@ -78,24 +78,16 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    xbox.b().onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> leftArm.changeFactor(Constants.TelescopingArm.UNWIND_FACTOR), leftArm), 
-      new InstantCommand(() -> rightArm.changeFactor(Constants.TelescopingArm.UNWIND_FACTOR), rightArm)));
+    xbox.y().onTrue(new ParallelCommandGroup(new ClimbToMaxHeight(leftArm), new ClimbToMaxHeight(rightArm)));
     
+    /* either of these 2 will be used, delete the other one */
+    // xbox.a().onTrue(new ParallelCommandGroup(new ClimbToMidHeight(leftArm), new ClimbToMidHeight(rightArm)));
     xbox.a().onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> leftArm.changeFactor(Constants.TelescopingArm.WIND_FACTOR), leftArm), 
-      new InstantCommand(() -> rightArm.changeFactor(Constants.TelescopingArm.WIND_FACTOR), rightArm)));
-    
-    xbox.x().onTrue(new ParallelCommandGroup(new ClimbToMaxHeight(leftArm), new ClimbToMaxHeight(rightArm)));
-    xbox.rightBumper().onTrue(new ParallelCommandGroup(new ClimbToMidHeight(leftArm), new ClimbToMidHeight(rightArm)));
-    
-    xbox.y().onTrue(new ParallelCommandGroup(
       new LowerClimbUntilSpike(leftArm, () -> powerDistribution.getCurrent(Constants.TelescopingArm.LEFT_MOTOR_PDH_PORT)), 
       new LowerClimbUntilSpike(rightArm, () -> powerDistribution.getCurrent(Constants.TelescopingArm.RIGHT_MOTOR_PDH_PORT))));
     
     leftArm.setDefaultCommand(new RunCommand(() -> leftArm.moveWinch(
       () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.TelescopingArm.DEADBAND)), leftArm));
-
     rightArm.setDefaultCommand(new RunCommand(() -> rightArm.moveWinch(
       () -> MathUtil.applyDeadband(xbox.getRightY(), Constants.TelescopingArm.DEADBAND)), rightArm));
   }
