@@ -6,23 +6,23 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.TelescopingArm;
+import frc.robot.subsystems.Climb;
 
 public class ClimbToMaxHeight extends Command {
-  private TelescopingArm arm;
+  private Climb climb;
   
   /**
    * Creates new ClimbToMaxHeight object
-   * @param arm - TelescopingArm object
+   * @param climb - Climb object
    */
-  public ClimbToMaxHeight(TelescopingArm _arm) {
-    arm = _arm;
-    addRequirements(arm);
+  public ClimbToMaxHeight(Climb _climb) {
+    climb = _climb;
+    addRequirements(climb);
   }
 
   @Override
   public void initialize() {
-    arm.moveTo(Constants.TelescopingArm.MAX_WINCH_ROTATIONS);
+    climb.moveTo(Constants.Climb.MAX_WINCH_ROTATIONS);
   }
 
   @Override
@@ -30,11 +30,11 @@ public class ClimbToMaxHeight extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    arm.stop();
+    climb.stop();
   }
 
   @Override
   public boolean isFinished() {
-    return arm.isReached();
+    return climb.isReached();
   }
 }

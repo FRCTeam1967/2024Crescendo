@@ -22,42 +22,40 @@ import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 
 import java.util.function.DoubleSupplier;
 
-public class TelescopingArm extends SubsystemBase {
+public class Climb extends SubsystemBase {
   private CANSparkMax motor;
   private RelativeEncoder relEncoder;
   private Canandcoder absEncoder;
   public SparkPIDController PIDController;
 
-  private double factor;
+  private boolean manualMode = true;
 
   private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(
-      Constants.TelescopingArm.MAX_VELOCITY, Constants.TelescopingArm.MAX_ACCELERATION);
-  public TrapezoidProfile.State goal = new TrapezoidProfile.State();
-  public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-
+      Constants.Climb.MAX_VELOCITY, Constants.Climb.MAX_ACCELERATION);
+  public TrapezoidProfile.State goal = new TrapezoidProfile.State(), setpoint = new TrapezoidProfile.State();
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
 
   /**
-   * Constructor for TelescopingArm class
+   * Constructor for Climb class
    * <p>
-   * Initializing and configuring motors for telescoping arms
+   * Initializing and configuring motors for climb
+   * @param motorID - port for motor
+   * @param encoderID - port for absolute encoder
    */
-  public TelescopingArm(int motorID) {
+  public Climb(int motorID, int encoderID) {
     motor = new CANSparkMax(motorID, MotorType.kBrushless);
-
-    absEncoder = new Canandcoder(Constants.TelescopingArm.ENCODER_ID);
+    absEncoder = new Canandcoder(encoderID);
     relEncoder = motor.getEncoder();
-
     PIDController = motor.getPIDController();
-    PIDController.setFeedbackDevice(relEncoder);
-
+    
     motor.restoreFactoryDefaults();
-    motor.setIdleMode(IdleMode.kBrake);
+    motor.setIdleMode(IdleMode.kCoast);
 
-    PIDController.setP(Constants.TelescopingArm.kP);
-    PIDController.setI(Constants.TelescopingArm.kI);
-    PIDController.setD(Constants.TelescopingArm.kD);
-    PIDController.setOutputRange(Constants.TelescopingArm.MIN_OUTPUT_RANGE, Constants.TelescopingArm.MAX_OUTPUT_RANGE);
+    PIDController.setFeedbackDevice(relEncoder);
+    PIDController.setP(Constants.Climb.kP);
+    PIDController.setI(Constants.Climb.kI);
+    PIDController.setD(Constants.Climb.kD);
+    PIDController.setOutputRange(Constants.Climb.MIN_OUTPUT_RANGE, Constants.Climb.MAX_OUTPUT_RANGE);
   }
   
   /**
@@ -97,31 +95,42 @@ public class TelescopingArm extends SubsystemBase {
   }
 
   /**
-   * Sets speed of motor to input multiplied by factor
-   * @param speed - speed of motor needed in order to
+   * Changes boolean field to manual or not manual mode
    */
-  public void moveWinch(DoubleSupplier speed) {
-    if(speed.getAsDouble()>0) factor = Constants.TelescopingArm.UNWIND_FACTOR;
-    else factor = Constants.TelescopingArm.WIND_FACTOR;
-
-    motor.set(speed.getAsDouble() * factor);
+  public void changeMode() {
+    manualMode = !manualMode;
   }
 
   /**
-   * Displays current winch factor, takes in entered factor, and boolean showing if climb is winding on Shuffleboard
-   * <p> Also displays values of relaive and absolute encoders
+   * Sets unwind/wind factor dependent on pos/neg value of speed
+   * <p> If in manual mode, runs motor
+   * @param speed - speed of motor
+   */
+  public void moveWinch(DoubleSupplier speed) {
+    if (manualMode){
+      if (speed.getAsDouble() > 0) {
+        motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
+      } else {
+        motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
+      }
+    }
+  }
+
+  /**
+   * Displays boolean for mode status and values of relative and absolute encoders on Shuffleboard
    * @param tab - ShuffleboardTab to add values to
    */
   public void configDashboard(ShuffleboardTab tab) {
-    tab.addBoolean("Is Winch Winding?", () -> (factor == Constants.TelescopingArm.WIND_FACTOR));
-
-    tab.addDouble("Relative Encoder", () -> relEncoder.getPosition());
-    tab.addDouble("Absolute Encoder", () -> absEncoder.getAbsPosition());
+    // tab.addDouble("Relative Encoder", () -> relEncoder.getPosition());
+    // tab.addDouble("Absolute Encoder", () -> absEncoder.getAbsPosition());
+    tab.addBoolean("Manual Mode?", () -> manualMode);
   }
 
  @Override
   public void periodic() {
-    setpoint = profile.calculate(Constants.TelescopingArm.kD_TIME, setpoint, goal);
-    PIDController.setReference((setpoint.position) * Constants.TelescopingArm.CLIMB_GEAR_RATIO,CANSparkBase.ControlType.kPosition);
+    if(!manualMode) {
+      setpoint = profile.calculate(Constants.Climb.kD_TIME, setpoint, goal);
+      PIDController.setReference((setpoint.position) * Constants.Climb.CLIMB_GEAR_RATIO, CANSparkBase.ControlType.kPosition);
+    }
   }
 }

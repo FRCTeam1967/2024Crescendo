@@ -29,10 +29,10 @@ import frc.robot.commands.*;
  */
 public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final TelescopingArm leftArm = new TelescopingArm(Constants.TelescopingArm.LEFT_MOTOR_ID);
-  private final TelescopingArm rightArm = new TelescopingArm(Constants.TelescopingArm.RIGHT_MOTOR_ID);
+  private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID, Constants.Climb.LEFT_ENCODER_ID);
+  private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID, Constants.Climb.RIGHT_ENCODER_ID);
 
-  private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
+  private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
   private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -41,31 +41,31 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     matchTab = Shuffleboard.getTab("Match");
-    leftArm.configDashboard(matchTab); //when testing, do one arm at a time?
+    leftClimb.configDashboard(matchTab); //when testing, do one side at a time?
 
     configureBindings();
 
     maintainPosition();
-    leftArm.home();
-    rightArm.home();
+    leftClimb.home();
+    rightClimb.home();
     
     matchTab.addDouble("Left PDH Current",
-      () -> powerDistribution.getCurrent(Constants.TelescopingArm.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
+      () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
     matchTab.addDouble("Right PDH Current",
-      () -> powerDistribution.getCurrent(Constants.TelescopingArm.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
+      () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
   }
 
   //TODO: combine with pivot's maintainPosition
   public void maintainPosition(){
-    leftArm.setpoint.velocity = 0;
-    leftArm.setpoint.position = leftArm.getRelPos();
-    leftArm.goal.velocity = 0;
-    leftArm.goal.position = leftArm.getRelPos();
+    leftClimb.setpoint.velocity = 0;
+    leftClimb.setpoint.position = leftClimb.getRelPos();
+    leftClimb.goal.velocity = 0;
+    leftClimb.goal.position = leftClimb.getRelPos();
 
-    rightArm.setpoint.velocity = 0;
-    rightArm.setpoint.position = rightArm.getRelPos();
-    rightArm.goal.velocity = 0;
-    rightArm.goal.position = rightArm.getRelPos();
+    rightClimb.setpoint.velocity = 0;
+    rightClimb.setpoint.position = rightClimb.getRelPos();
+    rightClimb.goal.velocity = 0;
+    rightClimb.goal.position = rightClimb.getRelPos();
   }
 
   /**
@@ -78,18 +78,22 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    xbox.y().onTrue(new ParallelCommandGroup(new ClimbToMaxHeight(leftArm), new ClimbToMaxHeight(rightArm)));
+    xbox.x().onTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> leftClimb.changeMode(), leftClimb), 
+      new InstantCommand(() -> rightClimb.changeMode(), rightClimb)));
+
+    xbox.y().onTrue(new ParallelCommandGroup(new ClimbToMaxHeight(leftClimb), new ClimbToMaxHeight(rightClimb)));
     
     /* either of these 2 will be used, delete the other one */
-    // xbox.a().onTrue(new ParallelCommandGroup(new ClimbToMidHeight(leftArm), new ClimbToMidHeight(rightArm)));
+    xbox.a().onTrue(new ParallelCommandGroup(new ClimbToLowHeight(leftClimb), new ClimbToLowHeight(rightClimb)));
     xbox.a().onTrue(new ParallelCommandGroup(
-      new LowerClimbUntilSpike(leftArm, () -> powerDistribution.getCurrent(Constants.TelescopingArm.LEFT_MOTOR_PDH_PORT)), 
-      new LowerClimbUntilSpike(rightArm, () -> powerDistribution.getCurrent(Constants.TelescopingArm.RIGHT_MOTOR_PDH_PORT))));
+      new LowerClimbUntilSpike(leftClimb, () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withTimeout(Constants.Climb.LOWER_TIME), 
+      new LowerClimbUntilSpike(rightClimb, () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withTimeout(Constants.Climb.LOWER_TIME)));
     
-    leftArm.setDefaultCommand(new RunCommand(() -> leftArm.moveWinch(
-      () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.TelescopingArm.DEADBAND)), leftArm));
-    rightArm.setDefaultCommand(new RunCommand(() -> rightArm.moveWinch(
-      () -> MathUtil.applyDeadband(xbox.getRightY(), Constants.TelescopingArm.DEADBAND)), rightArm));
+    leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveWinch(
+      () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
+    rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveWinch(
+      () -> MathUtil.applyDeadband(xbox.getRightY(), Constants.Climb.DEADBAND)), rightClimb));
   }
 
   /**

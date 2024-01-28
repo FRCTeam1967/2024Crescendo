@@ -8,21 +8,21 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.TelescopingArm;
+import frc.robot.subsystems.Climb;
 
 public class LowerClimbUntilSpike extends Command {
-  private TelescopingArm arm;
+  private Climb climb;
   private double current;
 
   /**
-   * Creates objects for arm and current fields 
-   * @param arm - TelescopingArm object
+   * Creates objects for climb and current fields 
+   * @param climb - Climb object
    * @param current - DoubleSupplier for updating current value
    */
-  public LowerClimbUntilSpike(TelescopingArm _arm, DoubleSupplier _current) {
-    arm = _arm;
+  public LowerClimbUntilSpike(Climb _climb, DoubleSupplier _current) {
+    climb = _climb;
     current = _current.getAsDouble();
-    addRequirements(arm);
+    addRequirements(climb);
   }
 
   @Override
@@ -30,16 +30,16 @@ public class LowerClimbUntilSpike extends Command {
 
   @Override
   public void execute() {
-    arm.moveWinch(() -> Constants.TelescopingArm.AUTOMATIC_LOWER_SPEED);
+    climb.moveWinch(() -> Constants.Climb.AUTOMATIC_LOWER_SPEED);
   }
 
   @Override
   public void end(boolean interrupted) {
-    arm.stop();
+    climb.stop();
   }
 
   @Override
   public boolean isFinished() {
-    return current >= Constants.TelescopingArm.SPIKE_CURRENT;
+    return current >= Constants.Climb.SPIKE_CURRENT;
   }
 }

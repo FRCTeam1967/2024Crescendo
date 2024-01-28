@@ -6,23 +6,23 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.TelescopingArm;
+import frc.robot.subsystems.Climb;
 
-public class ClimbToMidHeight extends Command {
-  private TelescopingArm arm;
+public class ClimbToLowHeight extends Command {
+  private Climb climb;
 
   /** 
-   * Creates new ClimbToMidHeight object
-   * @param arm - TelescopingArm object
+   * Creates new ClimbToLowHeight object
+   * @param climb - Climb object
    */
-  public ClimbToMidHeight(TelescopingArm _arm) {
-    arm = _arm;
-    addRequirements(arm);
+  public ClimbToLowHeight(Climb _climb) {
+    climb = _climb;
+    addRequirements(climb);
   }
 
   @Override
   public void initialize() {
-    arm.moveTo(Constants.TelescopingArm.MID_WINCH_ROTATIONS);
+    climb.moveTo(Constants.Climb.LOW_WINCH_ROTATIONS);
   }
 
   @Override
@@ -30,11 +30,11 @@ public class ClimbToMidHeight extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    arm.stop();
+    climb.stop();
   }
 
   @Override
   public boolean isFinished() {
-    return arm.isReached();
+    return climb.isReached();
   }
 }
