@@ -7,12 +7,14 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.SwerveDrive;
 import frc.robot.subsystems.Swerve;
+import frc.robot.commands.AutonomousAction;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
+
 
 public class RobotContainer {
   
@@ -32,6 +34,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    
   }
 
   private void configureBindings() {
@@ -52,5 +55,17 @@ public class RobotContainer {
 
     return new PathPlannerAuto("Score Middle");
 
+  }
+
+  private void registerAutonomousCommands() { //call someplace in bootup sequence like after config b    /* --- Intake Commands --- */
+    // prep
+
+    // AutonomousAction.registerAutonomousAction(
+    //     "prepGroundIntake", //name of path
+    //     GroundIntakeCommands.autonPrep(
+    //         _claw, _elevator, _controlboard, _ledController, GamePieceType.CUBE_GAME_PIECE
+    //     )
+    // );
+    
   }
 }
