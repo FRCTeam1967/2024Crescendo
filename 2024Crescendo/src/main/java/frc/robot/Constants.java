@@ -24,16 +24,16 @@ public final class Constants {
 
   public static class Swerve {
     public static final double POWER_kS = 0.14; //0.14 best
-    public static final double POWER_kV = 0.9; //1.8, 1., 0.8 //in volts
-    public static final double POWER_kA = 0.1; 
-    public static final double POWER_kP = 0.01; //0.2 //in rotations
+    public static final double POWER_kV = 0.8;//0.9; //1.8, 1., 0.8 //in volts
+    public static final double POWER_kA = 0.1;//0.1; 
+    public static final double POWER_kP = 0.01;//0.01; //0.2 //in rotations
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
-    public static final double STEER_kS = 0.13; // 0.6, 0.8, 0.7, 0.15 (still moving)
-    public static final double STEER_kV = 2.1; // 0.5, 0, 0.1, 1
-    public static final double STEER_kA = 0.1; //typically small (Ryan)
-    public static final double STEER_kP = 3; // 1.2, 0.8, 0.1 (1868: 2.4)
+    public static final double STEER_kS = 0.15;//0.13; // 0.6, 0.8, 0.7, 0.15 (still moving)
+    public static final double STEER_kV = 35;//2.1; // 0.5, 0, 0.1, 1
+    public static final double STEER_kA = 15;//0.1; //typically small (Ryan)
+    public static final double STEER_kP = 12.5;//3; // 1.2, 0.8, 0.1 (1868: 2.4)
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
 

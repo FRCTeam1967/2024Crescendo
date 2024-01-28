@@ -17,6 +17,9 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.reduxrobotics.canand.CanandDevice;
+import com.reduxrobotics.sensors.canandcoder.Canandcoder;
+import com.reduxrobotics.canand.CanandEventLoop;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 
 // import statements
@@ -39,6 +42,9 @@ public class SwerveModule {
     private TalonFX steerController;
     public CANcoder analogEncoder;
 
+    public Canandcoder climbLeftEncoder;
+    public Canandcoder climbRightEncoder;
+
     private SwerveModuleState initialState;
     private MotionMagicVoltage positionRequest;
     private MotionMagicVelocityVoltage velocityRequest;
@@ -60,6 +66,9 @@ public class SwerveModule {
         steerController = new TalonFX(steerIdx, "Canivore");
         analogEncoder = new CANcoder(encoderIdx, "Canivore");
 
+        // climbLeftEncoder = new Canandcoder(climbLeftEncoderIdx);
+        // climbRightEncoder = new Canandcoder(climbRightEncoderIdx);
+
         //configure cancoder
         CANcoderConfiguration ccdConfigs = new CANcoderConfiguration();
         var cancoderConfig = analogEncoder.getConfigurator();
@@ -67,19 +76,19 @@ public class SwerveModule {
         ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
 
         if (name == "FrontLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = 165.783/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = 166.552734/360; //165.783
         }
 
         if (name == "FrontRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = -64.423/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = -64.775391/360; //-64.423
         }
 
         if (name == "BackLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = 125.156/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = 122.255859/360; //125.156
         }
 
         if (name == "BackRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = -148.535/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = -154.16056/360; //-148.535
         }
 
         cancoderConfig.apply(ccdConfigs);
@@ -229,7 +238,7 @@ public class SwerveModule {
         double velocityToSet = optimized.speedMetersPerSecond;
     
         //old
-        //steerController.setControl(new PositionVoltage(optimized.angle.getRotations(), 0.0, false, 0.3, 0, false, false, false));
+        steerController.setControl(new PositionVoltage(optimized.angle.getRotations(), 0.0, false, 0.0, 0, false, false, false));
         
         powerController.setControl(new VelocityVoltage(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE, 0.0, false, 0.0, 0, false, false, false));
         //powerController.set((optimized.speedMetersPerSecond / Constants.Swerve.RPM_TO_MPS)/20);
@@ -240,7 +249,7 @@ public class SwerveModule {
        ///powerController.setControl(velocityRequest.withVelocity(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE)); //in rps
        
         positionRequest = new MotionMagicVoltage(0);
-        steerController.setControl(positionRequest.withPosition(optimized.angle.getRotations()));
+        //steerController.setControl(positionRequest.withPosition(optimized.angle.getRotations()));
     
 
     }
