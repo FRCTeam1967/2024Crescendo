@@ -9,12 +9,13 @@ import frc.robot.subsystems.*;
 
 public class RunFeeder extends Command {
   private Feeder feeder;
-  private double speed;
+  private double leftSpeed, rightSpeed;
   
   /** Creates a new RunFeeder. */
-  public RunFeeder(Feeder feeder, double speed) {
+  public RunFeeder(Feeder feeder, double leftSpeed, double rightSpeed) {
     this.feeder = feeder;
-    this.speed = speed;
+    this.leftSpeed = leftSpeed;
+    this.rightSpeed = rightSpeed;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(this.feeder);
   }
@@ -26,7 +27,7 @@ public class RunFeeder extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    feeder.feedFeeder(speed);
+    feeder.feedFeeder(leftSpeed, rightSpeed);
   }
 
   // Called once the command ends or is interrupted.

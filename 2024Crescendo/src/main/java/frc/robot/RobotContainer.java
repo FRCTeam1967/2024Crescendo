@@ -95,9 +95,9 @@ public class RobotContainer {
     m_xbox.b().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_10));
     m_xbox.start().onTrue(new HomePivot(pivot));
 
-    m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, Constants.Shooter.FRONT_SPEED, Constants.Shooter.BACK_SPEED).withTimeout(Constants.Shooter.SHOOT_TIME)));
+    m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, Constants.Shooter.FRONT_SPEED, Constants.Shooter.BACK_SPEED).withTimeout(Constants.Shooter.SHOOT_TIME)));
     shooter.setDefaultCommand(new RunShooter(shooter, 0.0, 0.0));
-    feeder.setDefaultCommand(new RunFeeder(feeder, 0));
+    feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
   }
 
   /**

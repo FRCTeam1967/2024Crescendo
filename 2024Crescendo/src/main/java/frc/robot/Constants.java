@@ -18,7 +18,8 @@ public final class Constants {
   }
 
   public static class Feeder{
-    public static final int FEEDER_ID = 11;
+    public static final int LEFT_ID = 11;
+    public static final int RIGHT_ID = 10; //tbd
     //public static final double kD_TIME = 0.02;
 
     public static final double FEED_TIME = 5.0;
@@ -34,7 +35,7 @@ public final class Constants {
     public static final double kD = 0;
     public static final double kD_TIME = 0.02;
 
-    public static final double GEAR_RATIO = 1; //Mech said 75
+    public static final double GEAR_RATIO = 50/1; //Mech said 75
 
     public static final double STARTING_ANGLE = 45;
 

@@ -14,21 +14,24 @@ import frc.robot.Constants;
 
 public class Feeder extends SubsystemBase {
 
-  private CANSparkMax feederMotor;
-  private SparkPIDController pidController;
+  private CANSparkMax leftMotor, rightMotor;
 
   /** Creates a new Feeder. */
   public Feeder() {
-    feederMotor = new CANSparkMax (Constants.Feeder.FEEDER_ID, MotorType.kBrushless); //make constant later
-    feederMotor.setSmartCurrentLimit(40);
+    leftMotor = new CANSparkMax (Constants.Feeder.LEFT_ID, MotorType.kBrushless); 
+    rightMotor = new CANSparkMax(Constants.Feeder.RIGHT_ID, MotorType.kBrushless);
+    leftMotor.setSmartCurrentLimit(40);
+    rightMotor.setSmartCurrentLimit(40);
   }
   
-  public void feedFeeder (double speed){
-    feederMotor.set(speed);
+  public void feedFeeder (double leftSpeed, double rightSpeed){
+    leftMotor.set(leftSpeed);
+    rightMotor.set(rightSpeed);
   }
 
   public void stopFeeder () {
-    feederMotor.stopMotor();
+    leftMotor.stopMotor();
+    rightMotor.stopMotor();
   }
   @Override
   public void periodic() {
