@@ -30,7 +30,7 @@ public class LowerClimbUntilSpike extends Command {
 
   @Override
   public void execute() {
-    climb.moveWinch(() -> Constants.Climb.AUTOMATIC_LOWER_SPEED);
+    climb.moveAt(() -> Constants.Climb.AUTOMATIC_LOWER_SPEED);
   }
 
   @Override

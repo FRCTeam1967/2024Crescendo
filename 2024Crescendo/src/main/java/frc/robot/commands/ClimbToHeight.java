@@ -5,24 +5,32 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
+import frc.robot.Constants;
 
-public class ClimbToMaxHeight extends Command {
+public class ClimbToHeight extends Command {
   private Climb climb;
-  
-  /**
-   * Creates new ClimbToMaxHeight object
+  private double height;
+
+  /** 
+   * Creates a new ClimbToHeight object
+   * @param height - rotations to go to certain height
    * @param climb - Climb object
    */
-  public ClimbToMaxHeight(Climb _climb) {
+  public ClimbToHeight(double _height, Climb _climb) {
     climb = _climb;
+    height = _height;
+
+    //configure PID based on if holding robot height or not
+    if (height == Constants.Climb.LATCH_POSITION_ROTATIONS) climb.configurePID(true);
+    else climb.configurePID(false);
+    
     addRequirements(climb);
   }
 
   @Override
   public void initialize() {
-    climb.moveTo(Constants.Climb.MAX_WINCH_ROTATIONS);
+    climb.moveTo(height);
   }
 
   @Override

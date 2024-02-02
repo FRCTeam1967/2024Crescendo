@@ -79,20 +79,29 @@ public class RobotContainer {
    */
   private void configureBindings() {
     xbox.x().onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> leftClimb.changeMode(), leftClimb), 
-      new InstantCommand(() -> rightClimb.changeMode(), rightClimb)));
+      new InstantCommand(() -> leftClimb.switchMode(), leftClimb), 
+      new InstantCommand(() -> rightClimb.switchMode(), rightClimb)));
 
-    xbox.y().onTrue(new ParallelCommandGroup(new ClimbToMaxHeight(leftClimb), new ClimbToMaxHeight(rightClimb)));
+    xbox.y().onTrue(new ParallelCommandGroup(
+      new ClimbToHeight(Constants.Climb.MAX_WINCH_ROTATIONS, leftClimb),
+      new ClimbToHeight(Constants.Climb.MAX_WINCH_ROTATIONS, rightClimb)));
     
-    /* either of these 2 will be used, delete the other one */
-    xbox.a().onTrue(new ParallelCommandGroup(new ClimbToLowHeight(leftClimb), new ClimbToLowHeight(rightClimb)));
+    xbox.b().onTrue(new ParallelCommandGroup(
+      new ClimbToHeight(Constants.Climb.LATCH_POSITION_ROTATIONS, leftClimb),
+      new ClimbToHeight(Constants.Climb.LATCH_POSITION_ROTATIONS, rightClimb)));
+    
+    xbox.a().onTrue(new ParallelCommandGroup(
+      new ClimbToHeight(Constants.Climb.LOW_WINCH_ROTATIONS, leftClimb),
+      new ClimbToHeight(Constants.Climb.LOW_WINCH_ROTATIONS, leftClimb)));;
+    
+    /* could replace ClimbToLowHeight method */
     xbox.a().onTrue(new ParallelCommandGroup(
       new LowerClimbUntilSpike(leftClimb, () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withTimeout(Constants.Climb.LOWER_TIME), 
       new LowerClimbUntilSpike(rightClimb, () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withTimeout(Constants.Climb.LOWER_TIME)));
     
-    leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveWinch(
+    leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
       () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
-    rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveWinch(
+    rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(
       () -> MathUtil.applyDeadband(xbox.getRightY(), Constants.Climb.DEADBAND)), rightClimb));
   }
 

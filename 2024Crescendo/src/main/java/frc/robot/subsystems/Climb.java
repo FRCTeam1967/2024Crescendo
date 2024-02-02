@@ -28,7 +28,7 @@ public class Climb extends SubsystemBase {
   private Canandcoder absEncoder;
   public SparkPIDController PIDController;
 
-  private boolean manualMode = true;
+  private boolean manualMode = false;
 
   private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(
       Constants.Climb.MAX_VELOCITY, Constants.Climb.MAX_ACCELERATION);
@@ -37,8 +37,7 @@ public class Climb extends SubsystemBase {
 
   /**
    * Constructor for Climb class
-   * <p>
-   * Initializing and configuring motors for climb
+   * <p> Initializing and configuring motors for climb
    * @param motorID - port for motor
    * @param encoderID - port for absolute encoder
    */
@@ -47,14 +46,27 @@ public class Climb extends SubsystemBase {
     absEncoder = new Canandcoder(encoderID);
     relEncoder = motor.getEncoder();
     PIDController = motor.getPIDController();
+    PIDController.setFeedbackDevice(relEncoder);
     
     motor.restoreFactoryDefaults();
-    motor.setIdleMode(IdleMode.kCoast);
+    motor.setIdleMode(IdleMode.kBrake);
+  }
 
-    PIDController.setFeedbackDevice(relEncoder);
-    PIDController.setP(Constants.Climb.kP);
-    PIDController.setI(Constants.Climb.kI);
-    PIDController.setD(Constants.Climb.kD);
+  /**
+   * Set PID values based on whether supporting robot weight or not
+   * @param holdingRobot - true if need to support robot
+   */
+  public void configurePID(boolean holdingRobot){
+    if(holdingRobot){
+      PIDController.setP(Constants.Climb.DOWN_kP);
+      PIDController.setI(Constants.Climb.DOWN_kI);
+      PIDController.setD(Constants.Climb.DOWN_kD);
+      PIDController.setFF(Constants.Climb.DOWN_kF);
+    } else {
+      PIDController.setP(Constants.Climb.UP_kP);
+      PIDController.setI(Constants.Climb.UP_kI);
+      PIDController.setD(Constants.Climb.UP_kD);
+    }
     PIDController.setOutputRange(Constants.Climb.MIN_OUTPUT_RANGE, Constants.Climb.MAX_OUTPUT_RANGE);
   }
   
@@ -95,23 +107,23 @@ public class Climb extends SubsystemBase {
   }
 
   /**
-   * Changes boolean field to manual or not manual mode
+   * Changes manualMode field value to opposite of current value
    */
-  public void changeMode() {
+  public void switchMode() {
     manualMode = !manualMode;
   }
 
   /**
-   * Sets unwind/wind factor dependent on pos/neg value of speed
-   * <p> If in manual mode, runs motor
+   * If in manual mode, sets unwind/wind factor dependent on pos/neg value of speed and runs motor
+   * <p> If winding, encoder position must be above latch to run
    * @param speed - speed of motor
    */
-  public void moveWinch(DoubleSupplier speed) {
+  public void moveAt(DoubleSupplier speed) {
     if (manualMode){
-      if (speed.getAsDouble() > 0) {
-        motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
-      } else {
+      if (speed.getAsDouble() < 0 && absEncoder.getAbsPosition() > Constants.Climb.LOW_WINCH_ROTATIONS) {
         motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
+      } else {
+        motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
       }
     }
   }
@@ -121,15 +133,15 @@ public class Climb extends SubsystemBase {
    * @param tab - ShuffleboardTab to add values to
    */
   public void configDashboard(ShuffleboardTab tab) {
-    // tab.addDouble("Relative Encoder", () -> relEncoder.getPosition());
-    // tab.addDouble("Absolute Encoder", () -> absEncoder.getAbsPosition());
-    tab.addBoolean("Manual Mode?", () -> manualMode);
+    tab.addDouble("Relative Encoder", () -> relEncoder.getPosition());
+    tab.addDouble("Absolute Encoder", () -> absEncoder.getAbsPosition());
+    tab.addBoolean("In Manual Mode?", () -> manualMode);
   }
 
  @Override
   public void periodic() {
     if(!manualMode) {
-      setpoint = profile.calculate(Constants.Climb.kD_TIME, setpoint, goal);
+      setpoint = profile.calculate(Constants.Climb.UP_kD_TIME, setpoint, goal);
       PIDController.setReference((setpoint.position) * Constants.Climb.CLIMB_GEAR_RATIO, CANSparkBase.ControlType.kPosition);
     }
   }

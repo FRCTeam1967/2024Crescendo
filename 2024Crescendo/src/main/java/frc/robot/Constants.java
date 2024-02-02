@@ -18,42 +18,33 @@ public final class Constants {
   }
   
   public static class Climb {
-    public static final int LEFT_MOTOR_ID = 30;
-    public static final int LEFT_ENCODER_ID = 30;
-
-    public static final int RIGHT_MOTOR_ID = 31;
-    public static final int RIGHT_ENCODER_ID = 31;
-
-    public static final int LEFT_MOTOR_PDH_PORT = 7;
-    public static final int RIGHT_MOTOR_PDH_PORT = 8;
+    public static final int LEFT_MOTOR_ID = 30, LEFT_ENCODER_ID = 30;
+    public static final int RIGHT_MOTOR_ID = 31, RIGHT_ENCODER_ID = 31;
+    public static final int LEFT_MOTOR_PDH_PORT = 7, RIGHT_MOTOR_PDH_PORT = 8;
     
-    public static final double UNWIND_FACTOR = -1.0;
-    public static final double WIND_FACTOR = 0.5;
+    public static final double UNWIND_FACTOR = -1.0, WIND_FACTOR = 0.5;
 
     public static final double DEADBAND = 0.05;
 
-    /* automatic climb */
+    /* calculate rotations for each height for automatic climb */
     public static final double CLIMB_GEAR_RATIO = 18;
     public static final double SHAFT_DIAMETER = 0.0254; //in meters, = 1"
     public static final double TOTAL_STAGE_HEIGHT = 0.7366;// in meters, = 15+16-2 (overlap) = 29"
     public static final double MAX_WINCH_ROTATIONS = (TOTAL_STAGE_HEIGHT*CLIMB_GEAR_RATIO)/(SHAFT_DIAMETER*Math.PI);
-    
     public static final double LOW_WINCH_ROTATIONS = ((TOTAL_STAGE_HEIGHT/4)*CLIMB_GEAR_RATIO)/(SHAFT_DIAMETER*Math.PI); //quarter of the way up
+    public static final double LATCH_POSITION_ROTATIONS = 0.0;
+
+    /* current spiking check */
     public static final double SPIKE_CURRENT = 20;
     public static final double AUTOMATIC_LOWER_SPEED = 0.5;
     public static final double LOWER_TIME = 0.7;
 
-    //TODO: tune values and replace
-    public static final double MAX_VELOCITY = 1.00;
-    public static final double MAX_ACCELERATION = 0.55; 
+    /* motion profiling */
+    public static final double MAX_VELOCITY = 1.00, MAX_ACCELERATION = 0.55; 
+    public static final double MIN_OUTPUT_RANGE = -0.2, MAX_OUTPUT_RANGE = 0.2;
 
-    public static final double MIN_OUTPUT_RANGE = -0.2;
-    public static final double MAX_OUTPUT_RANGE = 0.2;
-
-    // TODO: tune pid values
-    public static final double kP = 0.85;
-    public static final double kI = 0;
-    public static final double kD = 0;
-    public static final double kD_TIME = 0.02;
+    /* PID values*/
+    public static final double UP_kP = 0.85, UP_kI = 0, UP_kD = 0, UP_kD_TIME = 0.02;
+    public static final double DOWN_kP = 0.85, DOWN_kI = 0, DOWN_kD = 0, DOWN_kD_TIME = 0.02, DOWN_kF = 0;
   }
 }
