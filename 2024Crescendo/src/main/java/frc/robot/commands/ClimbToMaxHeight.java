@@ -4,34 +4,29 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
 
-public class LowerClimbUntilSpike extends Command {
+public class ClimbToMaxHeight extends Command {
   private Climb climb;
-  private double current;
-
+  
   /**
-   * Creates objects for climb and current fields 
+   * Creates new ClimbToMaxHeight object
    * @param climb - Climb object
-   * @param current - DoubleSupplier for updating current value
    */
-  public LowerClimbUntilSpike(Climb _climb, DoubleSupplier _current) {
+  public ClimbToMaxHeight(Climb _climb) {
     climb = _climb;
-    current = _current.getAsDouble();
     addRequirements(climb);
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    climb.moveTo(Constants.Climb.MAX_WINCH_ROTATIONS);
+  }
 
   @Override
-  public void execute() {
-    climb.moveWinch(() -> Constants.Climb.AUTOMATIC_LOWER_SPEED);
-  }
+  public void execute() {}
 
   @Override
   public void end(boolean interrupted) {
@@ -40,6 +35,6 @@ public class LowerClimbUntilSpike extends Command {
 
   @Override
   public boolean isFinished() {
-    return current >= Constants.Climb.SPIKE_CURRENT;
+    return climb.isReached();
   }
 }
