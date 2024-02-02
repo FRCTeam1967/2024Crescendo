@@ -42,30 +42,15 @@ public class RobotContainer {
   public RobotContainer() {
     matchTab = Shuffleboard.getTab("Match");
     leftClimb.configDashboard(matchTab); //when testing, do one side at a time?
-
-    configureBindings();
-
-    maintainPosition();
     leftClimb.home();
     rightClimb.home();
+
+    configureBindings();
     
     matchTab.addDouble("Left PDH Current",
       () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
     matchTab.addDouble("Right PDH Current",
       () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
-  }
-
-  //TODO: combine with pivot's maintainPosition
-  public void maintainPosition(){
-    leftClimb.setpoint.velocity = 0;
-    leftClimb.setpoint.position = leftClimb.getRelPos();
-    leftClimb.goal.velocity = 0;
-    leftClimb.goal.position = leftClimb.getRelPos();
-
-    rightClimb.setpoint.velocity = 0;
-    rightClimb.setpoint.position = rightClimb.getRelPos();
-    rightClimb.goal.velocity = 0;
-    rightClimb.goal.position = rightClimb.getRelPos();
   }
 
   /**
@@ -79,20 +64,29 @@ public class RobotContainer {
    */
   private void configureBindings() {
     xbox.x().onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> leftClimb.changeMode(), leftClimb), 
-      new InstantCommand(() -> rightClimb.changeMode(), rightClimb)));
+      new InstantCommand(() -> leftClimb.safeToClimb(), leftClimb), 
+      new InstantCommand(() -> rightClimb.safeToClimb(), rightClimb)));
 
-    xbox.y().onTrue(new ParallelCommandGroup(new ClimbToMaxHeight(leftClimb), new ClimbToMaxHeight(rightClimb)));
+    xbox.y().onTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.MAX_WINCH_ROTATIONS), leftClimb),
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.MAX_WINCH_ROTATIONS), rightClimb)));
     
-    /* either of these 2 will be used, delete the other one */
-    xbox.a().onTrue(new ParallelCommandGroup(new ClimbToLowHeight(leftClimb), new ClimbToLowHeight(rightClimb)));
+    xbox.b().onTrue(new ParallelCommandGroup (
+      new InstantCommand(() -> leftClimb.moveAt(() -> Constants.Climb.LATCH_POSITION_ROTATIONS), leftClimb),
+      new InstantCommand(() -> rightClimb.moveAt(() -> Constants.Climb.LATCH_POSITION_ROTATIONS), rightClimb)));
+    
+    /* either of the following 2 triggers will be used, delete the other one */
+    xbox.a().onTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LOW_WINCH_ROTATIONS), leftClimb),
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LOW_WINCH_ROTATIONS), rightClimb)));
+    
     xbox.a().onTrue(new ParallelCommandGroup(
       new LowerClimbUntilSpike(leftClimb, () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withTimeout(Constants.Climb.LOWER_TIME), 
       new LowerClimbUntilSpike(rightClimb, () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withTimeout(Constants.Climb.LOWER_TIME)));
     
-    leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveWinch(
+    leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
       () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
-    rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveWinch(
+    rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(
       () -> MathUtil.applyDeadband(xbox.getRightY(), Constants.Climb.DEADBAND)), rightClimb));
   }
 
@@ -101,7 +95,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
     return Autos.exampleAuto(m_exampleSubsystem);
   }
 }
