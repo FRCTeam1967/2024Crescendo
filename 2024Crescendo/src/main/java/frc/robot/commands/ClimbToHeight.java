@@ -22,7 +22,7 @@ public class ClimbToHeight extends Command {
     height = _height;
 
     //configure PID based on if holding robot height or not
-    if (height == Constants.Climb.LATCH_POSITION_ROTATIONS) climb.configurePID(true);
+    if (height == Constants.Climb.LATCH_HEIGHT) climb.configurePID(true);
     else climb.configurePID(false);
     
     addRequirements(climb);

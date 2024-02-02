@@ -83,21 +83,21 @@ public class RobotContainer {
       new InstantCommand(() -> rightClimb.switchMode(), rightClimb)));
 
     xbox.y().onTrue(new ParallelCommandGroup(
-      new ClimbToHeight(Constants.Climb.MAX_WINCH_ROTATIONS, leftClimb),
-      new ClimbToHeight(Constants.Climb.MAX_WINCH_ROTATIONS, rightClimb)));
+      new ClimbToHeight(Constants.Climb.MAX_HEIGHT, leftClimb),
+      new ClimbToHeight(Constants.Climb.MAX_HEIGHT, rightClimb)));
     
     xbox.b().onTrue(new ParallelCommandGroup(
-      new ClimbToHeight(Constants.Climb.LATCH_POSITION_ROTATIONS, leftClimb),
-      new ClimbToHeight(Constants.Climb.LATCH_POSITION_ROTATIONS, rightClimb)));
+      new ClimbToHeight(Constants.Climb.LATCH_HEIGHT, leftClimb),
+      new ClimbToHeight(Constants.Climb.LATCH_HEIGHT, rightClimb)));
     
     xbox.a().onTrue(new ParallelCommandGroup(
-      new ClimbToHeight(Constants.Climb.LOW_WINCH_ROTATIONS, leftClimb),
-      new ClimbToHeight(Constants.Climb.LOW_WINCH_ROTATIONS, leftClimb)));;
+      new ClimbToHeight(Constants.Climb.LOW_HEIGHT, leftClimb),
+      new ClimbToHeight(Constants.Climb.LOW_HEIGHT, rightClimb)));
     
     /* could replace ClimbToLowHeight method */
     xbox.a().onTrue(new ParallelCommandGroup(
-      new LowerClimbUntilSpike(leftClimb, () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withTimeout(Constants.Climb.LOWER_TIME), 
-      new LowerClimbUntilSpike(rightClimb, () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withTimeout(Constants.Climb.LOWER_TIME)));
+      new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT), leftClimb).withTimeout(Constants.Climb.LOWER_TIME), 
+      new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT), rightClimb).withTimeout(Constants.Climb.LOWER_TIME)));
     
     leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
       () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));

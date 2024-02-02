@@ -27,12 +27,11 @@ public final class Constants {
     public static final double DEADBAND = 0.05;
 
     /* calculate rotations for each height for automatic climb */
-    public static final double CLIMB_GEAR_RATIO = 18;
+    public static final double GEAR_RATIO = 18;
     public static final double SHAFT_DIAMETER = 0.0254; //in meters, = 1"
-    public static final double TOTAL_STAGE_HEIGHT = 0.7366;// in meters, = 15+16-2 (overlap) = 29"
-    public static final double MAX_WINCH_ROTATIONS = (TOTAL_STAGE_HEIGHT*CLIMB_GEAR_RATIO)/(SHAFT_DIAMETER*Math.PI);
-    public static final double LOW_WINCH_ROTATIONS = ((TOTAL_STAGE_HEIGHT/4)*CLIMB_GEAR_RATIO)/(SHAFT_DIAMETER*Math.PI); //quarter of the way up
-    public static final double LATCH_POSITION_ROTATIONS = 0.0;
+    public static final double MAX_HEIGHT = 0.7366; //in meters, = 15+16-2 (overlap) = 29"
+    public static final double LOW_HEIGHT = MAX_HEIGHT/4; //TODO: change
+    public static final double LATCH_HEIGHT = 0.0;
 
     /* current spiking check */
     public static final double SPIKE_CURRENT = 20;

@@ -93,9 +93,10 @@ public class Climb extends SubsystemBase {
   
   /**
    * Assigns new position for robot to move to based on current state
-   * @param revolutions - number of revolutions to move
+   * @param height - desired extension height in meters
    */
-  public void moveTo(double revolutions) {
+  public void moveTo(double height) {
+    double revolutions = (height*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
     goal = new TrapezoidProfile.State(revolutions, 0);
   }
 
@@ -120,7 +121,7 @@ public class Climb extends SubsystemBase {
    */
   public void moveAt(DoubleSupplier speed) {
     if (manualMode){
-      if (speed.getAsDouble() < 0 && absEncoder.getAbsPosition() > Constants.Climb.LOW_WINCH_ROTATIONS) {
+      if (speed.getAsDouble() < 0 && absEncoder.getAbsPosition() > Constants.Climb.LOW_HEIGHT) {
         motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
       } else {
         motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
@@ -142,7 +143,7 @@ public class Climb extends SubsystemBase {
   public void periodic() {
     if(!manualMode) {
       setpoint = profile.calculate(Constants.Climb.UP_kD_TIME, setpoint, goal);
-      PIDController.setReference((setpoint.position) * Constants.Climb.CLIMB_GEAR_RATIO, CANSparkBase.ControlType.kPosition);
+      PIDController.setReference((setpoint.position) * Constants.Climb.GEAR_RATIO, CANSparkBase.ControlType.kPosition);
     }
   }
 }

@@ -19,7 +19,7 @@ public class LowerClimbUntilSpike extends Command {
    * @param climb - Climb object
    * @param current - DoubleSupplier for updating current value
    */
-  public LowerClimbUntilSpike(Climb _climb, DoubleSupplier _current) {
+  public LowerClimbUntilSpike(DoubleSupplier _current, Climb _climb) {
     climb = _climb;
     current = _current.getAsDouble();
     addRequirements(climb);
