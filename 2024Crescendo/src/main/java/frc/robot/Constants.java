@@ -18,8 +18,7 @@ public final class Constants {
   }
 
   public static class Climb {
-    public static final int LEFT_MOTOR_ID = 30, LEFT_ENCODER_ID = 30;
-    public static final int RIGHT_MOTOR_ID = 31, RIGHT_ENCODER_ID = 31;
+    public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31;
     public static final int LEFT_MOTOR_PDH_PORT = 7, RIGHT_MOTOR_PDH_PORT = 8;
     
     public static final double UNWIND_FACTOR = -1.0, WIND_FACTOR = 0.5;
@@ -29,9 +28,13 @@ public final class Constants {
     /* calculate rotations for each height for automatic climb */
     public static final double GEAR_RATIO = 18;
     public static final double SHAFT_DIAMETER = 0.0254; //in meters, = 1"
-    public static final double MAX_HEIGHT = 0.7366; //in meters, = 15+16-2 (overlap) = 29"
-    public static final double LOW_HEIGHT = MAX_HEIGHT/4; //TODO: change
-    public static final double LATCH_HEIGHT = 0.0;
+    public static final double TOP_HEIGHT = 0.6858; //total height of climb in meters, = 15+16-2 (overlap) = 29", -2" to get to our 0 position
+    public static final double LATCH_HEIGHT = -0.0508; //-2"
+    
+    //calculate this or test & get value from shuffleboard
+    public static final double TOP_ROTATIONS = (TOP_HEIGHT*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
+    public static final double SAFE_ROTATIONS = 0.0;
+    public static final double LATCH_ROTATIONS = (LATCH_HEIGHT*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
 
     /* current spiking check */
     public static final double SPIKE_CURRENT = 20;

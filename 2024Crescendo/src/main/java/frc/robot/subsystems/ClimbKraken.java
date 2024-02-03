@@ -13,13 +13,10 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import com.reduxrobotics.sensors.canandcoder.Canandcoder;
-
 import java.util.function.DoubleSupplier;
 
 public class ClimbKraken extends SubsystemBase {
   private TalonFX motor;
-  private Canandcoder absEncoder;
   private boolean manualMode = false;
   private TalonFXConfiguration config;
   private MotionMagicVoltage request;
@@ -30,9 +27,8 @@ public class ClimbKraken extends SubsystemBase {
    * @param motorID - port for motor
    * @param encoderID - port for absolute encoder
    */
-  public ClimbKraken(int motorID, int encoderID) {
+  public ClimbKraken(int motorID) {
     motor = new TalonFX(motorID);
-    absEncoder = new Canandcoder(encoderID);
     config = new TalonFXConfiguration();
     request = new MotionMagicVoltage(0);
     
@@ -56,9 +52,8 @@ public class ClimbKraken extends SubsystemBase {
   /**
    * Sets zero position of relative encoder to position of absolute encoder
    */
-  public void home() {
-    motor.getConfigurator().setPosition(absEncoder.getAbsPosition());
-    //assuming under 1 rotation (absolute) -- make sure we're starting down
+  public void homeAtTop() {
+    motor.getConfigurator().setPosition(Constants.Climb.TOP_ROTATIONS);
   }
 
   /**
@@ -77,22 +72,21 @@ public class ClimbKraken extends SubsystemBase {
 
   /**
    * Moves robot to new height using Motion Magic
-   * @param height - desired extension height
+   * @param pos - desired position to go to in rotations
    * @param slot - configuration slot to use (0 for PID values without holding robot weight, 1 for with robot weight)
    */
-  public void moveTo(double height, int slot) {
-    double revolutions = (height*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
-    motor.setControl(request.withPosition(revolutions).withSlot(slot));
+  public void moveTo(double pos, int slot) {
+    motor.setControl(request.withPosition(pos).withSlot(slot));
   }
   
   /**
    * If in manual mode, sets unwind/wind factor dependent on pos/neg value of speed and runs motor
-   * <p> If winding, encoder position must be above latch to run
+   * <p> If winding, encoder position must be above "safe" position to run
    * @param speed - speed of motor
    */
   public void moveAt(DoubleSupplier speed) {
     if (manualMode){
-      if (speed.getAsDouble() < 0 && absEncoder.getAbsPosition() > Constants.Climb.LOW_HEIGHT){
+      if (speed.getAsDouble() < 0 && motor.getRotorPosition().getValueAsDouble() > Constants.Climb.SAFE_ROTATIONS){
         motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
       } else {
         motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
@@ -106,7 +100,6 @@ public class ClimbKraken extends SubsystemBase {
    */
   public void configDashboard(ShuffleboardTab tab) {
     tab.addDouble("Relative Encoder", () -> motor.getPosition().getValueAsDouble());
-    tab.addDouble("Absolute Encoder", () -> absEncoder.getAbsPosition());
     tab.addBoolean("In Manual Mode?", () -> manualMode);
   }
 

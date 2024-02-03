@@ -18,14 +18,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import com.reduxrobotics.sensors.canandcoder.Canandcoder;
-
 import java.util.function.DoubleSupplier;
 
 public class ClimbNEO extends SubsystemBase {
   private CANSparkMax motor;
   private RelativeEncoder relEncoder;
-  private Canandcoder absEncoder;
   private SparkPIDController PIDController;
 
   private boolean manualMode = false;
@@ -41,9 +38,8 @@ public class ClimbNEO extends SubsystemBase {
    * @param motorID - port for motor
    * @param encoderID - port for absolute encoder
    */
-  public ClimbNEO(int motorID, int encoderID) {
+  public ClimbNEO(int motorID) {
     motor = new CANSparkMax(motorID, MotorType.kBrushless);
-    absEncoder = new Canandcoder(encoderID);
     relEncoder = motor.getEncoder();
     PIDController = motor.getPIDController();
     PIDController.setFeedbackDevice(relEncoder);
@@ -71,10 +67,10 @@ public class ClimbNEO extends SubsystemBase {
   }
   
   /**
-   * Sets position of relative encoder to position of absolute encoder
+   * Tell relative encoder that it's at the top position
    */
-  public void home() {
-    relEncoder.setPosition(absEncoder.getAbsPosition());
+  public void homeAtTop() {
+    relEncoder.setPosition(Constants.Climb.TOP_ROTATIONS);
   }
 
   /**
@@ -93,11 +89,10 @@ public class ClimbNEO extends SubsystemBase {
   
   /**
    * Assigns new position for robot to move to based on current state
-   * @param height - desired extension height in meters
+   * @param pos - desired position to go to in rotations
    */
-  public void moveTo(double height) {
-    double revolutions = (height*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
-    goal = new TrapezoidProfile.State(revolutions, 0);
+  public void moveTo(double pos) {
+    goal = new TrapezoidProfile.State(pos, 0);
   }
 
   /**
@@ -121,7 +116,7 @@ public class ClimbNEO extends SubsystemBase {
    */
   public void moveAt(DoubleSupplier speed) {
     if (manualMode){
-      if (speed.getAsDouble() < 0 && absEncoder.getAbsPosition() > Constants.Climb.LOW_HEIGHT) {
+      if (speed.getAsDouble() < 0 && relEncoder.getPosition() > Constants.Climb.SAFE_ROTATIONS) {
         motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
       } else {
         motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
@@ -135,7 +130,6 @@ public class ClimbNEO extends SubsystemBase {
    */
   public void configDashboard(ShuffleboardTab tab) {
     tab.addDouble("Relative Encoder", () -> relEncoder.getPosition());
-    tab.addDouble("Absolute Encoder", () -> absEncoder.getAbsPosition());
     tab.addBoolean("In Manual Mode?", () -> manualMode);
   }
 

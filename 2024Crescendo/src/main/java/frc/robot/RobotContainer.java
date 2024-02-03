@@ -31,8 +31,8 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   //replace with Krakens for comp bot
-  private final ClimbNEO leftClimb = new ClimbNEO(Constants.Climb.LEFT_MOTOR_ID, Constants.Climb.LEFT_ENCODER_ID);
-  private final ClimbNEO rightClimb = new ClimbNEO(Constants.Climb.RIGHT_MOTOR_ID, Constants.Climb.RIGHT_ENCODER_ID);
+  private final ClimbNEO leftClimb = new ClimbNEO(Constants.Climb.LEFT_MOTOR_ID);
+  private final ClimbNEO rightClimb = new ClimbNEO(Constants.Climb.RIGHT_MOTOR_ID);
   
   private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
   private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -47,8 +47,8 @@ public class RobotContainer {
     configureBindings();
 
     maintainPosition();
-    leftClimb.home();
-    rightClimb.home();
+    leftClimb.homeAtTop();
+    rightClimb.homeAtTop();
     
     matchTab.addDouble("Left PDH Current",
       () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
@@ -84,16 +84,16 @@ public class RobotContainer {
       new InstantCommand(() -> rightClimb.switchMode(), rightClimb)));
 
     xbox.y().onTrue(new ParallelCommandGroup(
-      new ClimbToHeight(Constants.Climb.MAX_HEIGHT, leftClimb),
-      new ClimbToHeight(Constants.Climb.MAX_HEIGHT, rightClimb)));
+      new ClimbToPos(Constants.Climb.TOP_ROTATIONS, leftClimb),
+      new ClimbToPos(Constants.Climb.TOP_ROTATIONS, rightClimb)));
     
     xbox.b().onTrue(new ParallelCommandGroup(
-      new ClimbToHeight(Constants.Climb.LATCH_HEIGHT, leftClimb),
-      new ClimbToHeight(Constants.Climb.LATCH_HEIGHT, rightClimb)));
+      new ClimbToPos(Constants.Climb.LATCH_ROTATIONS, leftClimb),
+      new ClimbToPos(Constants.Climb.LATCH_ROTATIONS, rightClimb)));
     
     xbox.a().onTrue(new ParallelCommandGroup(
-      new ClimbToHeight(Constants.Climb.LOW_HEIGHT, leftClimb),
-      new ClimbToHeight(Constants.Climb.LOW_HEIGHT, rightClimb)));
+      new ClimbToPos(Constants.Climb.SAFE_ROTATIONS, leftClimb),
+      new ClimbToPos(Constants.Climb.SAFE_ROTATIONS, rightClimb)));
     
     /* could replace ClimbToLowHeight method */
     xbox.a().onTrue(new ParallelCommandGroup(
