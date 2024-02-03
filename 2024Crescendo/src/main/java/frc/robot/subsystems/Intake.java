@@ -4,22 +4,23 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
-  private CANSparkMax motor;
+  private TalonFX motor;
 
   /**
    * Constructor for Intake class
    * <p> Initializing and configuring motors
    */
-  public Intake() {
-    motor = new CANSparkMax(Constants.Intake.MOTOR_ID, MotorType.kBrushless);
-    motor.restoreFactoryDefaults();
+  public Intake(int motorID) {
+    motor = new TalonFX(motorID);
+    
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    motor.getConfigurator().apply(config);
   }
 
   /**

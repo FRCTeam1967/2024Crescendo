@@ -16,10 +16,11 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  
   public static final class Intake {
     public static final int MOTOR_ID = 1;
         
-    public static final double INTAKE_ROLLER_SPEED = -0.5;
-    public static final double EJECT_ROLLER_SPEED = -0.25;
+    public static final double INTAKE_SPEED = -0.5;
+    public static final double EJECT_SPEED = -0.25;
   }
 }
