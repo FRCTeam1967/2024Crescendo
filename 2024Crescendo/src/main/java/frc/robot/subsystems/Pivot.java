@@ -24,7 +24,7 @@ public class Pivot extends SubsystemBase {
   public TrapezoidProfile.State goal = new TrapezoidProfile.State();
   public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
 
-  public SparkPIDController pidController;
+  private SparkPIDController pidController;
   public double revsToMove;
   private RelativeEncoder relativeEncoder;
 

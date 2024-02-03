@@ -51,6 +51,21 @@ public final class Constants {
     public static final double DEGREE_0 = 0;
   }
 
+  public static class KrakenShooter {
+    public static final double MIN_OUTPUT_RANGE = 1; //will tune both of these later
+    public static final double MAX_OUTPUT_RANGE = -1;
+
+    public static final int TOP_LEFT_MOTOR_ID = 827; //tbd
+    public static final int TOP_RIGHT_MOTOR_ID = 108; //tbd
+    public static final int BOTTOM_LEFT_MOTOR_ID = 167; //tbd
+    public static final int BOTTOM_RIGHT_MOTOR_ID = 198; //tbd
+
+    public static final double TOP_SPEED = 0.3;
+    public static final double BOTTOM_SPEED = 0.3;
+  }
+
+  
+
   public static class Shooter {
     public static final int FRONT_LEFT_MOTOR_IDX = 1; //tbd
     public static final int FRONT_RIGHT_MOTOR_IDX = 2; //tbd
@@ -62,5 +77,9 @@ public final class Constants {
     public static final double BACK_SPEED = 0.3;
 
     public static final double SHOOT_TIME = 5.0;
+  }
+
+  public static class Vision {
+    public static final double DEGREE_ERROR = 2.0;
   }
 }

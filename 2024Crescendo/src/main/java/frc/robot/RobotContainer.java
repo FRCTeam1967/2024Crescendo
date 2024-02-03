@@ -38,9 +38,11 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Pivot pivot = new Pivot();
   private final Feeder feeder = new Feeder();
+  private final KrakenShooter krakenShooter = new KrakenShooter();
   
   public ShuffleboardTab limelightTab = Shuffleboard.getTab("limelight tab");
-  public Limelight limelight;
+  public Limelight limelight = new Limelight(limelightTab);
+  public Vision vision = new Vision();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_xbox =
@@ -49,12 +51,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    configureBindings();
     pivot.pivotHoming();
     CanandEventLoop.getInstance();
-    limelight = new Limelight(limelightTab);
+
     //powerDistribution.setSwitchableChannel(true);
-    
+    vision.configDashboard(limelightTab);
+    configureBindings();
     maintainPosition();
   }
 
@@ -95,8 +97,10 @@ public class RobotContainer {
     m_xbox.b().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_10));
     m_xbox.start().onTrue(new HomePivot(pivot));
 
-    m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, Constants.Shooter.FRONT_SPEED, Constants.Shooter.BACK_SPEED).withTimeout(Constants.Shooter.SHOOT_TIME)));
+    //m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, Constants.Shooter.FRONT_SPEED, Constants.Shooter.BACK_SPEED).withTimeout(Constants.Shooter.SHOOT_TIME)));
+    m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunKrakenShooter(krakenShooter, Constants.KrakenShooter.TOP_SPEED,  Constants.KrakenShooter.TOP_SPEED, Constants.KrakenShooter.BOTTOM_SPEED, Constants.KrakenShooter.BOTTOM_SPEED)));
     shooter.setDefaultCommand(new RunShooter(shooter, 0.0, 0.0));
+    krakenShooter.setDefaultCommand(new RunKrakenShooter(krakenShooter, 0, 0, 0, 0));
     feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
   }
 
