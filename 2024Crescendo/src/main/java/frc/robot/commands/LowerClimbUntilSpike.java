@@ -8,10 +8,10 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.Climb;
+import frc.robot.subsystems.ClimbNEO;
 
 public class LowerClimbUntilSpike extends Command {
-  private Climb climb;
+  private ClimbNEO climb;
   private double current;
 
   /**
@@ -19,7 +19,7 @@ public class LowerClimbUntilSpike extends Command {
    * @param climb - Climb object
    * @param current - DoubleSupplier for updating current value
    */
-  public LowerClimbUntilSpike(DoubleSupplier _current, Climb _climb) {
+  public LowerClimbUntilSpike(DoubleSupplier _current, ClimbNEO _climb) {
     climb = _climb;
     current = _current.getAsDouble();
     addRequirements(climb);

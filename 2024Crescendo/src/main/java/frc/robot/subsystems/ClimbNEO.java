@@ -22,11 +22,11 @@ import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 
 import java.util.function.DoubleSupplier;
 
-public class Climb extends SubsystemBase {
+public class ClimbNEO extends SubsystemBase {
   private CANSparkMax motor;
   private RelativeEncoder relEncoder;
   private Canandcoder absEncoder;
-  public SparkPIDController PIDController;
+  private SparkPIDController PIDController;
 
   private boolean manualMode = false;
 
@@ -36,12 +36,12 @@ public class Climb extends SubsystemBase {
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
 
   /**
-   * Constructor for Climb class
+   * Constructor for ClimbNEO class
    * <p> Initializing and configuring motors for climb
    * @param motorID - port for motor
    * @param encoderID - port for absolute encoder
    */
-  public Climb(int motorID, int encoderID) {
+  public ClimbNEO(int motorID, int encoderID) {
     motor = new CANSparkMax(motorID, MotorType.kBrushless);
     absEncoder = new Canandcoder(encoderID);
     relEncoder = motor.getEncoder();
@@ -56,7 +56,7 @@ public class Climb extends SubsystemBase {
    * Set PID values based on whether supporting robot weight or not
    * @param holdingRobot - true if need to support robot
    */
-  public void configurePID(boolean holdingRobot){
+  public void configPID(boolean holdingRobot){
     if(holdingRobot){
       PIDController.setP(Constants.Climb.DOWN_kP);
       PIDController.setI(Constants.Climb.DOWN_kI);
@@ -71,7 +71,7 @@ public class Climb extends SubsystemBase {
   }
   
   /**
-   * Sets zero position of relative encoder to position of absolute encoder
+   * Sets position of relative encoder to position of absolute encoder
    */
   public void home() {
     relEncoder.setPosition(absEncoder.getAbsPosition());

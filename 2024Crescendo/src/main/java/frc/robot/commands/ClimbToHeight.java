@@ -5,11 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Climb;
+import frc.robot.subsystems.ClimbNEO;
 import frc.robot.Constants;
 
 public class ClimbToHeight extends Command {
-  private Climb climb;
+  private ClimbNEO climb;
   private double height;
 
   /** 
@@ -17,14 +17,13 @@ public class ClimbToHeight extends Command {
    * @param height - rotations to go to certain height
    * @param climb - Climb object
    */
-  public ClimbToHeight(double _height, Climb _climb) {
+  public ClimbToHeight(double _height, ClimbNEO _climb) {
     climb = _climb;
     height = _height;
 
     //configure PID based on if holding robot height or not
-    if (height == Constants.Climb.LATCH_HEIGHT) climb.configurePID(true);
-    else climb.configurePID(false);
-    
+    if (height == Constants.Climb.LATCH_HEIGHT) climb.configPID(true);
+    else climb.configPID(false);
     addRequirements(climb);
   }
 

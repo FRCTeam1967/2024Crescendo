@@ -16,7 +16,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-  
+
   public static class Climb {
     public static final int LEFT_MOTOR_ID = 30, LEFT_ENCODER_ID = 30;
     public static final int RIGHT_MOTOR_ID = 31, RIGHT_ENCODER_ID = 31;
@@ -41,6 +41,9 @@ public final class Constants {
     /* motion profiling */
     public static final double MAX_VELOCITY = 1.00, MAX_ACCELERATION = 0.55; 
     public static final double MIN_OUTPUT_RANGE = -0.2, MAX_OUTPUT_RANGE = 0.2;
+
+    /* motion magic */
+    public static final double CRUISE_VELOCITY = 0.4, ACCELERATION = 0.5;
 
     /* PID values*/
     public static final double UP_kP = 0.85, UP_kI = 0, UP_kD = 0, UP_kD_TIME = 0.02;

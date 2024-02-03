@@ -29,11 +29,12 @@ import frc.robot.commands.*;
  */
 public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID, Constants.Climb.LEFT_ENCODER_ID);
-  private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID, Constants.Climb.RIGHT_ENCODER_ID);
 
+  //replace with Krakens for comp bot
+  private final ClimbNEO leftClimb = new ClimbNEO(Constants.Climb.LEFT_MOTOR_ID, Constants.Climb.LEFT_ENCODER_ID);
+  private final ClimbNEO rightClimb = new ClimbNEO(Constants.Climb.RIGHT_MOTOR_ID, Constants.Climb.RIGHT_ENCODER_ID);
+  
   private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
-
   private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   public ShuffleboardTab matchTab;
@@ -55,7 +56,7 @@ public class RobotContainer {
       () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
   }
 
-  //TODO: combine with pivot's maintainPosition
+  //TODO: combine with pivot's maintainPosition for JankyBot - only needed for NEOs
   public void maintainPosition(){
     leftClimb.setpoint.velocity = 0;
     leftClimb.setpoint.position = leftClimb.getRelPos();
@@ -103,6 +104,19 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(
       () -> MathUtil.applyDeadband(xbox.getRightY(), Constants.Climb.DEADBAND)), rightClimb));
+
+    /* for MotionMagic & Krakens */
+    // xbox.y().onTrue(new ParallelCommandGroup(
+    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.MAX_HEIGHT, 0), leftClimb),
+    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.MAX_HEIGHT, 0), rightClimb)));
+    
+    // xbox.a().onTrue(new ParallelCommandGroup(
+    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LOW_HEIGHT, 0), leftClimb),
+    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LOW_HEIGHT, 0), rightClimb)));
+
+    // xbox.b().onTrue(new ParallelCommandGroup (
+    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_HEIGHT, 1), leftClimb),
+    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_HEIGHT, 1), rightClimb)));
   }
 
   /**
