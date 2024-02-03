@@ -6,12 +6,12 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-//import frc.robot.Constants;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -29,10 +29,9 @@ import frc.robot.commands.*;
  */
 public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
-  //replace with Krakens for comp bot
-  private final ClimbNEO leftClimb = new ClimbNEO(Constants.Climb.LEFT_MOTOR_ID);
-  private final ClimbNEO rightClimb = new ClimbNEO(Constants.Climb.RIGHT_MOTOR_ID);
+  private final DigitalInput digitalInput = new DigitalInput(Constants.Climb.DIGITAL_INPUT_CHANNEL);
+  
+  private final Climb leftClimb, rightClimb;
   
   private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
   private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -41,8 +40,16 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    if(digitalInput.get() == true) { //whether JankyBot or CompBot, TODO: check if true or false
+      leftClimb = new ClimbNEO(Constants.Climb.LEFT_MOTOR_ID);
+      rightClimb = new ClimbNEO(Constants.Climb.RIGHT_MOTOR_ID);
+    } else {
+      leftClimb = new ClimbKraken(Constants.Climb.LEFT_MOTOR_ID);
+      rightClimb = new ClimbKraken(Constants.Climb.RIGHT_MOTOR_ID);
+    }
+
     matchTab = Shuffleboard.getTab("Match");
-    leftClimb.configDashboard(matchTab); //when testing, do one side at a time?
+    leftClimb.configDashboard(matchTab);
 
     configureBindings();
 
@@ -56,17 +63,10 @@ public class RobotContainer {
       () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
   }
 
-  //TODO: combine with pivot's maintainPosition for JankyBot - only needed for NEOs
-  public void maintainPosition(){
-    leftClimb.setpoint.velocity = 0;
-    leftClimb.setpoint.position = leftClimb.getRelPos();
-    leftClimb.goal.velocity = 0;
-    leftClimb.goal.position = leftClimb.getRelPos();
-
-    rightClimb.setpoint.velocity = 0;
-    rightClimb.setpoint.position = rightClimb.getRelPos();
-    rightClimb.goal.velocity = 0;
-    rightClimb.goal.position = rightClimb.getRelPos();
+  //TODO: combine with pivot's maintainPosition
+  public void maintainPosition() {
+    leftClimb.maintainPos();
+    rightClimb.maintainPos();
   }
 
   /**
@@ -104,19 +104,6 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(
       () -> MathUtil.applyDeadband(xbox.getRightY(), Constants.Climb.DEADBAND)), rightClimb));
-
-    /* for MotionMagic & Krakens */
-    // xbox.y().onTrue(new ParallelCommandGroup(
-    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.MAX_HEIGHT, 0), leftClimb),
-    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.MAX_HEIGHT, 0), rightClimb)));
-    
-    // xbox.a().onTrue(new ParallelCommandGroup(
-    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LOW_HEIGHT, 0), leftClimb),
-    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LOW_HEIGHT, 0), rightClimb)));
-
-    // xbox.b().onTrue(new ParallelCommandGroup (
-    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_HEIGHT, 1), leftClimb),
-    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_HEIGHT, 1), rightClimb)));
   }
 
   /**

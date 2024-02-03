@@ -20,7 +20,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import java.util.function.DoubleSupplier;
 
-public class ClimbNEO extends SubsystemBase {
+public class ClimbNEO extends SubsystemBase implements Climb {
   private CANSparkMax motor;
   private RelativeEncoder relEncoder;
   private SparkPIDController PIDController;
@@ -43,17 +43,27 @@ public class ClimbNEO extends SubsystemBase {
     relEncoder = motor.getEncoder();
     PIDController = motor.getPIDController();
     PIDController.setFeedbackDevice(relEncoder);
+
+    PIDController.setOutputRange(Constants.Climb.MIN_OUTPUT_RANGE, Constants.Climb.MAX_OUTPUT_RANGE);
     
     motor.restoreFactoryDefaults();
     motor.setIdleMode(IdleMode.kBrake);
   }
-
+  
   /**
-   * Set PID values based on whether supporting robot weight or not
-   * @param holdingRobot - true if need to support robot
+   * Tell relative encoder that it's at the top position
    */
-  public void configPID(boolean holdingRobot){
-    if(holdingRobot){
+  public void homeAtTop() {
+    relEncoder.setPosition(Constants.Climb.TOP_ROTATIONS);
+  }
+  
+  /**
+   * Assigns new position for robot to move to based on current state
+   * @param pos - desired position to go to in rotations
+   * @param holdingRobot - whether holding robot weight, used to configure PID accordingly
+   */
+  public void moveTo(double pos, boolean holdingRobot) {
+    if(holdingRobot){ //configure PID accordingly
       PIDController.setP(Constants.Climb.DOWN_kP);
       PIDController.setI(Constants.Climb.DOWN_kI);
       PIDController.setD(Constants.Climb.DOWN_kD);
@@ -63,50 +73,7 @@ public class ClimbNEO extends SubsystemBase {
       PIDController.setI(Constants.Climb.UP_kI);
       PIDController.setD(Constants.Climb.UP_kD);
     }
-    PIDController.setOutputRange(Constants.Climb.MIN_OUTPUT_RANGE, Constants.Climb.MAX_OUTPUT_RANGE);
-  }
-  
-  /**
-   * Tell relative encoder that it's at the top position
-   */
-  public void homeAtTop() {
-    relEncoder.setPosition(Constants.Climb.TOP_ROTATIONS);
-  }
-
-  /**
-   * Stops motor movement
-   */
-  public void stop() {
-    motor.stopMotor();
-  }
-
-  /**
-   * @return relative encoder's position
-   */
-  public double getRelPos() {
-    return relEncoder.getPosition();
-  }
-  
-  /**
-   * Assigns new position for robot to move to based on current state
-   * @param pos - desired position to go to in rotations
-   */
-  public void moveTo(double pos) {
     goal = new TrapezoidProfile.State(pos, 0);
-  }
-
-  /**
-   * @return true if the trapezoid profile reaches its goal
-   */
-  public boolean isReached() {
-    return (profile.isFinished(profile.timeLeftUntil(goal.position)));
-  }
-
-  /**
-   * Changes manualMode field value to opposite of current value
-   */
-  public void switchMode() {
-    manualMode = !manualMode;
   }
 
   /**
@@ -122,6 +89,38 @@ public class ClimbNEO extends SubsystemBase {
         motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
       }
     }
+  }
+
+  /**
+   * @param desiredPos - not doing anything for NEO
+   * @return true if the trapezoid profile reaches its goal
+   */
+  public boolean isReached(double desiredPos) {
+    return (profile.isFinished(profile.timeLeftUntil(goal.position)));
+  }
+
+  /**
+   * Changes manualMode field value to opposite of current value
+   */
+  public void switchMode() {
+    manualMode = !manualMode;
+  }
+
+  /**
+   * Stops motor movement
+   */
+  public void stop() {
+    motor.stopMotor();
+  }
+
+  /**
+   * Establishes starting setpoint and goal for motion profiling, called in teleopInit
+   */
+  public void maintainPos(){
+    setpoint.velocity = 0;
+    setpoint.position = relEncoder.getPosition();
+    goal.velocity = 0;
+    goal.position = relEncoder.getPosition();
   }
 
   /**

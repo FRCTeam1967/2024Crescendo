@@ -15,7 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import java.util.function.DoubleSupplier;
 
-public class ClimbKraken extends SubsystemBase {
+public class ClimbKraken extends SubsystemBase implements Climb {
   private TalonFX motor;
   private boolean manualMode = false;
   private TalonFXConfiguration config;
@@ -57,26 +57,13 @@ public class ClimbKraken extends SubsystemBase {
   }
 
   /**
-   * Stops motor movement
-   */
-  public void stop() {
-    motor.stopMotor();
-  }
-
-  /**
-   * Changes manualMode field value to opposite of current value
-   */
-  public void switchMode() {
-    manualMode = !manualMode;
-  }
-
-  /**
    * Moves robot to new height using Motion Magic
    * @param pos - desired position to go to in rotations
-   * @param slot - configuration slot to use (0 for PID values without holding robot weight, 1 for with robot weight)
+   * @param holdingRobot - whether holding robot weight, used to configure PID accordingly
    */
-  public void moveTo(double pos, int slot) {
-    motor.setControl(request.withPosition(pos).withSlot(slot));
+  public void moveTo(double pos, boolean holdingRobot) {
+    if(holdingRobot) motor.setControl(request.withPosition(pos).withSlot(1));
+    else motor.setControl(request.withPosition(pos).withSlot(0));
   }
   
   /**
@@ -95,6 +82,31 @@ public class ClimbKraken extends SubsystemBase {
   }
 
   /**
+   * @param desiredPos - in rotations
+   * @return true if the trapezoid profile reaches goal within error bound
+   */
+  public boolean isReached(double desiredPos){
+    return motor.getPosition().getValueAsDouble() > (desiredPos - Constants.Climb.ERROR_ROTATIONS)
+      && motor.getPosition().getValueAsDouble() < (desiredPos - Constants.Climb.ERROR_ROTATIONS);
+  }
+
+  /**
+   * Changes manualMode field value to opposite of current value
+   */
+  public void switchMode() {
+    manualMode = !manualMode;
+  }
+
+  /**
+   * Stops motor movement
+   */
+  public void stop() {
+    motor.stopMotor();
+  }
+
+  public void maintainPos(){}
+
+  /**
    * Displays boolean for mode status and values of relative and absolute encoders on Shuffleboard
    * @param tab - ShuffleboardTab to add values to
    */
@@ -102,7 +114,7 @@ public class ClimbKraken extends SubsystemBase {
     tab.addDouble("Relative Encoder", () -> motor.getPosition().getValueAsDouble());
     tab.addBoolean("In Manual Mode?", () -> manualMode);
   }
-
+  
   @Override
   public void periodic() {}
 }

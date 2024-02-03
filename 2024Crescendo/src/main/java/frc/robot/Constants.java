@@ -30,11 +30,13 @@ public final class Constants {
     public static final double SHAFT_DIAMETER = 0.0254; //in meters, = 1"
     public static final double TOP_HEIGHT = 0.6858; //total height of climb in meters, = 15+16-2 (overlap) = 29", -2" to get to our 0 position
     public static final double LATCH_HEIGHT = -0.0508; //-2"
+    public static final double ERROR_HEIGHT = 0.0254; //1"
     
     //calculate this or test & get value from shuffleboard
     public static final double TOP_ROTATIONS = (TOP_HEIGHT*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
     public static final double SAFE_ROTATIONS = 0.0;
     public static final double LATCH_ROTATIONS = (LATCH_HEIGHT*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
+    public static final double ERROR_ROTATIONS = (ERROR_HEIGHT*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
 
     /* current spiking check */
     public static final double SPIKE_CURRENT = 20;
@@ -51,5 +53,6 @@ public final class Constants {
     /* PID values*/
     public static final double UP_kP = 0.85, UP_kI = 0, UP_kD = 0, UP_kD_TIME = 0.02;
     public static final double DOWN_kP = 0.85, DOWN_kI = 0, DOWN_kD = 0, DOWN_kD_TIME = 0.02, DOWN_kF = 0;
+    public static final int DIGITAL_INPUT_CHANNEL = 0;
   }
 }
