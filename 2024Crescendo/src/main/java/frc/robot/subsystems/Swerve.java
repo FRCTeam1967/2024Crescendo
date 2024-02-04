@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -29,7 +30,7 @@ public class Swerve extends SubsystemBase{
     public final SwerveModule backRight;
 
     private final ADIS16470_IMU gyro;
-    private final SwerveDriveOdometry odometry;
+    public final SwerveDriveOdometry odometry;
     private Field2d field = new Field2d();
 
     private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
@@ -43,8 +44,6 @@ public class Swerve extends SubsystemBase{
         frontLeft = new SwerveModule("FrontLeft", Constants.Swerve.FL_POWER, Constants.Swerve.FL_STEER, Constants.Swerve.FL_ENCODER, driveTrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
         .withSize(2, 4)
         .withPosition(0, 0));
-
-    
 
         frontRight = new SwerveModule("FrontRight", Constants.Swerve.FR_POWER, Constants.Swerve.FR_STEER, Constants.Swerve.FR_ENCODER, driveTrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
         .withSize(2, 4)
@@ -60,9 +59,9 @@ public class Swerve extends SubsystemBase{
         
         gyro = new ADIS16470_IMU();
 
-        driveTrainTab.addDouble("Falcon Gyro Angle", () -> gyro.getAngle(gyro.getYawAxis()));
+        driveTrainTab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());
         
-        driveTrainTab.add("field", field).withSize(11, 5).withPosition(1, 1);
+        //driveTrainTab.add("field", field).withSize(8, 5).withPosition(1, 1);
 
 
 
@@ -72,19 +71,29 @@ public class Swerve extends SubsystemBase{
         });
 
         //took autobuilder from pathplanner - might need to be used in the auto file (driveRobotRelative not coded yet)
-        // AutoBuilder.configureHolonomic(
-        //         this::getPose, // Robot pose supplier
-        //         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-        //         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        //         this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        //         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-        //                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-        //                 new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-        //                 4.5, // Max module speed, in m/s
-        //                 0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-        //                 new ReplanningConfig() // Default path replanning config. See the API for the options here
-        //         ), 
-        //         this);
+        AutoBuilder.configureHolonomic(
+            this::getPose, // Robot pose supplier
+            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            this::driveRobotRelative , // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                new PIDConstants(0.0001, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(Constants.Auto.kPThetaController, 0.0, 0.0), // Rotation PID constants
+                0.3, // Max module speed, in m/s
+                0.41309, // Drive base radius in meters. Distance from robot center to furthest module.
+                new ReplanningConfig() // Default path replanning config. See the API for the options here
+        ), () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+        this);
         }
     
     public void stopModules() {
@@ -122,6 +131,15 @@ public class Swerve extends SubsystemBase{
         };
     }
 
+    public SwerveModulePosition[] getModulePositions() {
+        return new SwerveModulePosition[] {
+            frontLeft.getPosition(), 
+            frontRight.getPosition(), 
+            backLeft.getPosition(),
+            backRight.getPosition()
+        };
+    }
+
     public ChassisSpeeds getRobotRelativeSpeeds() {
         return Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toChassisSpeeds(frontLeft.getState(),
         frontRight.getState(),
@@ -129,39 +147,10 @@ public class Swerve extends SubsystemBase{
         backRight.getState());
     }
 
-    public void drive(double xSpeed, double ySpeed, double rotationSpeed){
-        xLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
-        yLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_MAX_SPEED * 2);
-        rotationLimiter = new SlewRateLimiter(Constants.Swerve.SWERVE_ROTATION_MAX_SPEED_IN_RAD);
-
-        //speed is from xsupplier  value and scaled down by max speed
-        double xSpeedScaled = cleanAndScaleInput(xSpeed, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-        double ySpeedScaled = cleanAndScaleInput(ySpeed, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-        double rotationSpeedScaled = cleanAndScaleInput(rotationSpeed, rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED_IN_RAD);
-        //converts field relative speeds to robot relative speeds 
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, this.getRotation2d());
-        //converts new chassisspeeds to module states
-        SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-        //ensures wheel speeds do not exceed swerve max speed
-        //SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
-        this.setModuleStates(moduleState);
-    }
-
     //finish
     public void driveRobotRelative(ChassisSpeeds speeds) {
-        this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond * Constants.Auto.RADIANS_TO_DEGREES);
-    }
-
-    private double cleanAndScaleInput(double input, SlewRateLimiter limiter, double speedScaling) {
-        //lowering down to 0 if abs value of input is below deadband 
-        input = Math.abs(input) > Constants.Swerve.SWERVE_DEADBAND ? input : 0;
-        //squaring input while preserving sign
-        input = signedSquare(input);
-        //using slewratelimiter to scale input
-        //input = limiter.calculate(input);
-        input *= speedScaling;
-
-        return input;
+        SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
+        this.setModuleStates(moduleState);
     }
 
     public static double signedSquare(double a) {
@@ -183,9 +172,11 @@ public class Swerve extends SubsystemBase{
     }
 
     public void resetOdometry (Pose2d pose) {
-        odometry.resetPosition(getRotation2d(), new SwerveModulePosition[] {
-            frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
-        }, pose);
+        odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
+    }
+
+    public void resetGyro () {
+        gyro.setGyroAngle(gyro.getYawAxis(), 0);
     }
 
     public void goToAngle(double angleInDegrees){
@@ -197,15 +188,16 @@ public class Swerve extends SubsystemBase{
     }
 
     public void defenseMode(){
-        SwerveModuleState fLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
-        SwerveModuleState fRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(-135));
-        SwerveModuleState bLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(-135));
-        SwerveModuleState bRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
+        SwerveModuleState fLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(45));
+        SwerveModuleState fRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(135));
+        SwerveModuleState bLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(45));
+        SwerveModuleState bRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(135));
 
         frontLeft.setState(fLDefenseState);
         frontRight.setState(fRDefenseState);
         backLeft.setState(bLDefenseState);
         backRight.setState(bRDefenseState);
+        System.out.println("lessgooo");
 
         frontLeft.brakeMode();
         frontRight.brakeMode();
@@ -237,13 +229,14 @@ public class Swerve extends SubsystemBase{
 
         var gyroAngle = getRotation2d();
 
-        pose = odometry.update(gyroAngle,
-            new SwerveModulePosition[] {
-            frontLeft.getPosition(), frontRight.getPosition(),
-            backLeft.getPosition(), backRight.getPosition()
-        });
+        pose = odometry.update(getRotation2d(), new SwerveModulePosition[] {
+            frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
+          });
 
-        field.setRobotPose(pose);
+          //System.out.println(pose);
+          field.setRobotPose(pose);
+          
+    
 
     }
 

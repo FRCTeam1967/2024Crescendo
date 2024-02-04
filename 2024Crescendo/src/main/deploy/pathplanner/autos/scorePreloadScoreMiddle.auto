@@ -34,24 +34,6 @@
           "data": {
             "name": "intakeNote"
           }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "shootMiddle"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
-          }
         }
       ]
     }

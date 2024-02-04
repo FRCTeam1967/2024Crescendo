@@ -23,21 +23,24 @@ public final class Constants {
   }
 
   public static class Swerve {
-    public static final double POWER_kS = 0.14; //0.14 best
-    public static final double POWER_kV = 0.8;//0.9; //1.8, 1., 0.8 //in volts
+    public static final double POWER_kS = 0.14;//0.14; //0.14 best
+    public static final double POWER_kV = 0.9;//0.9; //1.8, 1., 0.8 //in volts
     public static final double POWER_kA = 0.1;//0.1; 
     public static final double POWER_kP = 0.01;//0.01; //0.2 //in rotations
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
-    public static final double STEER_kS = 0.15;//0.13; // 0.6, 0.8, 0.7, 0.15 (still moving)
-    public static final double STEER_kV = 35;//2.1; // 0.5, 0, 0.1, 1
-    public static final double STEER_kA = 15;//0.1; //typically small (Ryan)
-    public static final double STEER_kP = 12.5;//3; // 1.2, 0.8, 0.1 (1868: 2.4)
+    public static final double STEER_kS = 0.1;//0.05;//0.15;//0.13; // 0.6, 0.8, 0.7, 0.15 (still moving)
+    public static final double STEER_kV = 30;//35;//2.1; // 0.5, 0, 0.1, 1
+    public static final double STEER_kA = 15;//15;//0.1; //typically small (Ryan)
+    public static final double STEER_kP = 12.5;//12.5;//3; // 1.2, 0.8, 0.1 (1868: 2.4)
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
 
     public static final int pigeonID = 1;
+
+    public static final int climbLeftEncoderIdx = 30;
+    public static final int climbRightEncoderIdx = 31;
 
     //0.319024 = circumference in meters
     //12.8:1 = rotor to sensor ratio
@@ -66,13 +69,13 @@ public final class Constants {
     public static final int BR_STEER = 4;
     public static final int BR_ENCODER = 2;
 
-    public static final double SWERVE_MAX_SPEED = 2.085; //4.1695 mps
+    public static final double SWERVE_MAX_SPEED = 2;//0.3; //4.1695 mps //3 for driver
     public static final double WIDTH = Units.inchesToMeters(23);
     public static final double LENGTH = Units.inchesToMeters(23);
 
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
 
-    public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = SWERVE_MAX_SPEED/ROTATION_CIRCLE_CIRCUMFERENCE; 
+    public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = (SWERVE_MAX_SPEED / WHEEL_CIRCUMFERENCE) * 2 * Math.PI; 
     public static final double SWERVE_DEADBAND = 0.05;
 
     public static Translation2d m_frontLeftLocation = new Translation2d(LENGTH / 2, WIDTH / 2);
@@ -102,14 +105,14 @@ public final class Constants {
   }
 
   public static class Auto {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxSpeedMetersPerSecond = 0.5;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 0.25;
     public static final double kMaxAngularSpeedDegreesPerSecond = 180;
     public static final double kMaxAngularSpeedDegreesPerSecondSquared = 180;
 
     public static final double kPXController = 25;
     public static final double kPYController = 30;
-    public static final double kPThetaController = 31.65;
+    public static final double kPThetaController = 7.5;
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
         new TrapezoidProfile.Constraints(
