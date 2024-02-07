@@ -87,7 +87,7 @@ public class ClimbKraken extends SubsystemBase implements Climb {
    */
   public boolean isReached(double desiredPos){
     return motor.getPosition().getValueAsDouble() > (desiredPos - Constants.Climb.ERROR_ROTATIONS)
-      && motor.getPosition().getValueAsDouble() < (desiredPos - Constants.Climb.ERROR_ROTATIONS);
+      && motor.getPosition().getValueAsDouble() < (desiredPos + Constants.Climb.ERROR_ROTATIONS);
   }
 
   /**

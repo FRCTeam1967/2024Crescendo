@@ -37,15 +37,17 @@ public class RobotContainer {
   private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   public ShuffleboardTab matchTab;
-
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     if(digitalInput.get() == true) { //whether JankyBot or CompBot, TODO: check if true or false
       leftClimb = new ClimbNEO(Constants.Climb.LEFT_MOTOR_ID);
       rightClimb = new ClimbNEO(Constants.Climb.RIGHT_MOTOR_ID);
+      matchTab.addString("Climb Type", ()->"NEO");
     } else {
       leftClimb = new ClimbKraken(Constants.Climb.LEFT_MOTOR_ID);
       rightClimb = new ClimbKraken(Constants.Climb.RIGHT_MOTOR_ID);
+      matchTab.addString("Climb Type", ()->"Kraken");
     }
 
     matchTab = Shuffleboard.getTab("Match");
@@ -75,8 +77,7 @@ public class RobotContainer {
    * predicate, or via the named factories in {@link
    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
    * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
   private void configureBindings() {
     xbox.x().onTrue(new ParallelCommandGroup(
