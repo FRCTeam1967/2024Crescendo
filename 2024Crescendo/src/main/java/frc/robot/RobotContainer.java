@@ -35,7 +35,6 @@ public class RobotContainer {
   
   //private final PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
   
-  private final Shooter shooter = new Shooter();
   private final Pivot pivot = new Pivot();
   private final Feeder feeder = new Feeder();
   private final KrakenShooter krakenShooter = new KrakenShooter();
@@ -53,7 +52,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     pivot.pivotHoming();
     CanandEventLoop.getInstance();
-
+    
     //powerDistribution.setSwitchableChannel(true);
     vision.configDashboard(limelightTab);
     configureBindings();
@@ -98,9 +97,9 @@ public class RobotContainer {
     m_xbox.start().onTrue(new HomePivot(pivot));
 
     //m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, Constants.Shooter.FRONT_SPEED, Constants.Shooter.BACK_SPEED).withTimeout(Constants.Shooter.SHOOT_TIME)));
-    m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunKrakenShooter(krakenShooter, Constants.KrakenShooter.TOP_SPEED,  Constants.KrakenShooter.TOP_SPEED, Constants.KrakenShooter.BOTTOM_SPEED, Constants.KrakenShooter.BOTTOM_SPEED)));
-    shooter.setDefaultCommand(new RunShooter(shooter, 0.0, 0.0));
+    //m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunKrakenShooter(krakenShooter, Constants.KrakenShooter.TOP_SPEED,  Constants.KrakenShooter.TOP_SPEED, Constants.KrakenShooter.BOTTOM_SPEED, Constants.KrakenShooter.BOTTOM_SPEED)));
     krakenShooter.setDefaultCommand(new RunKrakenShooter(krakenShooter, 0, 0, 0, 0));
+    m_xbox.x().onTrue(new RunKrakenShooter(krakenShooter, -0.5, 0.3, -0.5, 0.3));
     feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
   }
 
