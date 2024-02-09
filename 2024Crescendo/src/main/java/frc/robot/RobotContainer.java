@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final Intake intake = new Intake(Constants.Intake.MOTOR_ID);
+  private final Intake intake = new Intake();
 
   private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -40,10 +41,10 @@ public class RobotContainer {
    */
   private void configureBindings() {
     //TODO: turn both of these into parallel command with pivot down
-    xbox.leftTrigger().whileTrue(new RunCommand(() -> intake.runMotors(Constants.Intake.EJECT_SPEED), intake));
-    xbox.rightTrigger().whileTrue(new RunCommand(() -> intake.runMotors(Constants.Intake.INTAKE_SPEED), intake));
+    xbox.leftTrigger().whileTrue(new RunCommand (() -> intake.runMotors(Constants.Intake.EJECT_ROLLER_SPEED), intake));
+    xbox.rightTrigger().whileTrue(new RunCommand (() -> intake.runMotors(Constants.Intake.INTAKE_ROLLER_SPEED), intake));
     
-    intake.setDefaultCommand(new RunCommand(() -> intake.runMotors(0), intake));
+    intake.setDefaultCommand(new RunCommand (() -> intake.runMotors(0), intake));
   }
 
   /**
