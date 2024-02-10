@@ -85,10 +85,10 @@ public class Climb extends SubsystemBase {
    * @param desiredPos - in rotations
    * @return true if the trapezoid profile reaches goal within error bound
    */
-  public boolean isReached(double desiredPos){
-    return motor.getPosition().getValueAsDouble() > (desiredPos - Constants.Climb.ERROR_ROTATIONS)
-      && motor.getPosition().getValueAsDouble() < (desiredPos + Constants.Climb.ERROR_ROTATIONS);
-  }
+  // public boolean isReached(double desiredPos){
+  //   return motor.getPosition().getValueAsDouble() > (desiredPos - Constants.Climb.ERROR_ROTATIONS)
+  //     && motor.getPosition().getValueAsDouble() < (desiredPos + Constants.Climb.ERROR_ROTATIONS);
+  // }
 
   /**
    * Changes manualMode field value to opposite of current value
@@ -104,7 +104,6 @@ public class Climb extends SubsystemBase {
     motor.stopMotor();
   }
 
-  public void maintainPos(){}
 
   /**
    * Displays boolean for mode status and values of relative and absolute encoders on Shuffleboard
