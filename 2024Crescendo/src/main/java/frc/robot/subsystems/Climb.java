@@ -73,8 +73,13 @@ public class Climb extends SubsystemBase {
    */
   public void moveAt(DoubleSupplier speed) {
     if (manualMode){
-      if (speed.getAsDouble() < 0 && motor.getRotorPosition().getValueAsDouble() > Constants.Climb.SAFE_ROTATIONS){
-        motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
+      if (speed.getAsDouble() < 0 ){
+        if (motor.getRotorPosition().getValueAsDouble() > Constants.Climb.SAFE_ROTATIONS){
+          motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
+        }
+        else{
+          motor.stopMotor();
+        }
       } else {
         motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
       }
