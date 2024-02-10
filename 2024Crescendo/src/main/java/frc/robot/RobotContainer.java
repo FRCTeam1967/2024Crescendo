@@ -11,7 +11,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -29,7 +28,6 @@ import frc.robot.commands.*;
  */
 public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final DigitalInput digitalInput = new DigitalInput(Constants.Climb.DIGITAL_INPUT_CHANNEL);
   
   private final Climb leftClimb, rightClimb;
   
@@ -39,23 +37,15 @@ public class RobotContainer {
   public ShuffleboardTab matchTab;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    if(digitalInput.get() == true) { //whether JankyBot or CompBot, TODO: check if true or false
-      leftClimb = new ClimbNEO(Constants.Climb.LEFT_MOTOR_ID);
-      rightClimb = new ClimbNEO(Constants.Climb.RIGHT_MOTOR_ID);
-      matchTab.addString("Climb Type", ()->"NEO");
-    } else {
-      leftClimb = new ClimbKraken(Constants.Climb.LEFT_MOTOR_ID);
-      rightClimb = new ClimbKraken(Constants.Climb.RIGHT_MOTOR_ID);
-      matchTab.addString("Climb Type", ()->"Kraken");
-    }
+  public RobotContainer() { 
+    leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
+    rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
 
     matchTab = Shuffleboard.getTab("Match");
     leftClimb.configDashboard(matchTab);
 
     configureBindings();
 
-    maintainPosition();
     leftClimb.homeAtTop();
     rightClimb.homeAtTop();
     
@@ -63,12 +53,6 @@ public class RobotContainer {
       () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
     matchTab.addDouble("Right PDH Current",
       () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
-  }
-
-  //TODO: combine with pivot's maintainPosition
-  public void maintainPosition() {
-    leftClimb.maintainPos();
-    rightClimb.maintainPos();
   }
 
   /**
@@ -85,21 +69,21 @@ public class RobotContainer {
       new InstantCommand(() -> rightClimb.switchMode(), rightClimb)));
 
     xbox.y().onTrue(new ParallelCommandGroup(
-      new ClimbToPos(Constants.Climb.TOP_ROTATIONS, leftClimb),
-      new ClimbToPos(Constants.Climb.TOP_ROTATIONS, rightClimb)));
-    
-    xbox.b().onTrue(new ParallelCommandGroup(
-      new ClimbToPos(Constants.Climb.LATCH_ROTATIONS, leftClimb),
-      new ClimbToPos(Constants.Climb.LATCH_ROTATIONS, rightClimb)));
+      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_HEIGHT, false), leftClimb),
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_HEIGHT, false), rightClimb)));
     
     xbox.a().onTrue(new ParallelCommandGroup(
-      new ClimbToPos(Constants.Climb.SAFE_ROTATIONS, leftClimb),
-      new ClimbToPos(Constants.Climb.SAFE_ROTATIONS, rightClimb)));
+      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LOW_HEIGHT, false), leftClimb),
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LOW_HEIGHT, false), rightClimb)));
+
+    xbox.b().onTrue(new ParallelCommandGroup (
+      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_HEIGHT, true), leftClimb),
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_HEIGHT, true), rightClimb)));
     
     /* could replace ClimbToLowHeight method */
-    xbox.a().onTrue(new ParallelCommandGroup(
-      new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT), leftClimb).withTimeout(Constants.Climb.LOWER_TIME), 
-      new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT), rightClimb).withTimeout(Constants.Climb.LOWER_TIME)));
+    // xbox.a().onTrue(new ParallelCommandGroup(
+    //   new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT), leftClimb).withTimeout(Constants.Climb.LOWER_TIME), 
+    //   new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT), rightClimb).withTimeout(Constants.Climb.LOWER_TIME)));
     
     leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
       () -> MathUtil.applyDeadband(xbox.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));

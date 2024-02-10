@@ -35,6 +35,7 @@ public final class Constants {
     //calculate this or test & get value from shuffleboard
     public static final double TOP_ROTATIONS = (TOP_HEIGHT*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
     public static final double SAFE_ROTATIONS = 0.0;
+    public static final double LOW_HEIGHT = TOP_HEIGHT/4; //TODO: change
     public static final double LATCH_ROTATIONS = (LATCH_HEIGHT*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
     public static final double ERROR_ROTATIONS = (ERROR_HEIGHT*Constants.Climb.GEAR_RATIO)/(Constants.Climb.SHAFT_DIAMETER*Math.PI);
 
