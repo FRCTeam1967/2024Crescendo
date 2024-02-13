@@ -7,8 +7,11 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -24,10 +27,16 @@ public class RobotContainer {
   private final Intake intake = new Intake();
 
   private final CommandXboxController xbox = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
+
+  public ShuffleboardTab matchTab;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     configureBindings();
+    
+    matchTab.addDouble("Intake Current",
+      ()-> pdh.getCurrent(Constants.Intake.PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
   }
 
   /**
@@ -43,6 +52,9 @@ public class RobotContainer {
     //TODO: turn both of these into parallel command with pivot down
     xbox.leftTrigger().whileTrue(new RunCommand (() -> intake.runMotors(Constants.Intake.EJECT_ROLLER_SPEED), intake));
     xbox.rightTrigger().whileTrue(new RunCommand (() -> intake.runMotors(Constants.Intake.INTAKE_ROLLER_SPEED), intake));
+
+    //if using command RunIntakeUntilSpike
+    //xbox.a().onTrue(new RunIntakeUntilSpike(() -> pdh.getCurrent(Constants.Intake.PDH_PORT), intake).withTimeout(Constants.Intake.INTAKE_TIME));
     
     intake.setDefaultCommand(new RunCommand (() -> intake.runMotors(0), intake));
   }

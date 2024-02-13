@@ -18,8 +18,15 @@ public final class Constants {
   }
   public static final class Intake {
     public static final int MOTOR_ID = 8;
+    public static final int PDH_PORT = 7;
         
     public static final double INTAKE_ROLLER_SPEED = -0.5;
     public static final double EJECT_ROLLER_SPEED = -0.25;
+
+    //current spikings tests
+    public static final double SPIKE_CURRENT = 20;
+    public static final double INTAKE_TIME = 0.8; //in seconds
+
+	
   }
 }
