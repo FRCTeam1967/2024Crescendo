@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.*;
 
@@ -18,27 +19,34 @@ public class HomePivot extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    //pivot.zeroAbsPos();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     pivot.pivotHoming();
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    pivot.setpoint.velocity = 0;
-    pivot.setpoint.position = pivot.getRelPos();
-    pivot.goal.velocity = 0;
-    pivot.goal.position = pivot.getRelPos();
+    
     //pivot.moveTo(pivot.getAbsPos());
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    pivot.setpoint.velocity = 0;
+    pivot.setpoint.position = pivot.getAbsPos();
+    pivot.goal.velocity = 0;
+    pivot.goal.position = pivot.getAbsPos();
+
+    SmartDashboard.putString("Did we finish", "yes");
+
     return pivot.isReached();
   }
 }

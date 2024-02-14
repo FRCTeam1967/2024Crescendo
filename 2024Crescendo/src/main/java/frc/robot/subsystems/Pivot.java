@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -20,7 +21,7 @@ import frc.robot.Constants;
 public class Pivot extends SubsystemBase {
   private CANSparkMax pivotMotor;
   
-  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(1.00,0.55);
+  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(7,3);
   public TrapezoidProfile.State goal = new TrapezoidProfile.State();
   public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
 
@@ -34,7 +35,7 @@ public class Pivot extends SubsystemBase {
   /** Creates a new Pivot. */
   public Pivot() {
     pivotMotor = new CANSparkMax(Constants.Pivot.PIVOT_ID, MotorType.kBrushless);
-
+    pivotMotor.setInverted(true);    
     pidController = pivotMotor.getPIDController();
     pidController.setP(Constants.Pivot.kP);
     pidController.setI(Constants.Pivot.kI);
@@ -45,15 +46,23 @@ public class Pivot extends SubsystemBase {
     
     absEncoder = new Canandcoder(Constants.Pivot.ENCODER_ID);
     pidController.setFeedbackDevice(relativeEncoder);
+
+    Canandcoder.Settings settings = new Canandcoder.Settings();
+    settings.setInvertDirection(true);
+    absEncoder.setSettings(settings, 0.050);
   }
 
   public void pivotHoming(){
-    double absAngle = absEncoder.getAbsPosition(); //degrees of revolution (absolute)
-    relativeEncoder.setPosition(absAngle);
+    REVLibError success = relativeEncoder.setPosition(absRotsToRelRevs());
+    System.out.println("REV error" + success); 
   }
 
   public void stop() {
     pivotMotor.stopMotor();
+  }
+
+  public void zeroAbsPos(){
+    absEncoder.setAbsPosition(0);
   }
 
   public double getAbsPos() {
@@ -72,6 +81,15 @@ public class Pivot extends SubsystemBase {
     return(profile.isFinished(profile.timeLeftUntil(goal.position)));
   }
 
+  public void setBrakeMode(){
+    pivotMotor.setIdleMode(CANSparkBase.IdleMode.kCoast);
+  }
+
+  public double absRotsToRelRevs(){
+    double revs = absEncoder.getAbsPosition()*Constants.Pivot.GEAR_RATIO;
+    return revs;
+  }
+
   @Override
   public void periodic() {
     setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
@@ -80,6 +98,10 @@ public class Pivot extends SubsystemBase {
 
     SmartDashboard.putNumber("Rel Pos", relativeEncoder.getPosition());
     SmartDashboard.putNumber("Abs Encoder", absEncoder.getAbsPosition());
+    SmartDashboard.putNumber("Set Point", setpoint.position); 
+    SmartDashboard.putNumber("revs", revs); 
+    SmartDashboard.putNumber("Rel Pos Degrees", (relativeEncoder.getPosition()*360)/50);
+    SmartDashboard.putNumber("Abs Encoder Degrees", absEncoder.getAbsPosition()*360);
     // This method will be called once per scheduler run
   }
 }

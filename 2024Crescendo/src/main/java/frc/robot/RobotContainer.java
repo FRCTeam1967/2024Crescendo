@@ -5,17 +5,10 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import edu.wpi.first.units.Power;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.*;
@@ -38,18 +31,20 @@ public class RobotContainer {
   private final Pivot pivot = new Pivot();
   private final Feeder feeder = new Feeder();
   private final KrakenShooter krakenShooter = new KrakenShooter();
+  private final Intake intake = new Intake(Constants.Intake.MOTOR_ID);
   
   public ShuffleboardTab limelightTab = Shuffleboard.getTab("limelight tab");
-  public Limelight limelight = new Limelight(limelightTab);
   public Vision vision = new Vision();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_xbox =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+
     pivot.pivotHoming();
     CanandEventLoop.getInstance();
     
@@ -61,9 +56,17 @@ public class RobotContainer {
 
   public void maintainPosition(){
     pivot.setpoint.velocity = 0;
-    pivot.setpoint.position = pivot.getRelPos();
+    pivot.setpoint.position = pivot.getAbsPos();
     pivot.goal.velocity = 0;
-    pivot.goal.position = pivot.getRelPos();
+    pivot.goal.position = pivot.getAbsPos();
+  }
+
+  public void pivotHoming(){
+    pivot.pivotHoming();
+  }
+
+  public void setPivotBrakeMode(){
+    pivot.setBrakeMode();
   }
 
   public void refreshSensor(){
@@ -89,19 +92,43 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    //m_xbox.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_xbox.rightTrigger().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_90)); 
-    m_xbox.leftTrigger().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_180));
-    m_xbox.a().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_0));
-    m_xbox.b().onTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_10));
-    m_xbox.start().onTrue(new HomePivot(pivot));
+    //m_xbox.leftTrigger().whileTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_180));
+    
 
-    //m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, Constants.Shooter.FRONT_SPEED, Constants.Shooter.BACK_SPEED).withTimeout(Constants.Shooter.SHOOT_TIME)));
-    //m_xbox.x().onTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunKrakenShooter(krakenShooter, Constants.KrakenShooter.TOP_SPEED,  Constants.KrakenShooter.TOP_SPEED, Constants.KrakenShooter.BOTTOM_SPEED, Constants.KrakenShooter.BOTTOM_SPEED)));
-    krakenShooter.setDefaultCommand(new RunKrakenShooter(krakenShooter, 0, 0, 0, 0));
-    m_xbox.x().onTrue(new RunKrakenShooter(krakenShooter, -0.5, 0.3, -0.5, 0.3));
-    feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
+    //combined feeder shooter
+    //m_xbox.x().whileTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunKrakenShooter(krakenShooter, -(Constants.KrakenShooter.TOP_LEFT_SPEED), Constants.KrakenShooter.TOP_RIGHT_SPEED, -(Constants.KrakenShooter.BOTTOM_LEFT_SPEED), Constants.KrakenShooter.BOTTOM_RIGHT_SPEED)));
+    
+    //shooter
+    //krakenShooter.setDefaultCommand(new RunKrakenShooter(krakenShooter, 0, 0, 0, 0));
+    //m_xbox.rightTrigger().whileTrue(new RunKrakenShooter(krakenShooter, (Constants.KrakenShooter.TOP_VELOCITY), (Constants.KrakenShooter.TOP_ACCELERATION), (Constants.KrakenShooter.BOTTOM_VELOCITY), Constants.KrakenShooter.BOTTOM_ACCELERATION));
+    
+    //feeder
+    //feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
+    //m_xbox.x().whileTrue(new RunFeeder(feeder, -0.8, -0.8));
+    
+    //intake
+    /*intake.setDefaultCommand(new RunIntake(intake, 0));
+    m_xbox.leftBumper().whileTrue(new RunIntake(intake, -0.5));                                                                                                                  
+    m_xbox.rightBumper().whileTrue(new RunIntake(intake, 0.5));*/
+
+
+    //pivot
+    m_xbox.start().onTrue(new HomePivot(pivot));
+    //m_xbox.y().whileTrue(new MovePivot(pivot, Constants.Pivot.DEGREE_110)); 
+    m_xbox.b().whileTrue(new MovePivot(pivot, Constants.Pivot.TEST_20)); 
+    m_xbox.y().whileTrue(new MovePivot(pivot, Constants.Pivot.TEST_70)); 
+
+    
+    //m_xbox.a().whileTrue(lowerAndIntake);
+
+    //combined intake pivot
+    m_xbox.a().whileTrue(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new RunIntake(intake, -0.5)));
+    m_xbox.a().whileFalse(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE), new RunIntake(intake, 0)));
+    //pivot.setDefaultCommand(new MovePivot(pivot, Constants.Pivot.DEGREE_0));
+
+
   }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
