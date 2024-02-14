@@ -53,7 +53,7 @@ public class Climb extends SubsystemBase {
    * Sets zero position of encoder to just above the latch position of the telescoping arm
    */
   public void homeAtTop() {
-    motor.getConfigurator().setPosition(Constants.Climb.TOP_ROTATIONS);
+    motor.setPosition(Constants.Climb.TOP_ROTATIONS);
   }
 
   /**
@@ -68,18 +68,16 @@ public class Climb extends SubsystemBase {
   
   /**
    * If in manual mode, sets unwind/wind factor dependent on pos/neg value of speed and runs motor
-   * <p> If winding, encoder position must be above "safe" position to run
+   * <p> If winding, encoder position must be above "safe" position to run. Otherwise, motor stops
    * @param speed - speed of motor
    */
   public void moveAt(DoubleSupplier speed) {
+    boolean safe = motor.getRotorPosition().getValueAsDouble() > Constants.Climb.SAFE_ROTATIONS;
+    
     if (manualMode){
       if (speed.getAsDouble() < 0 ){
-        if (motor.getRotorPosition().getValueAsDouble() > Constants.Climb.SAFE_ROTATIONS){
-          motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
-        }
-        else{
-          motor.stopMotor();
-        }
+        if (safe) motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
+        else motor.stopMotor();
       } else {
         motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
       }
@@ -87,19 +85,12 @@ public class Climb extends SubsystemBase {
   }
 
   /**
-   * @param desiredPos - in rotations
-   * @return true if the trapezoid profile reaches goal within error bound
-   */
-  // public boolean isReached(double desiredPos){
-  //   return motor.getPosition().getValueAsDouble() > (desiredPos - Constants.Climb.ERROR_ROTATIONS)
-  //     && motor.getPosition().getValueAsDouble() < (desiredPos + Constants.Climb.ERROR_ROTATIONS);
-  // }
-
-  /**
    * Changes manualMode field value to opposite of current value
+   * @return updated status of manualMode
    */
-  public void switchMode() {
+  public boolean switchMode() {
     manualMode = !manualMode;
+    return manualMode;
   }
 
   /**
@@ -108,7 +99,6 @@ public class Climb extends SubsystemBase {
   public void stop() {
     motor.stopMotor();
   }
-
 
   /**
    * Displays boolean for mode status and values of relative and absolute encoders on Shuffleboard
