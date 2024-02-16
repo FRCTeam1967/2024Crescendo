@@ -4,19 +4,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Vision extends SubsystemBase {
   //https://readthedocs.org/projects/limelight/downloads/pdf/latest/
   private NetworkTable limelightTable;
   private double xOffset = -100000;
   private boolean isInRange = false;
-  private ShuffleboardTab tab;
   /** Creates a new Vision. */
   public Vision() {
     limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
@@ -31,10 +28,10 @@ public class Vision extends SubsystemBase {
   }
 
   public void configDashboard(ShuffleboardTab tab){
-    this.tab = tab;
     tab.addCamera("Limelight Camera", "m_limelight", "http://10.19.67.11:5800/");
 
     tab.addDouble("Limelight xOffset", () -> limelightTable.getEntry("tx").getDouble(0.0));
+    tab.addBoolean("In Range", ()->isInRange);
   }
 
   public void setVisionMode(boolean isVision){
@@ -48,13 +45,13 @@ public class Vision extends SubsystemBase {
   public void alignAngle(){
     updateValues();
     if (xOffset > -Constants.Vision.DEGREE_ERROR && xOffset < Constants.Vision.DEGREE_ERROR){
-      isInRange = true;
+      isInRange = false;
       //tab.addBoolean("Vision Align1", () -> isInRange);
       SmartDashboard.putString("Range", "yes");
       //tab.addBoolean("Yes", ()->isInRange);
       //return true;
     } else {
-      isInRange = false;
+      isInRange = true;
       //tab.addBoolean("Vision Align", () -> isInRange);
       SmartDashboard.putString("Range", "yes");
       //tab.addBoolean("Yes", ()->isInRange);
