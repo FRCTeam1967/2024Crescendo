@@ -40,19 +40,23 @@ public class RobotContainer {
   public RobotContainer() { 
     leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
     rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
-
+    
     matchTab = Shuffleboard.getTab("Match");
+    
     leftClimb.configDashboard(matchTab);
-
+    rightClimb.configDashboard(matchTab);
+    
     configureBindings();
-
-    leftClimb.homeAtTop();
-    rightClimb.homeAtTop();
     
     matchTab.addDouble("Left PDH Current",
       () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
     matchTab.addDouble("Right PDH Current",
       () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
+  }
+
+  public void setClimbEncoderOffset(){
+    leftClimb.setEncoderOffset();
+    rightClimb.setEncoderOffset();
   }
 
   /**
@@ -69,18 +73,18 @@ public class RobotContainer {
       new InstantCommand(() -> rightClimb.switchMode(), rightClimb)));
 
     xbox.y().onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_HEIGHT, false), leftClimb),
-      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_HEIGHT, false), rightClimb)));
+      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), leftClimb),
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), rightClimb)));
     
     xbox.a().onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LOW_HEIGHT, false), leftClimb),
-      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LOW_HEIGHT, false), rightClimb)));
+      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), leftClimb),
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), rightClimb)));
 
     xbox.b().onTrue(new ParallelCommandGroup (
-      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_HEIGHT, true), leftClimb),
-      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_HEIGHT, true), rightClimb)));
+      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), leftClimb),
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), rightClimb)));
     
-    /* could replace ClimbToLowHeight method */
+    // could replace ClimbToLowHeight method
     // xbox.a().onTrue(new ParallelCommandGroup(
     //   new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT), leftClimb).withTimeout(Constants.Climb.LOWER_TIME), 
     //   new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT), rightClimb).withTimeout(Constants.Climb.LOWER_TIME)));

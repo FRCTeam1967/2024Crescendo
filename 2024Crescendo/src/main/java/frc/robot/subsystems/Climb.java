@@ -1,4 +1,5 @@
 // Copyright (c) FIRST and other WPILib contributors.
+
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -17,10 +18,10 @@ import java.util.function.DoubleSupplier;
 
 public class Climb extends SubsystemBase {
   private TalonFX motor;
-  private boolean manualMode = false;
   private TalonFXConfiguration config;
   private MotionMagicVoltage request;
-
+  private boolean manualMode = false, isRight;
+  
   /**
    * Constructor for Climb class
    * <p> Initializing and configuring motor for Motion Magic
@@ -30,18 +31,22 @@ public class Climb extends SubsystemBase {
   public Climb(int motorID) {
     motor = new TalonFX(motorID);
     config = new TalonFXConfiguration();
-    request = new MotionMagicVoltage(0);
+    request = new MotionMagicVoltage(0, false, 0.0, 0, false, false, false);
     
+    isRight = motorID == Constants.Climb.RIGHT_MOTOR_ID;
+    if(isRight) motor.setInverted(true);
+
     motor.setNeutralMode(NeutralModeValue.Brake);
 
     config.Slot0.kP = Constants.Climb.UP_kP;
     config.Slot0.kI = Constants.Climb.UP_kI;
     config.Slot0.kD = Constants.Climb.UP_kD;
+    config.Slot0.kS = Constants.Climb.UP_kS;
 
     config.Slot1.kP = Constants.Climb.DOWN_kP;
     config.Slot1.kI = Constants.Climb.DOWN_kI;
     config.Slot1.kD = Constants.Climb.DOWN_kD;
-    config.Slot1.kS = Constants.Climb.DOWN_kF;
+    config.Slot1.kS = Constants.Climb.DOWN_kS;
 
     config.MotionMagic.MotionMagicCruiseVelocity = Constants.Climb.CRUISE_VELOCITY;
     config.MotionMagic.MotionMagicAcceleration = Constants.Climb.ACCELERATION;
@@ -52,7 +57,7 @@ public class Climb extends SubsystemBase {
   /**
    * Sets zero position of encoder to just above the latch position of the telescoping arm
    */
-  public void homeAtTop() {
+  public void setEncoderOffset() {
     motor.setPosition(Constants.Climb.TOP_ROTATIONS);
   }
 
@@ -62,20 +67,23 @@ public class Climb extends SubsystemBase {
    * @param holdingRobot - whether holding robot weight, used to configure PID accordingly
    */
   public void moveTo(double pos, boolean holdingRobot) {
-    if(holdingRobot) motor.setControl(request.withPosition(pos).withSlot(1));
-    else motor.setControl(request.withPosition(pos).withSlot(0));
+    if(!manualMode){
+      if(holdingRobot) motor.setControl(request.withPosition(pos).withSlot(1));
+      else motor.setControl(request.withPosition(pos).withSlot(0));
+    }
   }
   
   /**
    * If in manual mode, sets unwind/wind factor dependent on pos/neg value of speed and runs motor
    * <p> If winding, encoder position must be above "safe" position to run. Otherwise, motor stops
+   * <p> If right climb, flip sign of speed
    * @param speed - speed of motor
    */
   public void moveAt(DoubleSupplier speed) {
     boolean safe = motor.getRotorPosition().getValueAsDouble() > Constants.Climb.SAFE_ROTATIONS;
     
     if (manualMode){
-      if (speed.getAsDouble() < 0 ){
+      if (speed.getAsDouble() < 0){
         if (safe) motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
         else motor.stopMotor();
       } else {
@@ -99,14 +107,16 @@ public class Climb extends SubsystemBase {
   public void stop() {
     motor.stopMotor();
   }
-
+  
   /**
    * Displays boolean for mode status and values of relative and absolute encoders on Shuffleboard
    * @param tab - ShuffleboardTab to add values to
    */
   public void configDashboard(ShuffleboardTab tab) {
-    tab.addDouble("Relative Encoder", () -> motor.getPosition().getValueAsDouble());
-    tab.addBoolean("In Manual Mode?", () -> manualMode);
+    if(isRight) tab.addDouble("Right Relative Encoder", () -> motor.getPosition().getValueAsDouble());
+    else tab.addDouble("Left Relative Encoder", () -> motor.getPosition().getValueAsDouble());
+    
+    if(isRight) tab.addBoolean("Manual Mode?", () -> manualMode);
   }
   
   @Override
