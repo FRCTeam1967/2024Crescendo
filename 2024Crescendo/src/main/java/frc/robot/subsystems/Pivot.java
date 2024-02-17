@@ -82,7 +82,7 @@ public class Pivot extends SubsystemBase {
   }
 
   public void setBrakeMode(){
-    pivotMotor.setIdleMode(CANSparkBase.IdleMode.kCoast);
+    pivotMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
   }
 
   public double absRotsToRelRevs(){

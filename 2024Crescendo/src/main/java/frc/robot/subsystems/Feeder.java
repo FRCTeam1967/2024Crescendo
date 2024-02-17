@@ -4,10 +4,9 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -20,8 +19,6 @@ public class Feeder extends SubsystemBase {
   public Feeder() {
     leftMotor = new CANSparkMax (Constants.Feeder.LEFT_ID, MotorType.kBrushless); 
     rightMotor = new CANSparkMax(Constants.Feeder.RIGHT_ID, MotorType.kBrushless);
-    leftMotor.setSmartCurrentLimit(40);
-    rightMotor.setSmartCurrentLimit(40);
   }
   
   public void feedFeeder (double leftSpeed, double rightSpeed){

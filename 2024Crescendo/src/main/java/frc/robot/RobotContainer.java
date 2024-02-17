@@ -99,8 +99,13 @@ public class RobotContainer {
     //m_xbox.x().whileTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunKrakenShooter(krakenShooter, -(Constants.KrakenShooter.TOP_LEFT_SPEED), Constants.KrakenShooter.TOP_RIGHT_SPEED, -(Constants.KrakenShooter.BOTTOM_LEFT_SPEED), Constants.KrakenShooter.BOTTOM_RIGHT_SPEED)));
     
     //shooter
-    krakenShooter.setDefaultCommand(new RunKrakenShooter(krakenShooter, 0, -(Constants.KrakenShooter.TOP_ACCELERATION), 0, -(Constants.KrakenShooter.BOTTOM_ACCELERATION)));
-    m_xbox.rightTrigger().whileTrue(new RunKrakenShooter(krakenShooter, (Constants.KrakenShooter.TOP_VELOCITY), (Constants.KrakenShooter.TOP_ACCELERATION), (Constants.KrakenShooter.BOTTOM_VELOCITY), Constants.KrakenShooter.BOTTOM_ACCELERATION));
+    krakenShooter.setDefaultCommand(new RunKrakenShooter(krakenShooter, 0, 0, 0, 0));
+    m_xbox.rightTrigger().whileTrue(new RunKrakenShooter(krakenShooter, (Constants.KrakenShooter.SPEAKER_TOP_VELOCITY), (Constants.KrakenShooter.SPEAKER_TOP_ACCELERATION), (Constants.KrakenShooter.SPEAKER_BOTTOM_VELOCITY), Constants.KrakenShooter.SPEAKER_BOTTOM_ACCELERATION));
+    
+    //m_xbox.rightTrigger().whileFalse(new RunKrakenShooter(krakenShooter, 0,0,0,0));
+   
+    m_xbox.leftTrigger().whileTrue(new RunKrakenShooter(krakenShooter, (Constants.KrakenShooter.AMP_TOP_VELOCITY), (Constants.KrakenShooter.AMP_TOP_ACCELERATION), (Constants.KrakenShooter.AMP_BOTTOM_VELOCITY), Constants.KrakenShooter.AMP_BOTTOM_ACCELERATION));
+    
     //m_xbox.rightTrigger().whileFalse(new RunKrakenShooter(krakenShooter, 0, 0, 0, 0));
 
     //feeder

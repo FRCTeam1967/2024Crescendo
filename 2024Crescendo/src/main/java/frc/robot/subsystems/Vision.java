@@ -45,20 +45,20 @@ public class Vision extends SubsystemBase {
   public void alignAngle(){
     updateValues();
     if (xOffset > -Constants.Vision.DEGREE_ERROR && xOffset < Constants.Vision.DEGREE_ERROR){
-      isInRange = false;
-      //tab.addBoolean("Vision Align1", () -> isInRange);
-      SmartDashboard.putString("Range", "yes");
-      //tab.addBoolean("Yes", ()->isInRange);
-      //return true;
-    } else {
       isInRange = true;
-      //tab.addBoolean("Vision Align", () -> isInRange);
       SmartDashboard.putString("Range", "yes");
-      //tab.addBoolean("Yes", ()->isInRange);
-      //return false;
+    } else {
+      isInRange = false;
+      SmartDashboard.putString("Range", "yes");
     }
+  }
 
-    //tab.addBoolean("Range", ()->isInRange);
+  public boolean getIsInRange(){
+    return isInRange;
+  }
+
+  public double getOffset() {
+    return xOffset;
   }
 
   @Override

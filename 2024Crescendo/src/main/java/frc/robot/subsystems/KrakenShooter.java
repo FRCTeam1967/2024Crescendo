@@ -15,6 +15,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
@@ -66,17 +67,17 @@ public class KrakenShooter extends SubsystemBase {
     bottomRightMotor.setControl(new VelocityVoltage(bottomVelocity, bottomAcceleration, false, 0.0, 0, false, false, false));
     //Kraken RPM 6000
 
-    // topLeftMotor.set(topLeftSpeed);
-    //  topRightMotor.set(topRightSpeed);
-    //  bottomLeftMotor.set(bottomLeftSpeed);
-    //  bottomRightMotor.set(bottomRightSpeed);
+    // topLeftMotor.set(-topVelocity);
+    //  topRightMotor.set(topAcceleration);
+    //  bottomLeftMotor.set(-topVelocity);
+    //  bottomRightMotor.set(topAcceleration);
   }
 
   public void stopMotors () {
-    topLeftMotor.stopMotor();
-    topRightMotor.stopMotor();
-    bottomLeftMotor.stopMotor();
-    bottomRightMotor.stopMotor();
+    topLeftMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
+    topRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
+    bottomLeftMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
+    bottomRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
   }
   
   @Override

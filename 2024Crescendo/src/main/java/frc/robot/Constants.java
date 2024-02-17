@@ -41,15 +41,19 @@ public final class Constants {
     public static final double BOTTOM_LEFT_SPEED = 0.15;
     public static final double BOTTOM_RIGHT_SPEED = 0.15;
 
-    public static final double kP = 0.2;
+    public static final double kP = 0.32;
     public static final double kI = 0;
     public static final double kD = 0;
 
-    public static final double TOP_VELOCITY = 100;
-    public static final double TOP_ACCELERATION = 75;
+    public static final double SPEAKER_TOP_VELOCITY = 90;
+    public static final double SPEAKER_TOP_ACCELERATION = 65;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 90;
+    public static final double SPEAKER_BOTTOM_ACCELERATION = 65;
 
-    public static final double BOTTOM_VELOCITY = 100;
-    public static final double BOTTOM_ACCELERATION = 75;
+    public static final double AMP_TOP_VELOCITY = 20;
+    public static final double AMP_TOP_ACCELERATION = 8;
+    public static final double AMP_BOTTOM_VELOCITY = 20;
+    public static final double AMP_BOTTOM_ACCELERATION = 8;
 
   }
 
