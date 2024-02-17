@@ -69,13 +69,13 @@ public final class Constants {
     public static final int BR_STEER = 4;
     public static final int BR_ENCODER = 2;
 
-    public static final double SWERVE_MAX_SPEED = 2;//0.3; //4.1695 mps //3 for driver
+    public static final double SWERVE_MAX_SPEED = 3;//0.3; //4.1695 mps //3 for driver
     public static final double WIDTH = Units.inchesToMeters(23);
     public static final double LENGTH = Units.inchesToMeters(23);
 
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
 
-    public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = (SWERVE_MAX_SPEED / WHEEL_CIRCUMFERENCE) * 2 * Math.PI; 
+    public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = (2 / WHEEL_CIRCUMFERENCE) * 2 * Math.PI; 
     public static final double SWERVE_DEADBAND = 0.05;
 
     public static Translation2d m_frontLeftLocation = new Translation2d(LENGTH / 2, WIDTH / 2);
@@ -100,8 +100,15 @@ public final class Constants {
     );
 
 
+    public static final double SWERVE_ROTATION_TOLERANCE = 5;
 
+    public static final TrapezoidProfile.Constraints SWERVE_ROTATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(36000, 36000);
+    public static final TrapezoidProfile.Constraints SWERVE_TRANSLATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(15, 3);
 
+  }
+
+  public static class Vision {
+    public static final double DEGREE_ERROR = 5.0;
   }
 
   public static class Auto {
@@ -118,5 +125,78 @@ public final class Constants {
         new TrapezoidProfile.Constraints(
             kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
     public static final double RADIANS_TO_DEGREES = 57.29578;
+  }
+
+
+  public static final class Intake {
+    public static final int MOTOR_ID = 8;
+    public static final int PDH_PORT = 7;
+        
+    public static final double INTAKE_ROLLER_SPEED = -0.5;
+    public static final double EJECT_ROLLER_SPEED = -0.25;
+
+    //current spikings tests
+    public static final double SPIKE_CURRENT = 20;
+    public static final double INTAKE_TIME = 0.8; //in seconds
+
+	
+  }
+
+  public static class KrakenShooter {
+    public static final double MIN_OUTPUT_RANGE = 1; //will tune both of these later
+    public static final double MAX_OUTPUT_RANGE = -1;
+
+    public static final int TOP_LEFT_MOTOR_ID = 28; //tbd
+    public static final int TOP_RIGHT_MOTOR_ID = 27; //tbd
+    public static final int BOTTOM_LEFT_MOTOR_ID = 25; //tbd
+    public static final int BOTTOM_RIGHT_MOTOR_ID = 26; //tbd
+
+
+    public static final double TOP_LEFT_SPEED = 0.15;
+    public static final double TOP_RIGHT_SPEED = 0.15;
+    public static final double BOTTOM_LEFT_SPEED = 0.15;
+    public static final double BOTTOM_RIGHT_SPEED = 0.15;
+
+    public static final double kP = 0.85;
+    public static final double kI = 0;
+    public static final double kD = 0;
+
+    public static final double TOP_VELOCITY = 10;
+    public static final double TOP_ACCELERATION = 5;
+
+    public static final double BOTTOM_VELOCITY = 10;
+    public static final double BOTTOM_ACCELERATION = 5;
+
+  }
+
+  public static class Pivot {
+    public static final int PIVOT_ID = 30; 
+    public static final int ENCODER_ID = 32;
+
+    public static final double kP = 5;
+    public static final double kI = 0;
+    public static final double kD = 0;
+    public static final double kD_TIME = 0.02;
+
+    public static final double GEAR_RATIO = 50/1; //Mech said 50/1
+
+    public static final double STARTING_ANGLE = 45;
+
+    public static final int OFFSET = 0;
+    public static final int NEO_TICKS_PER_REVOLUTION = 42;
+    
+    public static final double ABSOLUTE_TICKS_PER_REVOLUTION = 4096;
+    public static final double CONVERSION_FACTOR = 1.0/360.0;
+    
+    public static final double TEST_20 = 20 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double TEST_70 = 70 * Constants.Pivot.CONVERSION_FACTOR;
+
+    public static final double INTAKE_SAFE = 110 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double INTAKE_DOWN = 20 * Constants.Pivot.CONVERSION_FACTOR;
+
+    
+
+
+    public static final double DEGREE_0 = 0;
   }
 }

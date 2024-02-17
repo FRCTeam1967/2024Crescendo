@@ -59,8 +59,7 @@ public class Swerve extends SubsystemBase{
         
         gyro = new ADIS16470_IMU();
 
-        driveTrainTab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());
-        
+        driveTrainTab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());        
         //driveTrainTab.add("field", field).withSize(8, 5).withPosition(1, 1);
 
 

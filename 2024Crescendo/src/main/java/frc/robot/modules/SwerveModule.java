@@ -76,20 +76,37 @@ public class SwerveModule {
         ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
 
         if (name == "FrontLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = -132.978516/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = 173.056/360;
         }
 
         if (name == "FrontRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = 58.095703/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = -59.501/360;
         }
 
         if (name == "BackLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = 116.103516/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = 124.980/360;
         }
 
         if (name == "BackRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = -15.732422/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = -153.544/360;
         }
+
+
+        // if (name == "FrontLeft") {
+        //     ccdConfigs.MagnetSensor.MagnetOffset = 171.738281/360;
+        // }
+
+        // if (name == "FrontRight") {
+        //     ccdConfigs.MagnetSensor.MagnetOffset = -60.820313/360;
+        // }
+
+        // if (name == "BackLeft") {
+        //     ccdConfigs.MagnetSensor.MagnetOffset = 122.695313/360;
+        // }
+
+        // if (name == "BackRight") {
+        //     ccdConfigs.MagnetSensor.MagnetOffset = -153.808484/360;
+        // }
 
         cancoderConfig.apply(ccdConfigs);
 
