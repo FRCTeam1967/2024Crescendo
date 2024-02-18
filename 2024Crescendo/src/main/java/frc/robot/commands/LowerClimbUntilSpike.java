@@ -41,5 +41,6 @@ public class LowerClimbUntilSpike extends Command {
   @Override
   public boolean isFinished() {
     return current >= Constants.Climb.SPIKE_CURRENT;
+    //return motor.getRotorVelocity().getValueAsDouble() < Constants.Climb.VELOCITY_MIN;
   }
 }

@@ -24,11 +24,12 @@ public final class Constants {
     public static final double UNWIND_FACTOR = 0.7, WIND_FACTOR = 0.4, DEADBAND = 0.05;
     
     public static final double TOP_ROTATIONS = 80.0, SAFE_ROTATIONS = 0.0, LATCH_ROTATIONS = 120;
-        
+    
     /* current spiking check */
-    public static final double SPIKE_CURRENT = 20;
-    public static final double AUTOMATIC_LOWER_SPEED = 0.5;
-    public static final double LOWER_TIME = 0.7;
+    public static final double SPIKE_CURRENT = 20, AUTOMATIC_LOWER_SPEED = 0.5, LOWER_TIME = 0.7;
+
+    /* velocity spiking check */
+     public static final double VELOCITY_MIN = 10.0; //rps
     
     /* PID values*/
     public static final double UP_kP = 1.0, UP_kI = 0, UP_kD = 0, UP_kS = 0.00, UP_kD_TIME = 0.02;
