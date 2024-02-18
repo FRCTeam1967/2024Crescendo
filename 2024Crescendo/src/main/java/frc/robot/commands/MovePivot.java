@@ -4,28 +4,25 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.*;
 
-/** An example command that uses an example subsystem. */
-public class ExampleCommand extends Command {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ExampleSubsystem m_subsystem;
-
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
-  public ExampleCommand(ExampleSubsystem subsystem) {
-    m_subsystem = subsystem;
+public class MovePivot extends Command {
+  private Pivot pivot;
+  private double desiredRev;
+  /** Creates a new PivotMove. */
+  public MovePivot(Pivot pivot, double rev) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    this.pivot = pivot; 
+    desiredRev = rev;
+    addRequirements(this.pivot);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    pivot.moveTo(desiredRev);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -33,11 +30,20 @@ public class ExampleCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    pivot.stop();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    /*if (desiredRev==Constants.Pivot.INTAKE_SAFE){
+      pivot.pivotHoming();
+      pivot.setpoint.velocity = 0;
+      pivot.setpoint.position = pivot.getAbsPos();
+      pivot.goal.velocity = 0;
+      pivot.goal.position = pivot.getAbsPos();
+    }*/
+    return pivot.isReached();
   }
 }
