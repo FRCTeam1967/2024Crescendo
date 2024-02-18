@@ -11,32 +11,32 @@ public class RunFeeder extends Command {
   private Feeder feeder;
   private double leftSpeed, rightSpeed;
   
-  /** Creates a new RunFeeder. */
+  /**
+   * Creates a new RunFeeder
+   * @param feeder - Feeder object
+   * @param leftSpeed
+   * @param rightSpeed
+   */
   public RunFeeder(Feeder feeder, double leftSpeed, double rightSpeed) {
     this.feeder = feeder;
     this.leftSpeed = leftSpeed;
     this.rightSpeed = rightSpeed;
-    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(this.feeder);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     feeder.feedFeeder(leftSpeed, rightSpeed);
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     feeder.stopFeeder();
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

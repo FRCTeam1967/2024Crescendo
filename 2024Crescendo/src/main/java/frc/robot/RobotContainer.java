@@ -14,13 +14,21 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.*; //NOT WORKING
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import com.reduxrobotics.canand.CanandEventLoop;
 
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Climb;
+import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Shooter;
+
 import frc.robot.commands.*;
 import frc.robot.Constants.*;
 
@@ -36,14 +44,14 @@ public class RobotContainer {
   private final Swerve swerve = new Swerve();
   private final Intake intake = new Intake();  
   private final Vision vision = new Vision();
-  private final KrakenShooter shooter = new KrakenShooter();
+  private final Shooter shooter = new Shooter();
   
   private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
   
   public ShuffleboardTab limelightTab = Shuffleboard.getTab("limelight tab"), matchTab = Shuffleboard.getTab("Match");
   
-  private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final CommandXboxController operatorController = new CommandXboxController(1);
+  private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
+  private final CommandXboxController operatorController = new CommandXboxController(Xbox.OPERATOR_CONTROLLER_PORT);
 
   private final Command turnToAngle = new RunCommand(() -> swerve.goToAngle(100), swerve);
   private final Command goToDefenseMode = new InstantCommand(() -> swerve.defenseMode(), swerve);
@@ -54,24 +62,19 @@ public class RobotContainer {
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
     
-    configureBindings();
-    
     matchTab.addDouble("Left PDH Current",
       () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
     matchTab.addDouble("Right PDH Current",
       () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
-    
-    resetSensors();
-    
-    CanandEventLoop.getInstance();
-
-    pivot.pivotHoming();
-    maintainPosition();
-    
     vision.configDashboard(limelightTab);
     
-    configureBindings();
+    resetSensors();
+
+    CanandEventLoop.getInstance();
+    maintainPivotPosition();
     pivot.setBrakeMode();
+    
+    configureBindings();
   }
 
   public void setClimbEncoderOffset(){
@@ -80,7 +83,7 @@ public class RobotContainer {
   }
   
   public void maintainPivotPosition(){
-    pivot.pivotHoming();
+    pivot.setRelToAbs();
     
     pivot.setpoint.velocity = 0;
     pivot.setpoint.position = pivot.getAbsPos();
@@ -96,6 +99,14 @@ public class RobotContainer {
     swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;
+  }
+
+  public InstantCommand swerveToCoastMode(){
+    return new InstantCommand(() -> swerve.setNeutralMode(false), swerve);         
+  }
+
+  public void swerveToNeutralMode(){
+    swerve.setNeutralMode(true);
   }
 
   /**
@@ -135,8 +146,8 @@ public class RobotContainer {
       () -> MathUtil.applyDeadband(operatorController.getRightY(), Constants.Climb.DEADBAND)), rightClimb));
 
     //SHOOTER
-    operatorController.leftTrigger().whileTrue(new RunKrakenShooter(shooter, (Constants.KrakenShooter.AMP_TOP_VELOCITY), (Constants.KrakenShooter.AMP_TOP_ACCELERATION), (Constants.KrakenShooter.AMP_BOTTOM_VELOCITY), Constants.KrakenShooter.AMP_BOTTOM_ACCELERATION));
-    operatorController.rightTrigger().whileTrue(new RunKrakenShooter(shooter, (Constants.KrakenShooter.SPEAKER_TOP_VELOCITY), (Constants.KrakenShooter.SPEAKER_TOP_ACCELERATION), (Constants.KrakenShooter.SPEAKER_BOTTOM_VELOCITY), Constants.KrakenShooter.SPEAKER_BOTTOM_ACCELERATION));
+    operatorController.leftTrigger().whileTrue(new RunShooter(shooter, (Constants.Shooter.AMP_TOP_VELOCITY), (Constants.Shooter.AMP_TOP_ACCELERATION), (Constants.Shooter.AMP_BOTTOM_VELOCITY), Constants.Shooter.AMP_BOTTOM_ACCELERATION));
+    operatorController.rightTrigger().whileTrue(new RunShooter(shooter, (Constants.Shooter.SPEAKER_TOP_VELOCITY), (Constants.Shooter.SPEAKER_TOP_ACCELERATION), (Constants.Shooter.SPEAKER_BOTTOM_VELOCITY), Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
     
     //FEEDER
     //feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
@@ -145,8 +156,8 @@ public class RobotContainer {
     //m_driverController.leftTrigger().whileTrue(turnToAngle);
     
     //COMBINED FEEDER + SHOOTER
-    //m_xbox.x().whileTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunKrakenShooter(shooter, -(Constants.KrakenShooter.TOP_LEFT_SPEED), Constants.KrakenShooter.TOP_RIGHT_SPEED, -(Constants.KrakenShooter.BOTTOM_LEFT_SPEED), Constants.KrakenShooter.BOTTOM_RIGHT_SPEED)));
-    shooter.setDefaultCommand(new RunKrakenShooter(shooter, 0, 0, 0, 0));
+    //m_xbox.x().whileTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, -(Constants.Shooter.TOP_LEFT_SPEED), Constants.Shooter.TOP_RIGHT_SPEED, -(Constants.Shooter.BOTTOM_LEFT_SPEED), Constants.Shooter.BOTTOM_RIGHT_SPEED)));
+    shooter.setDefaultCommand(new RunShooter(shooter, 0, 0, 0, 0));
 
     //COMBINED INTAKE + PIVOT
     operatorController.a().whileTrue(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new RunIntake(intake, -0.5)));
@@ -157,9 +168,9 @@ public class RobotContainer {
     driverController.button(2).onTrue(resetGyro); //b button
     driverController.button(3).onTrue(goToDefenseMode); //x button
     driverController.a().onTrue(new VisionAlign(swerve, vision)); //a button
-    driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -m_driverController.getRawAxis(1), () -> -m_driverController.getRawAxis(0), ()-> 0));
-    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -m_driverController.getRawAxis(1),
-      () -> -m_driverController.getRawAxis(0), () -> -m_driverController.getRawAxis(4)));
+    driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()-> 0));
+    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
+      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
   }
 
   /**

@@ -12,57 +12,49 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 import frc.robot.modules.SwerveModule;
 
 public class Swerve extends SubsystemBase{
-
-    public final SwerveModule frontLeft;
-    public final SwerveModule frontRight;
-    public final SwerveModule backLeft;
-    public final SwerveModule backRight;
+    public final SwerveModule frontLeft, frontRight, backLeft, backRight;
 
     private final ADIS16470_IMU gyro;
     public final SwerveDriveOdometry odometry;
     private Field2d field = new Field2d();
 
     private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
-
     private Pose2d pose;
 
     public Swerve() {
-
         ShuffleboardTab driveTrainTab = Shuffleboard.getTab("Drivetrain");
 
         frontLeft = new SwerveModule("FrontLeft", Constants.Swerve.FL_POWER, Constants.Swerve.FL_STEER, Constants.Swerve.FL_ENCODER, driveTrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
-        .withSize(2, 4)
-        .withPosition(0, 0));
-
+            .withSize(2, 4)
+            .withPosition(0, 0));
         frontRight = new SwerveModule("FrontRight", Constants.Swerve.FR_POWER, Constants.Swerve.FR_STEER, Constants.Swerve.FR_ENCODER, driveTrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
-        .withSize(2, 4)
-        .withPosition(2, 0));
-
+            .withSize(2, 4)
+            .withPosition(2, 0));
         backLeft = new SwerveModule("BackLeft", Constants.Swerve.BL_POWER, Constants.Swerve.BL_STEER, Constants.Swerve.BL_ENCODER, driveTrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
-        .withSize(2, 4)
-        .withPosition(4, 0));
-
+            .withSize(2, 4)
+            .withPosition(4, 0));
         backRight = new SwerveModule("BackRight", Constants.Swerve.BR_POWER, Constants.Swerve.BR_STEER, Constants.Swerve.BR_ENCODER, driveTrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
-        .withSize(2, 4)
-        .withPosition(6, 0));
+            .withSize(2, 4)
+            .withPosition(6, 0));
         
         gyro = new ADIS16470_IMU();
 
         driveTrainTab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());        
         //driveTrainTab.add("field", field).withSize(8, 5).withPosition(1, 1);
-
-
 
         odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
         new SwerveModulePosition[] {
@@ -93,7 +85,7 @@ public class Swerve extends SubsystemBase{
                     return false;
                 },
         this);
-        }
+    }
     
     public void stopModules() {
         frontLeft.stop();
@@ -103,6 +95,7 @@ public class Swerve extends SubsystemBase{
     }
 
     //takes in degrees and returns rotation object with desired angle
+    /** @return rotation object with desired angle */
     public Rotation2d getRotation2d() {
         //adis16470 version
         //var degrees = gyro.getAngle(gyro.getYawAxis());
@@ -110,7 +103,6 @@ public class Swerve extends SubsystemBase{
 
         //pigeon version
         return Rotation2d.fromDegrees(gyro.getAngle(gyro.getYawAxis()));
-    
     }
 
     public double getYaw() {

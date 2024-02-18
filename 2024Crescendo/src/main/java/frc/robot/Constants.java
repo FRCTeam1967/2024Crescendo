@@ -18,8 +18,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
+  public static class Xbox {
+    public static final int DRIVER_CONTROLLER_PORT = 0, OPERATOR_CONTROLLER_PORT = 1;
   }
   
   public static class Climb {
@@ -43,12 +43,8 @@ public final class Constants {
   }
   
   public static class Feeder{
-    public static final int LEFT_ID = 31;
-    public static final int RIGHT_ID = 32; //tbd
-    //public static final double kD_TIME = 0.02;
-
-    public static final double FEED_TIME = 5.0;
-    public static final double FEED_SPEED = 0.3;
+    public static final int LEFT_ID = 31, RIGHT_ID = 32;
+    public static final double FEED_TIME = 5.0, FEED_SPEED = 0.3;
   }
 
   public static class Swerve {
@@ -68,8 +64,7 @@ public final class Constants {
 
     public static final int pigeonID = 1;
 
-    public static final int climbLeftEncoderIdx = 30;
-    public static final int climbRightEncoderIdx = 31;
+    public static final int climbLeftEncoderIdx = 30, climbRightEncoderIdx = 31;
 
     //0.319024 = circumference in meters
     //12.8:1 = rotor to sensor ratio
@@ -82,21 +77,10 @@ public final class Constants {
 
     public static final double ANALOG_SAMPLE_DEPTH = 0;
 
-    public static final int FL_POWER = 7;
-    public static final int FL_STEER = 8;
-    public static final int FL_ENCODER = 4;
-
-    public static final int FR_POWER = 1;
-    public static final int FR_STEER = 2;
-    public static final int FR_ENCODER = 1;
-
-    public static final int BL_POWER = 5;
-    public static final int BL_STEER = 6;
-    public static final int BL_ENCODER = 3;
-
-    public static final int BR_POWER = 3;
-    public static final int BR_STEER = 4;
-    public static final int BR_ENCODER = 2;
+    public static final int FL_POWER = 7, FL_STEER = 8, FL_ENCODER = 4;
+    public static final int FR_POWER = 1, FR_STEER = 2, FR_ENCODER = 1;
+    public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
+    public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
     public static final double SWERVE_MAX_SPEED = 3;//0.3; //4.1695 mps //3 for driver
     public static final double WIDTH = Units.inchesToMeters(23);
@@ -112,16 +96,8 @@ public final class Constants {
     public static Translation2d m_backLeftLocation = new Translation2d(-LENGTH / 2, WIDTH / 2);
     public static Translation2d m_backRightLocation = new Translation2d(-LENGTH / 2, -WIDTH / 2);
 
-
     public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = new SwerveDriveKinematics(
-      //fl
-        m_frontLeftLocation,
-      //fr
-        m_frontRightLocation,
-      //bl
-        m_backLeftLocation,
-      //br
-        m_backRightLocation
+      m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
 
     SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
@@ -130,10 +106,8 @@ public final class Constants {
 
 
     public static final double SWERVE_ROTATION_TOLERANCE = 5;
-
     public static final TrapezoidProfile.Constraints SWERVE_ROTATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(36000, 36000);
     public static final TrapezoidProfile.Constraints SWERVE_TRANSLATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(15, 3);
-
   }
 
   public static class Vision {
@@ -151,77 +125,36 @@ public final class Constants {
     public static final double kPThetaController = 7.5;
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
-        new TrapezoidProfile.Constraints(
-            kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
+      new TrapezoidProfile.Constraints(kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
     public static final double RADIANS_TO_DEGREES = 57.29578;
   }
 
   public static final class Intake {
     public static final int MOTOR_ID = 8;
-    public static final int PDH_PORT = 7;
-        
-    public static final double INTAKE_ROLLER_SPEED = -0.5;
-    public static final double EJECT_ROLLER_SPEED = -0.25;
-
-    //current spikings tests
-    public static final double SPIKE_CURRENT = 20;
-    public static final double INTAKE_TIME = 0.8; //in seconds
+    public static final double INTAKE_ROLLER_SPEED = -0.5, EJECT_ROLLER_SPEED = -0.25;
   }
 
-  public static class KrakenShooter {
-    public static final double MIN_OUTPUT_RANGE = 1; //will tune both of these later
-    public static final double MAX_OUTPUT_RANGE = -1;
+  public static class Shooter {
+    public static final int TOP_LEFT_MOTOR_ID = 28, TOP_RIGHT_MOTOR_ID = 27;
+    public static final int BOTTOM_LEFT_MOTOR_ID = 25, BOTTOM_RIGHT_MOTOR_ID = 26;
 
-    public static final int TOP_LEFT_MOTOR_ID = 28; //tbd
-    public static final int TOP_RIGHT_MOTOR_ID = 27; //tbd
-    public static final int BOTTOM_LEFT_MOTOR_ID = 25; //tbd
-    public static final int BOTTOM_RIGHT_MOTOR_ID = 26; //tbd
+    public static final double kP = 0.32, kI = 0, kD = 0;
 
-    public static final double TOP_LEFT_SPEED = 0.15;
-    public static final double TOP_RIGHT_SPEED = 0.15;
-    public static final double BOTTOM_LEFT_SPEED = 0.15;
-    public static final double BOTTOM_RIGHT_SPEED = 0.15;
+    public static final double SPEAKER_TOP_VELOCITY = 90, SPEAKER_TOP_ACCELERATION = 65;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 90, SPEAKER_BOTTOM_ACCELERATION = 65;
 
-    public static final double kP = 0.32;
-    public static final double kI = 0;
-    public static final double kD = 0;
-
-    public static final double SPEAKER_TOP_VELOCITY = 90;
-    public static final double SPEAKER_TOP_ACCELERATION = 65;
-    public static final double SPEAKER_BOTTOM_VELOCITY = 90;
-    public static final double SPEAKER_BOTTOM_ACCELERATION = 65;
-
-    public static final double AMP_TOP_VELOCITY = 20;
-    public static final double AMP_TOP_ACCELERATION = 8;
-    public static final double AMP_BOTTOM_VELOCITY = 20;
-    public static final double AMP_BOTTOM_ACCELERATION = 8;
+    public static final double AMP_TOP_VELOCITY = 20, AMP_TOP_ACCELERATION = 8;
+    public static final double AMP_BOTTOM_VELOCITY = 20, AMP_BOTTOM_ACCELERATION = 8;
   }
   
   public static class Pivot {
-    public static final int PIVOT_ID = 30; 
-    public static final int ENCODER_ID = 32;
+    public static final int PIVOT_ID = 30, ENCODER_ID = 32;
+    public static final double GEAR_RATIO = 50/1;
 
-    public static final double kP = 5;
-    public static final double kI = 0;
-    public static final double kD = 0;
-    public static final double kD_TIME = 0.02;
-
-    public static final double GEAR_RATIO = 50/1; //Mech said 50/1
-
-    public static final double STARTING_ANGLE = 45;
-
-    public static final int OFFSET = 0;
-    public static final int NEO_TICKS_PER_REVOLUTION = 42;
+    public static final double kP = 5, kI = 0, kD = 0, kD_TIME = 0.02;
     
-    public static final double ABSOLUTE_TICKS_PER_REVOLUTION = 4096;
     public static final double CONVERSION_FACTOR = 1.0/360.0;
-    
-    public static final double TEST_20 = 20 * Constants.Pivot.CONVERSION_FACTOR;
-    public static final double TEST_70 = 70 * Constants.Pivot.CONVERSION_FACTOR;
-
     public static final double INTAKE_SAFE = 114 * Constants.Pivot.CONVERSION_FACTOR;
     public static final double INTAKE_DOWN = 10 * Constants.Pivot.CONVERSION_FACTOR;
-
-    public static final double DEGREE_0 = 0;
   }
 }

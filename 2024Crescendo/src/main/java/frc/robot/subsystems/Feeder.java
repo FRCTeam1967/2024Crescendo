@@ -7,31 +7,35 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 public class Feeder extends SubsystemBase {
-
   private CANSparkMax leftMotor, rightMotor;
 
-  /** Creates a new Feeder. */
+  /** Creates new Feeder */
   public Feeder() {
     leftMotor = new CANSparkMax (Constants.Feeder.LEFT_ID, MotorType.kBrushless); 
     rightMotor = new CANSparkMax(Constants.Feeder.RIGHT_ID, MotorType.kBrushless);
   }
   
-  public void feedFeeder (double leftSpeed, double rightSpeed){
+  /**
+   * Runs feeder motors
+   * @param leftSpeed
+   * @param rightSpeed
+   */
+  public void feedFeeder(double leftSpeed, double rightSpeed){
     leftMotor.set(leftSpeed);
     rightMotor.set(rightSpeed);
   }
 
-  public void stopFeeder () {
+  /** Stops feeder motors */
+  public void stopFeeder() {
     leftMotor.stopMotor();
     rightMotor.stopMotor();
   }
+
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+  public void periodic() {}
 }

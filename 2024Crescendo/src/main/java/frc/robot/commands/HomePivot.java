@@ -10,34 +10,27 @@ import frc.robot.subsystems.*;
 
 public class HomePivot extends Command {
   private Pivot pivot;
-  /** Creates a new HomePivot. */
+  
+  /**
+   * Creates a new HomePivot.
+   * @param pivot - Pivot object
+   */
   public HomePivot(Pivot pivot) {
     this.pivot = pivot;
-    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(pivot);
   }
 
-  // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    //pivot.zeroAbsPos();
-  }
+  public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    pivot.pivotHoming();
-
+    pivot.setRelToAbs();
   }
 
-  // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    
-    //pivot.moveTo(pivot.getAbsPos());
-  }
+  public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     pivot.setpoint.velocity = 0;

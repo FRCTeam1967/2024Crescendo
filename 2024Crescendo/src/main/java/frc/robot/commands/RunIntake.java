@@ -10,31 +10,31 @@ import frc.robot.subsystems.*;
 public class RunIntake extends Command {
   Intake intake;
   double speed;
-  /** Creates a new RunIntake. */
+  
+  /**
+   * Creates a new RunIntake
+   * @param intake - Intake object
+   * @param speed - desired speed
+   */
   public RunIntake(Intake intake, double speed) {
     this.intake = intake;
     this.speed = speed;
     addRequirements(intake);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     intake.runMotors(speed);
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     intake.stopMotors();
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

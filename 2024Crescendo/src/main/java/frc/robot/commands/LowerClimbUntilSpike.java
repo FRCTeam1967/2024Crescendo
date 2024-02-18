@@ -15,7 +15,7 @@ public class LowerClimbUntilSpike extends Command {
   private double current;
 
   /**
-   * Creates objects for climb and current fields 
+   * Creates a new LowerClimbUntilSpike object
    * @param climb - Climb object
    * @param current - DoubleSupplier for updating current value
    */

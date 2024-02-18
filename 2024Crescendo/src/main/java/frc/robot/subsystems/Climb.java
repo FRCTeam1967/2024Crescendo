@@ -23,7 +23,7 @@ public class Climb extends SubsystemBase {
   private boolean manualMode = false, isRight;
   
   /**
-   * Constructor for Climb class
+   * Creates new Climb
    * <p> Initializing and configuring motor for Motion Magic
    * @param motorID - port for motor
    * @param encoderID - port for absolute encoder
@@ -101,9 +101,7 @@ public class Climb extends SubsystemBase {
     return manualMode;
   }
 
-  /**
-   * Stops motor movement
-   */
+  /** Stops climb motor */
   public void stop() {
     motor.stopMotor();
   }
