@@ -46,11 +46,19 @@ public class Vision extends SubsystemBase {
     updateValues();
     if (xOffset > -Constants.Vision.DEGREE_ERROR && xOffset < Constants.Vision.DEGREE_ERROR){
       isInRange = true;
+      //tab.addBoolean("Vision Align1", () -> isInRange);
       SmartDashboard.putString("Range", "yes");
+      //tab.addBoolean("Yes", ()->isInRange);
+      //return true;
     } else {
       isInRange = false;
+      //tab.addBoolean("Vision Align", () -> isInRange);
       SmartDashboard.putString("Range", "yes");
+      //tab.addBoolean("Yes", ()->isInRange);
+      //return false;
     }
+
+    //tab.addBoolean("Range", ()->isInRange);
   }
 
   public boolean getIsInRange(){

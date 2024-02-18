@@ -66,11 +66,6 @@ public class KrakenShooter extends SubsystemBase {
     bottomLeftMotor.setControl(new VelocityVoltage(-bottomVelocity, -bottomAcceleration, false, 0.0, 0, false, false, false));
     bottomRightMotor.setControl(new VelocityVoltage(bottomVelocity, bottomAcceleration, false, 0.0, 0, false, false, false));
     //Kraken RPM 6000
-
-    // topLeftMotor.set(-topVelocity);
-    //  topRightMotor.set(topAcceleration);
-    //  bottomLeftMotor.set(-topVelocity);
-    //  bottomRightMotor.set(topAcceleration);
   }
 
   public void stopMotors () {
