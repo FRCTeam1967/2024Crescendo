@@ -6,9 +6,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import frc.robot.Constants;
-import java.lang.Object;
-//import com.ctre.phoenix6.jni.CtreJniWrapper;
+
 import com.revrobotics.SparkPIDController;
+
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -19,14 +19,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.subsystems.*; 
 
@@ -36,7 +36,6 @@ public class KrakenShooter extends SubsystemBase {
 
   /** Creates a new KrakenShooter. */
   public KrakenShooter() {
-
     topLeftMotor = new TalonFX(Constants.KrakenShooter.TOP_LEFT_MOTOR_ID);
     topRightMotor = new TalonFX(Constants.KrakenShooter.TOP_RIGHT_MOTOR_ID);
     bottomLeftMotor = new TalonFX(Constants.KrakenShooter.BOTTOM_LEFT_MOTOR_ID);
@@ -58,7 +57,6 @@ public class KrakenShooter extends SubsystemBase {
     motor.setNeutralMode(NeutralModeValue.Coast);
     motor.getConfigurator().apply(config);
   }
-
 
   public void runKrakenShooter(double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration) {
     topLeftMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));

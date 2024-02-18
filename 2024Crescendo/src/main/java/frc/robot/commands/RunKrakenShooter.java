@@ -8,18 +8,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.KrakenShooter;
 
 public class RunKrakenShooter extends Command {
-
   private KrakenShooter krakenShooter;
   private double topVelocity, topAcceleration,  bottomVelocity, bottomAcceleration;
   
-  //Creates a new RunKra
+  //Creates a new RunKrakenShooter
   public RunKrakenShooter(KrakenShooter krakenShooter, double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration) {
     this.krakenShooter = krakenShooter;
     this.topVelocity = topVelocity;
     this.topAcceleration = topAcceleration;
     this.bottomVelocity = bottomVelocity;
     this.bottomAcceleration = bottomAcceleration;
-     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(this.krakenShooter);
   }
 
