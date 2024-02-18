@@ -7,43 +7,36 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.*;
 
-public class MovePivot extends Command {
-  private Pivot pivot;
-  private double desiredRev;
-  /** Creates a new PivotMove. */
-  public MovePivot(Pivot pivot, double rev) {
+public class RunIntake extends Command {
+  Intake intake;
+  double speed;
+  /** Creates a new RunIntake. */
+  public RunIntake(Intake intake, double speed) {
+    this.intake = intake;
+    this.speed = speed;
+    addRequirements(intake);
     // Use addRequirements() here to declare subsystem dependencies.
-    this.pivot = pivot; 
-    desiredRev = rev;
-    addRequirements(this.pivot);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    pivot.moveTo(desiredRev);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    intake.runMotors(speed);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    pivot.stop();
+    intake.stopMotors();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    /*if (desiredRev==Constants.Pivot.INTAKE_SAFE){
-      pivot.pivotHoming();
-      pivot.setpoint.velocity = 0;
-      pivot.setpoint.position = pivot.getAbsPos();
-      pivot.goal.velocity = 0;
-      pivot.goal.position = pivot.getAbsPos();
-    }*/
-    return pivot.isReached();
+    return false;
   }
 }

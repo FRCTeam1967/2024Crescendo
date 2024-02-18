@@ -8,19 +8,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.KrakenShooter;
 
 public class RunKrakenShooter extends Command {
-
   private KrakenShooter krakenShooter;
-  private double topLeftSpeed, topRightSpeed, bottomLeftSpeed, bottomRightSpeed;
+  private double topVelocity, topAcceleration,  bottomVelocity, bottomAcceleration;
   
-  //Creates a new RunKra
-  public RunKrakenShooter(KrakenShooter krakenShooter, double topLeftSpeed, double topRightSpeed, double bottomLeftSpeed, double bottomRightSpeed) {
+  //Creates a new RunKrakenShooter
+  public RunKrakenShooter(KrakenShooter krakenShooter, double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration) {
     this.krakenShooter = krakenShooter;
-    this.topLeftSpeed = topLeftSpeed;
-    this.topRightSpeed = topRightSpeed;
-    this.bottomLeftSpeed = bottomLeftSpeed;
-    this.bottomRightSpeed = bottomRightSpeed;
-     // Use addRequirements() here to declare subsystem dependencies.
-    ;addRequirements(this.krakenShooter);
+    this.topVelocity = topVelocity;
+    this.topAcceleration = topAcceleration;
+    this.bottomVelocity = bottomVelocity;
+    this.bottomAcceleration = bottomAcceleration;
+    addRequirements(this.krakenShooter);
   }
 
   // Called when the command is initially scheduled.
@@ -30,7 +28,7 @@ public class RunKrakenShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    krakenShooter.runKrakenShooter(topLeftSpeed, topRightSpeed, bottomLeftSpeed, bottomRightSpeed);
+    krakenShooter.runKrakenShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
   }
 
   // Called once the command ends or is interrupted.

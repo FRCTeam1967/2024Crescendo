@@ -22,6 +22,15 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static class Feeder{
+    public static final int LEFT_ID = 31;
+    public static final int RIGHT_ID = 32; //tbd
+    //public static final double kD_TIME = 0.02;
+
+    public static final double FEED_TIME = 5.0;
+    public static final double FEED_SPEED = 0.3;
+  }
+
   public static class Swerve {
     public static final double POWER_kS = 0.14;//0.14; //0.14 best
     public static final double POWER_kV = 0.9;//0.9; //1.8, 1., 0.8 //in volts
@@ -127,7 +136,6 @@ public final class Constants {
     public static final double RADIANS_TO_DEGREES = 57.29578;
   }
 
-
   public static final class Intake {
     public static final int MOTOR_ID = 8;
     public static final int PDH_PORT = 7;
@@ -138,8 +146,6 @@ public final class Constants {
     //current spikings tests
     public static final double SPIKE_CURRENT = 20;
     public static final double INTAKE_TIME = 0.8; //in seconds
-
-	
   }
 
   public static class KrakenShooter {
@@ -151,24 +157,26 @@ public final class Constants {
     public static final int BOTTOM_LEFT_MOTOR_ID = 25; //tbd
     public static final int BOTTOM_RIGHT_MOTOR_ID = 26; //tbd
 
-
     public static final double TOP_LEFT_SPEED = 0.15;
     public static final double TOP_RIGHT_SPEED = 0.15;
     public static final double BOTTOM_LEFT_SPEED = 0.15;
     public static final double BOTTOM_RIGHT_SPEED = 0.15;
 
-    public static final double kP = 0.85;
+    public static final double kP = 0.32;
     public static final double kI = 0;
     public static final double kD = 0;
 
-    public static final double TOP_VELOCITY = 10;
-    public static final double TOP_ACCELERATION = 5;
+    public static final double SPEAKER_TOP_VELOCITY = 90;
+    public static final double SPEAKER_TOP_ACCELERATION = 65;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 90;
+    public static final double SPEAKER_BOTTOM_ACCELERATION = 65;
 
-    public static final double BOTTOM_VELOCITY = 10;
-    public static final double BOTTOM_ACCELERATION = 5;
-
+    public static final double AMP_TOP_VELOCITY = 20;
+    public static final double AMP_TOP_ACCELERATION = 8;
+    public static final double AMP_BOTTOM_VELOCITY = 20;
+    public static final double AMP_BOTTOM_ACCELERATION = 8;
   }
-
+  
   public static class Pivot {
     public static final int PIVOT_ID = 30; 
     public static final int ENCODER_ID = 32;
@@ -191,11 +199,8 @@ public final class Constants {
     public static final double TEST_20 = 20 * Constants.Pivot.CONVERSION_FACTOR;
     public static final double TEST_70 = 70 * Constants.Pivot.CONVERSION_FACTOR;
 
-    public static final double INTAKE_SAFE = 110 * Constants.Pivot.CONVERSION_FACTOR;
-    public static final double INTAKE_DOWN = 20 * Constants.Pivot.CONVERSION_FACTOR;
-
-    
-
+    public static final double INTAKE_SAFE = 114 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double INTAKE_DOWN = 10 * Constants.Pivot.CONVERSION_FACTOR;
 
     public static final double DEGREE_0 = 0;
   }

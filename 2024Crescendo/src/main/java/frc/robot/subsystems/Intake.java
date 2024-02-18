@@ -29,7 +29,11 @@ public class Intake extends SubsystemBase {
   public void runMotors(double speed){
     motor.set(speed);
   }
-
+  
+  public void stopMotors(){
+    motor.stopMotor();
+  }
+  
   @Override
   public void periodic() {}
 }
