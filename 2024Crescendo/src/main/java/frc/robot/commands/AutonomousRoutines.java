@@ -12,25 +12,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Swerve;
 
-
 public enum AutonomousRoutines {
   DEFAULT_AUTO(false, "DEFAULT", Commands.print("DEFAULT AUTO SAYS HI")),
   SQUARE_AUTO(true, "Square", "Square");
 
   public final boolean showInDashboard;
-  public final String shuffleboardName;
-  public final String trajectoryName;
+  public final String shuffleboardName, trajectoryName;
   public final boolean buildable;
 
   private PathLegs[] pathOne; //scorePreloadIntakeMiddle + intakemiddle
 
 //   public pathplanner
 
-  public Command command;
-  public Command builtCommand;
+  public Command command, builtCommand;
 
   AutonomousRoutines(
-      boolean show, String shuffleboardName, String trajectoryName
+    boolean show, String shuffleboardName, String trajectoryName
   ) {
     showInDashboard = show;
     this.shuffleboardName = shuffleboardName;
@@ -43,7 +40,7 @@ public enum AutonomousRoutines {
   }
 
   AutonomousRoutines(
-      boolean show, String shuffleboardName, Command simpleCommand
+    boolean show, String shuffleboardName, Command simpleCommand
   ) {
     showInDashboard = show;
     this.shuffleboardName = shuffleboardName;
@@ -76,7 +73,6 @@ public enum AutonomousRoutines {
     scorePreloadIntakeMiddle(true, "scorePreloadIntake"), //auto
     scorePreloadScoreMiddle(true, "scorePreloadScoreMiddle"); //auto
     
-
     public final boolean currentlyExists;
     public final String name;
 
@@ -92,11 +88,5 @@ public enum AutonomousRoutines {
     public String name(String name){
       return name;
     }
-
-    
   }
-  
-
-  
-
 }
