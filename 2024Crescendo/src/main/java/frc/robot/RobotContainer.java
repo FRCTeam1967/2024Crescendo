@@ -138,13 +138,12 @@ public class RobotContainer {
     operatorController.b().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), leftClimb),
       new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), rightClimb)));
-    operatorController.a().onTrue(new ParallelCommandGroup (
-      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), leftClimb),
-      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), rightClimb)));
-    // could replace Climb to latch
-    // operatorController.a().onTrue(new ParallelCommandGroup(
-    //   new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT), leftClimb).withTimeout(Constants.Climb.LOWER_TIME), 
-    //   new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT), rightClimb).withTimeout(Constants.Climb.LOWER_TIME)));
+    // operatorController.a().onTrue(new ParallelCommandGroup (
+    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), leftClimb),
+    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), rightClimb)));
+    operatorController.a().onTrue(new ParallelCommandGroup(
+      new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT), leftClimb), 
+      new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT), rightClimb)));
     leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
       () -> MathUtil.applyDeadband(operatorController.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(

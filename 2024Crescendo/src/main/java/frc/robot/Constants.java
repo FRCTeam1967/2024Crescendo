@@ -24,14 +24,14 @@ public final class Constants {
   
   public static class Climb {
     public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31;
-    public static final int LEFT_MOTOR_PDH_PORT = 17, RIGHT_MOTOR_PDH_PORT = 0;
+    public static final int LEFT_MOTOR_PDH_PORT = 18, RIGHT_MOTOR_PDH_PORT = 5;
     
     public static final double UNWIND_FACTOR = 0.7, WIND_FACTOR = 0.4, DEADBAND = 0.05;
     
     public static final double TOP_ROTATIONS = 80.0, SAFE_ROTATIONS = 0.0, LATCH_ROTATIONS = 120;
     
     /* current spiking check */
-    public static final double SPIKE_CURRENT = 20, AUTOMATIC_LOWER_SPEED = 0.5, LOWER_TIME = 0.7;
+    public static final double SPIKE_CURRENT = 40, AUTOMATIC_LOWER_SPEED = 0.5, CURRENT_LIMIT = 55;
 
     /* velocity spiking check */
      public static final double VELOCITY_MIN = 10.0; //rps
@@ -43,7 +43,7 @@ public final class Constants {
   }
   
   public static class Feeder{
-    public static final int LEFT_ID = 31, RIGHT_ID = 32;
+    public static final int LEFT_ID = 17, RIGHT_ID = 18;
     public static final double FEED_TIME = 5.0, FEED_SPEED = 0.3;
   }
 
@@ -130,13 +130,13 @@ public final class Constants {
   }
 
   public static final class Intake {
-    public static final int MOTOR_ID = 8;
+    public static final int MOTOR_ID = 13;
     public static final double INTAKE_ROLLER_SPEED = -0.5, EJECT_ROLLER_SPEED = -0.25;
   }
 
   public static class Shooter {
-    public static final int TOP_LEFT_MOTOR_ID = 28, TOP_RIGHT_MOTOR_ID = 27;
-    public static final int BOTTOM_LEFT_MOTOR_ID = 25, BOTTOM_RIGHT_MOTOR_ID = 26;
+    public static final int TOP_LEFT_MOTOR_ID = 20, TOP_RIGHT_MOTOR_ID = 21;
+    public static final int BOTTOM_LEFT_MOTOR_ID = 19, BOTTOM_RIGHT_MOTOR_ID = 22;
 
     public static final double kP = 0.32, kI = 0, kD = 0;
 
@@ -148,7 +148,7 @@ public final class Constants {
   }
   
   public static class Pivot {
-    public static final int PIVOT_ID = 30, ENCODER_ID = 32;
+    public static final int PIVOT_ID = 14, ENCODER_ID = 32;
     public static final double GEAR_RATIO = 50/1;
 
     public static final double kP = 5, kI = 0, kD = 0, kD_TIME = 0.02;
