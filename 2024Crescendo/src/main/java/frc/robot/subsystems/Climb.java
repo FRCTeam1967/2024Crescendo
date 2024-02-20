@@ -57,9 +57,7 @@ public class Climb extends SubsystemBase {
     motor.getConfigurator().apply(config);
   }
   
-  /**
-   * Sets zero position of encoder to just above the latch position of the telescoping arm
-   */
+  /** Sets zero position of encoder to just above the latch position of the telescoping arm */
   public void setEncoderOffset() {
     motor.setPosition(Constants.Climb.TOP_ROTATIONS);
   }
@@ -83,23 +81,28 @@ public class Climb extends SubsystemBase {
    * @param speed - speed of motor
    */
   public void moveAt(DoubleSupplier speed) {
-    boolean safe = motor.getRotorPosition().getValueAsDouble() > Constants.Climb.SAFE_ROTATIONS;
-    
-    if (manualMode){
-      if (speed.getAsDouble() < 0){
-        if (safe) motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
-        else motor.stopMotor();
-      } else {
-        motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
-      }
+    if(manualMode){
+      if(speed.getAsDouble() < 0) motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
+      else motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
     }
   }
-
+  
+  /**
+   * Lower motor at set speed if not in manual mode
+   * @param speed - speed of motor
+   */
+  public void lowerAt(double speed){
+    if(!manualMode) motor.set(speed * Constants.Climb.WIND_FACTOR);
+    else stop();
+  }
+  
   /**
    * Changes manualMode field value to opposite of current value
+   * <p> If switching from automatic to manual mode, stops motor
    * @return updated status of manualMode
    */
   public boolean switchMode() {
+    if(!manualMode) motor.stopMotor();
     manualMode = !manualMode;
     return manualMode;
   }
@@ -107,6 +110,11 @@ public class Climb extends SubsystemBase {
   /** Stops climb motor */
   public void stop() {
     motor.stopMotor();
+  }
+
+  /** @return motor position as double */
+  public double getMotorPosition(){
+    return motor.getRotorPosition().getValueAsDouble();
   }
   
   /**

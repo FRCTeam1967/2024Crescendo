@@ -99,7 +99,7 @@ public class RobotContainer {
     swerve.setNeutralMode(true);
   }
   
-  /** Defines trigger -> command mappings for {@link CommandXboxController Xbox} controllers */
+  /** Defines trigger->command mappings for {@link CommandXboxController Xbox} controllers */
   private void configureBindings() {
     /*SWERVE*/
     driverController.b().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
@@ -135,15 +135,15 @@ public class RobotContainer {
     operatorController.y().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), leftClimb),
       new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), rightClimb)));
-    operatorController.b().onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), leftClimb),
-      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), rightClimb)));
+    // operatorController.b().onTrue(new ParallelCommandGroup(
+    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), leftClimb),
+    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), rightClimb)));
     // operatorController.a().onTrue(new ParallelCommandGroup (
     //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), leftClimb),
-    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), rightClimb)));
+    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), rightClimb))); 
     operatorController.a().onTrue(new ParallelCommandGroup(
-      new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT), leftClimb), 
-      new LowerClimbUntilSpike(() -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT), rightClimb)));
+      new LowerClimbUntilSpike(Constants.Climb.LEFT_MOTOR_PDH_PORT, pdh, leftClimb), 
+      new LowerClimbUntilSpike(Constants.Climb.RIGHT_MOTOR_PDH_PORT, pdh, rightClimb)));
     leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
       () -> MathUtil.applyDeadband(operatorController.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(

@@ -31,10 +31,8 @@ public final class Constants {
     public static final double TOP_ROTATIONS = 80.0, SAFE_ROTATIONS = 0.0, LATCH_ROTATIONS = 120;
     
     /* current spiking check */
-    public static final double SPIKE_CURRENT = 40, AUTOMATIC_LOWER_SPEED = 0.5, CURRENT_LIMIT = 55;
-
-    /* velocity spiking check */
-     public static final double VELOCITY_MIN = 10.0; //rps
+    public static final double SPIKE_CURRENT = 25, AUTOMATIC_LOWER_SPEED = 0.5, HANG_CURRENT = 15;
+    public static final double CURRENT_LIMIT = 40;
     
     /* PID values*/
     public static final double UP_kP = 1.0, UP_kI = 0, UP_kD = 0, UP_kS = 0.00, UP_kD_TIME = 0.02;
@@ -46,8 +44,14 @@ public final class Constants {
     public static final int LEFT_ID = 17, RIGHT_ID = 18;
     public static final double FEED_TIME = 5.0, FEED_SPEED = 0.3;
   }
-
+  
   public static class Swerve {
+    public static final int pigeonID = 1;
+    public static final int FL_POWER = 7, FL_STEER = 8, FL_ENCODER = 4;
+    public static final int FR_POWER = 1, FR_STEER = 2, FR_ENCODER = 1;
+    public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
+    public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
+    
     public static final double POWER_kS = 0.14;//0.14; //0.14 best
     public static final double POWER_kV = 0.9;//0.9; //1.8, 1., 0.8 //in volts
     public static final double POWER_kA = 0.1;//0.1; 
@@ -62,10 +66,6 @@ public final class Constants {
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
 
-    public static final int pigeonID = 1;
-
-    public static final int climbLeftEncoderIdx = 30, climbRightEncoderIdx = 31;
-
     //0.319024 = circumference in meters
     //12.8:1 = rotor to sensor ratio
     public static final double STEER_GEAR_RATIO = 150/7;
@@ -77,15 +77,9 @@ public final class Constants {
 
     public static final double ANALOG_SAMPLE_DEPTH = 0;
 
-    public static final int FL_POWER = 7, FL_STEER = 8, FL_ENCODER = 4;
-    public static final int FR_POWER = 1, FR_STEER = 2, FR_ENCODER = 1;
-    public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
-    public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
-
     public static final double SWERVE_MAX_SPEED = 3;//0.3; //4.1695 mps //3 for driver
-    public static final double WIDTH = Units.inchesToMeters(23);
-    public static final double LENGTH = Units.inchesToMeters(23);
 
+    public static final double WIDTH = Units.inchesToMeters(23), LENGTH = Units.inchesToMeters(23);
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
 
     public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = (2 / WHEEL_CIRCUMFERENCE) * 2 * Math.PI; 
@@ -103,8 +97,7 @@ public final class Constants {
     SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
-
-
+    
     public static final double SWERVE_ROTATION_TOLERANCE = 5;
     public static final TrapezoidProfile.Constraints SWERVE_ROTATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(36000, 36000);
     public static final TrapezoidProfile.Constraints SWERVE_TRANSLATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(15, 3);

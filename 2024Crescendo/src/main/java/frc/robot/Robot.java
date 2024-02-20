@@ -93,7 +93,6 @@ public class Robot extends TimedRobot {
     }
 
     robotContainer.swerveToNeutralMode();
-    
     robotContainer.maintainPivotPosition();
     robotContainer.setClimbEncoderOffset();
   }

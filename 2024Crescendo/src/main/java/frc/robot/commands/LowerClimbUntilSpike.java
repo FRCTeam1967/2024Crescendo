@@ -4,8 +4,7 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
@@ -16,12 +15,13 @@ public class LowerClimbUntilSpike extends Command {
 
   /**
    * Creates a new LowerClimbUntilSpike object
+   * @param pdhPort - PDH port for that motor
+   * @param pdh - Power Distribution object
    * @param climb - Climb object
-   * @param current - DoubleSupplier for updating current value
    */
-  public LowerClimbUntilSpike(DoubleSupplier _current, Climb _climb) {
+  public LowerClimbUntilSpike(int pdhPort, PowerDistribution pdh, Climb _climb) {
     climb = _climb;
-    current = _current.getAsDouble();
+    current = pdh.getCurrent(pdhPort);
     addRequirements(climb);
   }
 
@@ -30,16 +30,17 @@ public class LowerClimbUntilSpike extends Command {
 
   @Override
   public void execute() {
-    climb.moveAt(() -> Constants.Climb.AUTOMATIC_LOWER_SPEED);
+    climb.lowerAt(Constants.Climb.AUTOMATIC_LOWER_SPEED);
   }
 
   @Override
   public void end(boolean interrupted) {
     climb.stop();
   }
-
+  
   @Override
   public boolean isFinished() {
-    return current >= Constants.Climb.SPIKE_CURRENT;
+    return (current >= Constants.Climb.SPIKE_CURRENT) || //latched!
+    (climb.getMotorPosition() >= Constants.Climb.SAFE_ROTATIONS && current <= Constants.Climb.HANG_CURRENT); //reached safe position but didn't hang on chain
   }
 }
