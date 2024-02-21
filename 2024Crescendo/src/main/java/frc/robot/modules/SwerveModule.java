@@ -76,19 +76,19 @@ public class SwerveModule {
         ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
 
         if (name == "FrontLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = 173.056/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = -133.857/360;
         }
 
         if (name == "FrontRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = -59.501/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = 61.5234/360;
         }
 
         if (name == "BackLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = 124.980/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = 113.203/360;
         }
 
         if (name == "BackRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = -153.544/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = -19.5996/360;
         }
 
 

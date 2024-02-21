@@ -20,18 +20,17 @@ import frc.robot.Constants;
 
 public class Pivot extends SubsystemBase {
   private CANSparkMax pivotMotor;
+  private Canandcoder absEncoder;
+  private SparkPIDController pidController;
+  private RelativeEncoder relativeEncoder;
   
   private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(7,3);
-  public TrapezoidProfile.State goal = new TrapezoidProfile.State();
-  public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-
-  private SparkPIDController pidController;
-  public double revsToMove;
-  private RelativeEncoder relativeEncoder;
-
-  private Canandcoder absEncoder;
-
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
+  public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
+  public TrapezoidProfile.State goal = new TrapezoidProfile.State();
+  
+  public double revsToMove;
+
   /** Creates a new Pivot. */
   public Pivot() {
     pivotMotor = new CANSparkMax(Constants.Pivot.PIVOT_ID, MotorType.kBrushless);
@@ -52,42 +51,42 @@ public class Pivot extends SubsystemBase {
     absEncoder.setSettings(settings, 0.050);
   }
 
-  public void pivotHoming(){
-    REVLibError success = relativeEncoder.setPosition(absRotsToRelRevs());
+  /** Sets relative encoder value to absolute encoder value */
+  public void setRelToAbs(){
+    REVLibError success = relativeEncoder.setPosition(absEncoder.getAbsPosition()*Constants.Pivot.GEAR_RATIO);
     System.out.println("REV error" + success); 
   }
 
+  /** Stops pivot motor */
   public void stop() {
     pivotMotor.stopMotor();
   }
 
-  public void zeroAbsPos(){
-    absEncoder.setAbsPosition(0);
-  }
-
+  /**
+   * @return position from absolute encoder
+   */
   public double getAbsPos() {
     return absEncoder.getAbsPosition();
   }
 
-  public double getRelPos() {
-    return relativeEncoder.getPosition();
-  }
-
+  /**
+   * Sets motion profiling goal to desired revolutions
+   * @param revolutions
+   */
   public void moveTo(double revolutions) {
     goal = new TrapezoidProfile.State(revolutions, 0);
   }
 
+  /**
+   * @return whether profile has been finished
+   */
   public boolean isReached(){
     return(profile.isFinished(profile.timeLeftUntil(goal.position)));
   }
 
+  /** Sets pivot motor to brake mode */
   public void setBrakeMode(){
-    pivotMotor.setIdleMode(CANSparkBase.IdleMode.kCoast);
-  }
-
-  public double absRotsToRelRevs(){
-    double revs = absEncoder.getAbsPosition()*Constants.Pivot.GEAR_RATIO;
-    return revs;
+    pivotMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
   }
 
   @Override
@@ -102,6 +101,5 @@ public class Pivot extends SubsystemBase {
     SmartDashboard.putNumber("revs", revs); 
     SmartDashboard.putNumber("Rel Pos Degrees", (relativeEncoder.getPosition()*360)/50);
     SmartDashboard.putNumber("Abs Encoder Degrees", absEncoder.getAbsPosition()*360);
-    // This method will be called once per scheduler run
   }
 }

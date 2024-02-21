@@ -105,8 +105,8 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.swerve.setNeutralMode(true);
 
-    m_robotContainer.pivotHoming();
-    m_robotContainer.maintainPosition();
+    //m_robotContainer.pivotHoming();
+    //m_robotContainer.maintainPosition();
   }
 
   /** This function is called periodically during operator control. */

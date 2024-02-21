@@ -10,31 +10,31 @@ import frc.robot.subsystems.*;
 public class MovePivot extends Command {
   private Pivot pivot;
   private double desiredRev;
-  /** Creates a new PivotMove. */
+
+  /**
+   * Creates a new MovePivot object
+   * @param pivot - Pivot object
+   * @param rev - revolutions for desired position
+   */
   public MovePivot(Pivot pivot, double rev) {
-    // Use addRequirements() here to declare subsystem dependencies.
     this.pivot = pivot; 
     desiredRev = rev;
     addRequirements(this.pivot);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     pivot.moveTo(desiredRev);
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {}
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     pivot.stop();
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     /*if (desiredRev==Constants.Pivot.INTAKE_SAFE){

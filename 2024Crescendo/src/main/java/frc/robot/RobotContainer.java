@@ -4,31 +4,42 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
+import edu.wpi.first.wpilibj2.command.*; //NOT WORKING
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import com.reduxrobotics.canand.CanandEventLoop;
 
-import frc.robot.subsystems.*;
-import frc.robot.commands.*;
+import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 
+import frc.robot.commands.*;
+import frc.robot.Constants.*;
 
 public class RobotContainer {
   private final Pivot pivot = new Pivot();
   public final Swerve swerve = new Swerve();
   private final Intake intake = new Intake();  
-  private final KrakenShooter krakenShooter = new KrakenShooter();
-  public ShuffleboardTab limelightTab = Shuffleboard.getTab("limelight tab");
-  public Vision vision = new Vision();
+  private final Shooter shooter = new Shooter();
+  private final Feeder feeder = new Feeder();
+  //public Vision vision = new Vision();
+  private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
+  private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
+  private final CommandXboxController operatorController = new CommandXboxController(Xbox.OPERATOR_CONTROLLER_PORT);
 
   private final Command turnToAngle = new RunCommand(() -> {
     swerve.goToAngle(100);
@@ -43,8 +54,6 @@ public class RobotContainer {
     swerve.resetGyro();
   }, swerve);
 
-  private final CommandXboxController m_driverController = new CommandXboxController(
-      OperatorConstants.kDriverControllerPort);
 
   //private final CommandXboxController m_xbox = new CommandXboxController(1);
  
@@ -56,39 +65,28 @@ public class RobotContainer {
   public RobotContainer() {
   
     resetSensors();
-    pivot.pivotHoming();
+    // pivot.pivotHoming();
+    // CanandEventLoop.getInstance();
+
     CanandEventLoop.getInstance();
-
-
+    maintainPivotPosition();
+    pivot.setBrakeMode();
 
     configureBindings();
-    maintainPosition();
-    vision.configDashboard(limelightTab);
+    // maintainPosition();
+    // vision.configDashboard(limelightTab);
 
     
   }
 
-  public void maintainPosition(){
+  
+  public void maintainPivotPosition(){
+    pivot.setRelToAbs();
+
     pivot.setpoint.velocity = 0;
     pivot.setpoint.position = pivot.getAbsPos();
     pivot.goal.velocity = 0;
     pivot.goal.position = pivot.getAbsPos();
-  }
-
-  public void pivotHoming(){
-    pivot.pivotHoming();
-  }
-
-  public void setPivotBrakeMode(){
-    pivot.setBrakeMode();
-  }
-
-  public void refreshSensor(){
-    pivot.moveTo(pivot.getRelPos());
-  }
-
-  public void stopMotor(){
-    pivot.stop();
   }
 
   private void configureBindings() {
@@ -99,22 +97,26 @@ public class RobotContainer {
     //intake.setDefaultCommand(new RunCommand (() -> intake.runMotors(0), intake));
 
     //left trigger button
-    //m_driverController.leftTrigger().whileTrue(turnToAngle);
+    //driverController.leftTrigger().whileTrue(turnToAngle);
 
     //b button
-    m_driverController.button(2).onTrue(resetGyro);
+    driverController.button(2).onTrue(resetGyro);
 
     //x button
-    m_driverController.button(3).onTrue(goToDefenseMode);
+    driverController.button(3).onTrue(goToDefenseMode);
 
-    m_driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -m_driverController.getRawAxis(1), () -> -m_driverController.getRawAxis(0), ()-> 0));
+    driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()-> 0));
 
      //a button
-     m_driverController.a().onTrue(new VisionAlign(swerve, vision));
+     //driverController.a().onTrue(new VisionAlign(swerve, vision));
 
-    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -m_driverController.getRawAxis(1),
-      () -> -m_driverController.getRawAxis(0), () -> -m_driverController.getRawAxis(4)));
-    
+    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
+      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
+  /*OPERATOR CONTROLLER */
+  operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new ParallelCommandGroup(new RunIntake(intake, Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -(Constants.Feeder.FEED_SPEED), 0.0)));
+  operatorController.y().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, 0.0, -(Constants.Feeder.FEED_SPEED)), new RunShooter(shooter, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)));
+  operatorController.a().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, 0.0, -(Constants.Feeder.FEED_SPEED)), new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)));
+
 
     
     //krakenShooter.setDefaultCommand(new RunKrakenShooter(krakenShooter, 0, 0, 0, 0));

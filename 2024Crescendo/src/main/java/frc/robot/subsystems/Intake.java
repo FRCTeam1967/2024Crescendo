@@ -13,10 +13,7 @@ import frc.robot.Constants;
 public class Intake extends SubsystemBase {
   private CANSparkMax motor;
 
-  /**
-   * Constructor for Intake class
-   * <p> Initializing and configuring motors
-   */
+  /** Creates new Intake */
   public Intake() {
     motor = new CANSparkMax(Constants.Intake.MOTOR_ID, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
@@ -29,7 +26,12 @@ public class Intake extends SubsystemBase {
   public void runMotors(double speed){
     motor.set(speed);
   }
-
+  
+  /** Stops intake motor */
+  public void stopMotors(){
+    motor.stopMotor();
+  }
+  
   @Override
   public void periodic() {}
 }
