@@ -25,6 +25,7 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Feeder;
 
 import frc.robot.commands.*;
 import frc.robot.Constants.*;
