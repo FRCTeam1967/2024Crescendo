@@ -25,6 +25,7 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Feeder;
 
 import frc.robot.commands.*;
 import frc.robot.Constants.*;
@@ -57,15 +58,9 @@ public class RobotContainer {
 
   //private final CommandXboxController m_xbox = new CommandXboxController(1);
  
-
-
-  
-    
-
   public RobotContainer() {
   
     resetSensors();
-    // pivot.pivotHoming();
     // CanandEventLoop.getInstance();
 
     CanandEventLoop.getInstance();
@@ -113,10 +108,11 @@ public class RobotContainer {
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
       () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
   /*OPERATOR CONTROLLER */
-  operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new ParallelCommandGroup(new RunIntake(intake, Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -(Constants.Feeder.FEED_SPEED), 0.0)));
-  operatorController.y().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, 0.0, -(Constants.Feeder.FEED_SPEED)), new RunShooter(shooter, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)));
-  operatorController.a().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, 0.0, -(Constants.Feeder.FEED_SPEED)), new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)));
-
+  operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new ParallelCommandGroup(new RunIntake(intake, Constants.Intake.INTAKE_ROLLER_SPEED), new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new RunFeeder(feeder, -(Constants.Feeder.FEED_SPEED), 0.0)));
+  operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse (new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
+  operatorController.povUp().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, -(Constants.Feeder.FEED_SPEED), -(Constants.Feeder.FEED_SPEED)), new RunShooter(shooter, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)));
+  operatorController.povDown().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, -(Constants.Feeder.FEED_SPEED), -(Constants.Feeder.FEED_SPEED)), new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)));
+  operatorController.rightBumper().whileTrue(new RunIntake(intake, -Constants.Intake.INTAKE_ROLLER_SPEED));
 
     
     //krakenShooter.setDefaultCommand(new RunKrakenShooter(krakenShooter, 0, 0, 0, 0));

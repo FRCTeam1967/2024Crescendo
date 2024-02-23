@@ -92,7 +92,7 @@ public final class Constants {
     public static final int BR_STEER = 4;
     public static final int BR_ENCODER = 2;
 
-    public static final double SWERVE_MAX_SPEED = 3;//0.3; //4.1695 mps //3 for driver
+    public static final double SWERVE_MAX_SPEED = 4.1695;//0.3; //4.1695 mps //3 for driver
     public static final double WIDTH = Units.inchesToMeters(23);
     public static final double LENGTH = Units.inchesToMeters(23);
 
@@ -168,13 +168,13 @@ public final class Constants {
   }
   
   public static class Pivot {
-    public static final int PIVOT_ID = 14, ENCODER_ID = 32;
+    public static final int PIVOT_ID = 14, ENCODER_ID = 23;
     public static final double GEAR_RATIO = 50/1;
 
     public static final double kP = 5, kI = 0, kD = 0, kD_TIME = 0.02;
     
     public static final double CONVERSION_FACTOR = 1.0/360.0;
     public static final double INTAKE_SAFE = 100 * Constants.Pivot.CONVERSION_FACTOR;
-    public static final double INTAKE_DOWN = 5 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double INTAKE_DOWN = 10 * Constants.Pivot.CONVERSION_FACTOR;
   }
 }
