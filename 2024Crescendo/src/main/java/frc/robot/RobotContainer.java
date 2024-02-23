@@ -112,8 +112,8 @@ public class RobotContainer {
       () -> -driverController.getLeftX(), () -> -driverController.getRightX()));
     
     // COMBINED INTAKE + PIVOT
-    operatorController.a().whileTrue(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new RunIntake(intake, -0.5)));
-    operatorController.a().whileFalse(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE), new RunIntake(intake, 0)));
+    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new RunIntake(intake, -0.5)));
+    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE), new RunIntake(intake, 0)));
     intake.setDefaultCommand(new RunIntake(intake, 0));
     
     // COMBINED FEEDER + SHOOTER
@@ -121,20 +121,23 @@ public class RobotContainer {
     shooter.setDefaultCommand(new RunShooter(shooter, 0, 0, 0, 0));
     
     // SHOOTER
-    operatorController.leftTrigger().whileTrue(new RunShooter(shooter, (Constants.Shooter.AMP_TOP_VELOCITY), (Constants.Shooter.AMP_TOP_ACCELERATION), (Constants.Shooter.AMP_BOTTOM_VELOCITY), Constants.Shooter.AMP_BOTTOM_ACCELERATION));
-    operatorController.rightTrigger().whileTrue(new RunShooter(shooter, (Constants.Shooter.SPEAKER_TOP_VELOCITY), (Constants.Shooter.SPEAKER_TOP_ACCELERATION), (Constants.Shooter.SPEAKER_BOTTOM_VELOCITY), Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
+    operatorController.y().whileTrue(new RunShooter(shooter, (Constants.Shooter.AMP_TOP_VELOCITY), (Constants.Shooter.AMP_TOP_ACCELERATION), (Constants.Shooter.AMP_BOTTOM_VELOCITY), Constants.Shooter.AMP_BOTTOM_ACCELERATION));
+    operatorController.a().whileTrue(new RunShooter(shooter, (Constants.Shooter.SPEAKER_TOP_VELOCITY), (Constants.Shooter.SPEAKER_TOP_ACCELERATION), (Constants.Shooter.SPEAKER_BOTTOM_VELOCITY), Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
     
     // FEEDER
     //feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
     //operatorController.x().whileTrue(new RunFeeder(feeder, -0.8, -0.8));
     
-    /*CLIMB*/
-    operatorController.y().onTrue(new ParallelCommandGroup(
+    // CLIMB
+    operatorController.povUp().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), leftClimb),
       new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), rightClimb)));
-    operatorController.a().onTrue(new ParallelCommandGroup(
+    operatorController.povDown().onTrue(new ParallelCommandGroup(
       new LowerClimbUntilLatch(leftClimb, leftClimbSensor), new LowerClimbUntilLatch(rightClimb, rightClimbSensor)));
-    // JUST FOR TESTING
+    operatorController.x().onTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> leftClimb.stop(), leftClimb), new InstantCommand(() -> rightClimb.stop(), rightClimb)
+    ));
+      // JUST FOR TESTING
     leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
       () -> MathUtil.applyDeadband(operatorController.getLeftY(), Constants.Climb.DEADBAND))));
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(
