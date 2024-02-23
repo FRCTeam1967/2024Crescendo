@@ -21,7 +21,7 @@ public class Climb extends SubsystemBase {
   private TalonFX motor;
   private TalonFXConfiguration config;
   private MotionMagicVoltage request;
-  private boolean manualMode = false, isRight;
+  private boolean isRight;
   
   /**
    * Creates new Climb
@@ -68,23 +68,18 @@ public class Climb extends SubsystemBase {
    * @param holdingRobot - whether holding robot weight, used to configure PID accordingly
    */
   public void moveTo(double pos, boolean holdingRobot) {
-    if(!manualMode){
-      if(holdingRobot) motor.setControl(request.withPosition(pos).withSlot(1));
-      else motor.setControl(request.withPosition(pos).withSlot(0));
-    }
+    if(holdingRobot) motor.setControl(request.withPosition(pos).withSlot(1));
+    else motor.setControl(request.withPosition(pos).withSlot(0));
   }
   
   /**
-   * If in manual mode, sets unwind/wind factor dependent on pos/neg value of speed and runs motor
+   * JUST FOR TESTING: if in manual mode, sets unwind/wind factor dependent on pos/neg value of speed and runs motor
    * <p> If winding, encoder position must be above "safe" position to run. Otherwise, motor stops
-   * <p> If right climb, flip sign of speed
    * @param speed - speed of motor
    */
   public void moveAt(DoubleSupplier speed) {
-    if(manualMode){
-      if(speed.getAsDouble() < 0) motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
-      else motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
-    }
+    if(speed.getAsDouble() < 0) motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
+    else motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
   }
   
   /**
@@ -92,19 +87,7 @@ public class Climb extends SubsystemBase {
    * @param speed - speed of motor
    */
   public void lowerAt(double speed){
-    if(!manualMode) motor.set(speed * Constants.Climb.WIND_FACTOR);
-    else stop();
-  }
-  
-  /**
-   * Changes manualMode field value to opposite of current value
-   * <p> If switching from automatic to manual mode, stops motor
-   * @return updated status of manualMode
-   */
-  public boolean switchMode() {
-    if(!manualMode) motor.stopMotor();
-    manualMode = !manualMode;
-    return manualMode;
+    motor.set(speed * Constants.Climb.WIND_FACTOR);
   }
 
   /** Stops climb motor */
@@ -118,14 +101,12 @@ public class Climb extends SubsystemBase {
   }
   
   /**
-   * Displays boolean for mode status and values of relative and absolute encoders on Shuffleboard
+   * Displays value of relative encoder on Shuffleboard
    * @param tab - ShuffleboardTab to add values to
    */
   public void configDashboard(ShuffleboardTab tab) {
     if(isRight) tab.addDouble("Right Relative Encoder", () -> motor.getPosition().getValueAsDouble());
     else tab.addDouble("Left Relative Encoder", () -> motor.getPosition().getValueAsDouble());
-    
-    if(isRight) tab.addBoolean("Manual Mode?", () -> manualMode);
   }
   
   @Override

@@ -33,7 +33,10 @@ public final class Constants {
     /* current spiking check */
     public static final double SPIKE_CURRENT = 25, AUTOMATIC_LOWER_SPEED = 0.5, HANG_CURRENT = 15;
     public static final double CURRENT_LIMIT = 40;
-    
+
+    //digital input
+    public static final int LEFT_DIGITAL_INPUT_ID = 2, RIGHT_DIGITAL_INPUT_ID = 3; //TODO: change IDs
+        
     /* PID values*/
     public static final double UP_kP = 1.0, UP_kI = 0, UP_kD = 0, UP_kS = 0.00, UP_kD_TIME = 0.02;
     public static final double DOWN_kP = 0.85, DOWN_kI = 0, DOWN_kD = 0, DOWN_kD_TIME = 0.02, DOWN_kS = 0.0;

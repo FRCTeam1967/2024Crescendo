@@ -10,13 +10,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+// import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.DigitalInput;
+// import edu.wpi.first.wpilibj.PowerDistribution;
+// import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import edu.wpi.first.wpilibj2.command.*; //NOT WORKING
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+// import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -33,14 +34,17 @@ import frc.robot.commands.*;
 import frc.robot.Constants.*;
 
 public class RobotContainer {
-  private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID), rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
+  private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
+  private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
   private final Pivot pivot = new Pivot();
   private final Swerve swerve = new Swerve();
   private final Intake intake = new Intake();  
   private final Vision vision = new Vision();
   private final Shooter shooter = new Shooter();
   
-  private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
+  // private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
+  private final DigitalInput leftClimbSensor = new DigitalInput(Constants.Climb.LEFT_DIGITAL_INPUT_ID);
+  private final DigitalInput rightClimbSensor = new DigitalInput(Constants.Climb.RIGHT_DIGITAL_INPUT_ID);
   
   public ShuffleboardTab limelightTab = Shuffleboard.getTab("Limelight"), matchTab = Shuffleboard.getTab("Match");
   
@@ -52,10 +56,6 @@ public class RobotContainer {
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
     
-    matchTab.addDouble("Left Climb Current",
-      () -> pdh.getCurrent(Constants.Climb.LEFT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
-    matchTab.addDouble("Right Climb Current",
-      () -> pdh.getCurrent(Constants.Climb.RIGHT_MOTOR_PDH_PORT)).withWidget(BuiltInWidgets.kGraph);
     vision.configDashboard(limelightTab);
     
     resetSwerveSensors();
@@ -101,7 +101,7 @@ public class RobotContainer {
   
   /** Defines trigger->command mappings for {@link CommandXboxController Xbox} controllers */
   private void configureBindings() {
-    /*SWERVE*/
+    // SWERVE
     driverController.b().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve));
     driverController.a().onTrue(new VisionAlign(swerve, vision));
@@ -111,43 +111,37 @@ public class RobotContainer {
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getLeftY(),
       () -> -driverController.getLeftX(), () -> -driverController.getRightX()));
     
-    /*COMBINED INTAKE + PIVOT*/
+    // COMBINED INTAKE + PIVOT
     operatorController.a().whileTrue(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new RunIntake(intake, -0.5)));
     operatorController.a().whileFalse(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE), new RunIntake(intake, 0)));
     intake.setDefaultCommand(new RunIntake(intake, 0));
     
-    /*COMBINED FEEDER + SHOOTER*/
+    // COMBINED FEEDER + SHOOTER
     //operatorController.x().whileTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, -(Constants.Shooter.TOP_LEFT_SPEED), Constants.Shooter.TOP_RIGHT_SPEED, -(Constants.Shooter.BOTTOM_LEFT_SPEED), Constants.Shooter.BOTTOM_RIGHT_SPEED)));
     shooter.setDefaultCommand(new RunShooter(shooter, 0, 0, 0, 0));
     
-    /*SHOOTER*/
+    // SHOOTER
     operatorController.leftTrigger().whileTrue(new RunShooter(shooter, (Constants.Shooter.AMP_TOP_VELOCITY), (Constants.Shooter.AMP_TOP_ACCELERATION), (Constants.Shooter.AMP_BOTTOM_VELOCITY), Constants.Shooter.AMP_BOTTOM_ACCELERATION));
     operatorController.rightTrigger().whileTrue(new RunShooter(shooter, (Constants.Shooter.SPEAKER_TOP_VELOCITY), (Constants.Shooter.SPEAKER_TOP_ACCELERATION), (Constants.Shooter.SPEAKER_BOTTOM_VELOCITY), Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
     
-    /*FEEDER*/
+    // FEEDER
     //feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
     //operatorController.x().whileTrue(new RunFeeder(feeder, -0.8, -0.8));
     
     /*CLIMB*/
-    operatorController.x().onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> leftClimb.switchMode(), leftClimb), 
-      new InstantCommand(() -> rightClimb.switchMode(), rightClimb)));
     operatorController.y().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), leftClimb),
       new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), rightClimb)));
-    // operatorController.b().onTrue(new ParallelCommandGroup(
-    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), leftClimb),
-    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.SAFE_ROTATIONS, false), rightClimb)));
-    // operatorController.a().onTrue(new ParallelCommandGroup (
-    //   new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), leftClimb),
-    //   new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.LATCH_ROTATIONS, true), rightClimb))); 
     operatorController.a().onTrue(new ParallelCommandGroup(
-      new LowerClimbUntilSpike(Constants.Climb.LEFT_MOTOR_PDH_PORT, pdh, leftClimb), 
-      new LowerClimbUntilSpike(Constants.Climb.RIGHT_MOTOR_PDH_PORT, pdh, rightClimb)));
+      new LowerClimbUntilLatch(leftClimb, leftClimbSensor), new LowerClimbUntilLatch(rightClimb, rightClimbSensor)));
+    // JUST FOR TESTING
     leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
-      () -> MathUtil.applyDeadband(operatorController.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
+      () -> MathUtil.applyDeadband(operatorController.getLeftY(), Constants.Climb.DEADBAND))));
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(
       () -> MathUtil.applyDeadband(operatorController.getRightY(), Constants.Climb.DEADBAND)), rightClimb));
+    // FINAL
+    // leftClimb.setDefaultCommand(new InstantCommand(() -> leftClimb.stop()));
+    // rightClimb.setDefaultCommand(new InstantCommand(() -> rightClimb.stop()));
   }
 
   /**
