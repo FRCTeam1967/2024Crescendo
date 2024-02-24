@@ -65,7 +65,7 @@ public class Climb extends SubsystemBase {
   
   /** Sets zero position of encoder to just above the latch position of the telescoping arm */
   public void setEncoderOffset() {
-    motor.setPosition(Constants.Climb.TOP_ROTATIONS);
+    motor.setPosition(0);
   }
 
   /**

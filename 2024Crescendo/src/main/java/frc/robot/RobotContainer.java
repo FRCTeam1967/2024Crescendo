@@ -24,11 +24,11 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.reduxrobotics.canand.CanandEventLoop;
 
 import frc.robot.subsystems.Climb;
-import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.Shooter;
+//import frc.robot.subsystems.Pivot;
+// import frc.robot.subsystems.Swerve;
+// import frc.robot.subsystems.Intake;
+// import frc.robot.subsystems.Vision;
+// import frc.robot.subsystems.Shooter;
 
 import frc.robot.commands.*;
 import frc.robot.Constants.*;
@@ -36,11 +36,11 @@ import frc.robot.Constants.*;
 public class RobotContainer {
   private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
   private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
-  private final Pivot pivot = new Pivot();
-  private final Swerve swerve = new Swerve();
-  private final Intake intake = new Intake();  
-  private final Vision vision = new Vision();
-  private final Shooter shooter = new Shooter();
+  // private final Pivot pivot = new Pivot();
+  // private final Swerve swerve = new Swerve();
+  // private final Intake intake = new Intake();  
+  // private final Vision vision = new Vision();
+  // private final Shooter shooter = new Shooter();
   
   // private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
   
@@ -54,13 +54,13 @@ public class RobotContainer {
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
     
-    vision.configDashboard(limelightTab);
+    // vision.configDashboard(limelightTab);
     
-    resetSwerveSensors();
+    // resetSwerveSensors();
 
     CanandEventLoop.getInstance();
-    maintainPivotPosition();
-    pivot.setBrakeMode();
+    // maintainPivotPosition();
+    // pivot.setBrakeMode();
     
     configureBindings();
   }
@@ -70,57 +70,57 @@ public class RobotContainer {
     rightClimb.setEncoderOffset();
   }
   
-  public void maintainPivotPosition(){
-    pivot.setRelToAbs();
+  // public void maintainPivotPosition(){
+  //   pivot.setRelToAbs();
     
-    pivot.setpoint.velocity = 0;
-    pivot.setpoint.position = pivot.getAbsPos();
-    pivot.goal.velocity = 0;
-    pivot.goal.position = pivot.getAbsPos();
-  }
+  //   pivot.setpoint.velocity = 0;
+  //   pivot.setpoint.position = pivot.getAbsPos();
+  //   pivot.goal.velocity = 0;
+  //   pivot.goal.position = pivot.getAbsPos();
+  // }
   
-  public void resetSwerveSensors() {
-    swerve.frontLeft.resetEncoder();
-    swerve.frontRight.resetEncoder();
-    swerve.backLeft.resetEncoder();
-    swerve.backRight.resetEncoder();
-    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
-      swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
-    });;
-  }
+  // public void resetSwerveSensors() {
+  //   swerve.frontLeft.resetEncoder();
+  //   swerve.frontRight.resetEncoder();
+  //   swerve.backLeft.resetEncoder();
+  //   swerve.backRight.resetEncoder();
+  //   swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
+  //     swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
+  //   });;
+  // }
 
-  public InstantCommand swerveToCoastMode(){
-    return new InstantCommand(() -> swerve.setNeutralMode(false), swerve);         
-  }
+  // public InstantCommand swerveToCoastMode(){
+  //   return new InstantCommand(() -> swerve.setNeutralMode(false), swerve);         
+  // }
 
-  public void swerveToNeutralMode(){
-    swerve.setNeutralMode(true);
-  }
+  // public void swerveToNeutralMode(){
+  //   swerve.setNeutralMode(true);
+  // }
   
   /** Defines trigger->command mappings for {@link CommandXboxController Xbox} controllers */
   private void configureBindings() {
     // SWERVE
-    driverController.b().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
-    driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve));
-    driverController.a().onTrue(new VisionAlign(swerve, vision));
-    //driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), ()-> 0));
-    driverController.leftTrigger().whileTrue(new RunCommand(() -> swerve.goToAngle(180), swerve));
-    driverController.rightTrigger().whileTrue(new RunCommand(() -> swerve.goToAngle(90), swerve));
-    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getLeftY(),
-      () -> -driverController.getLeftX(), () -> -driverController.getRightX()));
+    // driverController.b().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
+    // driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve));
+    // driverController.a().onTrue(new VisionAlign(swerve, vision));
+    // //driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), ()-> 0));
+    // driverController.leftTrigger().whileTrue(new RunCommand(() -> swerve.goToAngle(180), swerve));
+    // driverController.rightTrigger().whileTrue(new RunCommand(() -> swerve.goToAngle(90), swerve));
+    // swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getLeftY(),
+    //   () -> -driverController.getLeftX(), () -> -driverController.getRightX()));
     
-    // COMBINED INTAKE + PIVOT
-    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new RunIntake(intake, -0.5)));
-    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE), new RunIntake(intake, 0)));
-    intake.setDefaultCommand(new RunIntake(intake, 0));
+    // // COMBINED INTAKE + PIVOT
+    // // operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new RunIntake(intake, -0.5)));
+    // // operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new SequentialCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE), new RunIntake(intake, 0)));
+    // // intake.setDefaultCommand(new RunIntake(intake, 0));
     
-    // COMBINED FEEDER + SHOOTER
-    //operatorController.x().whileTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, -(Constants.Shooter.TOP_LEFT_SPEED), Constants.Shooter.TOP_RIGHT_SPEED, -(Constants.Shooter.BOTTOM_LEFT_SPEED), Constants.Shooter.BOTTOM_RIGHT_SPEED)));
-    shooter.setDefaultCommand(new RunShooter(shooter, 0, 0, 0, 0));
+    // // COMBINED FEEDER + SHOOTER
+    // //operatorController.x().whileTrue(new SequentialCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(Constants.Feeder.FEED_TIME), new RunShooter(shooter, -(Constants.Shooter.TOP_LEFT_SPEED), Constants.Shooter.TOP_RIGHT_SPEED, -(Constants.Shooter.BOTTOM_LEFT_SPEED), Constants.Shooter.BOTTOM_RIGHT_SPEED)));
+    // shooter.setDefaultCommand(new RunShooter(shooter, 0, 0, 0, 0));
     
-    // SHOOTER
-    operatorController.y().whileTrue(new RunShooter(shooter, (Constants.Shooter.AMP_TOP_VELOCITY), (Constants.Shooter.AMP_TOP_ACCELERATION), (Constants.Shooter.AMP_BOTTOM_VELOCITY), Constants.Shooter.AMP_BOTTOM_ACCELERATION));
-    operatorController.a().whileTrue(new RunShooter(shooter, (Constants.Shooter.SPEAKER_TOP_VELOCITY), (Constants.Shooter.SPEAKER_TOP_ACCELERATION), (Constants.Shooter.SPEAKER_BOTTOM_VELOCITY), Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
+    // // SHOOTER
+    // operatorController.y().whileTrue(new RunShooter(shooter, (Constants.Shooter.AMP_TOP_VELOCITY), (Constants.Shooter.AMP_TOP_ACCELERATION), (Constants.Shooter.AMP_BOTTOM_VELOCITY), Constants.Shooter.AMP_BOTTOM_ACCELERATION));
+    // operatorController.a().whileTrue(new RunShooter(shooter, (Constants.Shooter.SPEAKER_TOP_VELOCITY), (Constants.Shooter.SPEAKER_TOP_ACCELERATION), (Constants.Shooter.SPEAKER_BOTTOM_VELOCITY), Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
     
     // FEEDER
     //feeder.setDefaultCommand(new RunFeeder(feeder, 0, 0));
@@ -137,12 +137,12 @@ public class RobotContainer {
     ));
       // JUST FOR TESTING
     leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.moveAt(
-      () -> MathUtil.applyDeadband(operatorController.getLeftY(), Constants.Climb.DEADBAND))));
+      () -> MathUtil.applyDeadband(operatorController.getLeftY(), Constants.Climb.DEADBAND)), leftClimb));
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.moveAt(
       () -> MathUtil.applyDeadband(operatorController.getRightY(), Constants.Climb.DEADBAND)), rightClimb));
     // FINAL
-    // leftClimb.setDefaultCommand(new InstantCommand(() -> leftClimb.stop()));
-    // rightClimb.setDefaultCommand(new InstantCommand(() -> rightClimb.stop()));
+    // leftClimb.setDefaultCommand(new InstantCommand(() -> leftClimb.stop(), leftClimb));
+    // rightClimb.setDefaultCommand(new InstantCommand(() -> rightClimb.stop(), rightClimb));
   }
 
   /**

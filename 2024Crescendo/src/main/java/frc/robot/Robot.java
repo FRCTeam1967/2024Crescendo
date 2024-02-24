@@ -29,13 +29,13 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
     
-    robotContainer.resetSwerveSensors();
+    // robotContainer.resetSwerveSensors();
 
     // Turn brake mode off shortly after the robot is disabled
-    new Trigger(this::isEnabled) // Create a trigger that is active when the robot is enabled
-      .negate() // Negate the trigger, so it is active when the robot is disabled
-      .debounce(3) // Delay action until robot has been disabled for a certain time
-      .onTrue(robotContainer.swerveToCoastMode().ignoringDisable(true)); //run when the robot is disabled
+    // new Trigger(this::isEnabled) // Create a trigger that is active when the robot is enabled
+    //   .negate() // Negate the trigger, so it is active when the robot is disabled
+    //   .debounce(3) // Delay action until robot has been disabled for a certain time
+    //   .onTrue(robotContainer.swerveToCoastMode().ignoringDisable(true)); //run when the robot is disabled
   }
 
   /**
@@ -64,10 +64,10 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    robotContainer.resetSwerveSensors();
+    // robotContainer.resetSwerveSensors();
     m_autonomousCommand = robotContainer.getAutonomousCommand();
 
-    robotContainer.swerveToNeutralMode();
+    // robotContainer.swerveToNeutralMode();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    robotContainer.swerveToNeutralMode();
+    // robotContainer.swerveToNeutralMode();
   }
 
   @Override
@@ -92,8 +92,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    robotContainer.swerveToNeutralMode();
-    robotContainer.maintainPivotPosition();
+    // robotContainer.swerveToNeutralMode();
+    // robotContainer.maintainPivotPosition();
     robotContainer.setClimbEncoderOffset();
   }
 
