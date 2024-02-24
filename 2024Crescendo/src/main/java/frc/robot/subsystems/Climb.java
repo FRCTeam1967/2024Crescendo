@@ -6,6 +6,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -22,20 +23,25 @@ public class Climb extends SubsystemBase {
   private TalonFXConfiguration config;
   private MotionMagicVoltage request;
   private boolean isRight;
+  private DigitalInput sensor;
   
   /**
    * Creates new Climb
-   * <p> Initializing and configuring motor for Motion Magic
+   * <p> Initializing and configuring motor for Motion Magic, initializing sensor
    * @param motorID - port for motor
-   * @param encoderID - port for absolute encoder
    */
   public Climb(int motorID) {
     motor = new TalonFX(motorID);
     config = new TalonFXConfiguration();
     request = new MotionMagicVoltage(0, false, 0.0, 0, false, false, false);
     
-    isRight = motorID == Constants.Climb.RIGHT_MOTOR_ID;
-    if(isRight) motor.setInverted(true);
+    isRight = (motorID == Constants.Climb.RIGHT_MOTOR_ID);
+    if(isRight) {
+      motor.setInverted(true);
+      sensor = new DigitalInput(Constants.Climb.RIGHT_DIGITAL_INPUT_ID);
+    } else {
+      sensor = new DigitalInput(Constants.Climb.LEFT_DIGITAL_INPUT_ID);
+    }
 
     motor.setNeutralMode(NeutralModeValue.Brake);
 
@@ -74,7 +80,6 @@ public class Climb extends SubsystemBase {
   
   /**
    * JUST FOR TESTING: if in manual mode, sets unwind/wind factor dependent on pos/neg value of speed and runs motor
-   * <p> If winding, encoder position must be above "safe" position to run. Otherwise, motor stops
    * @param speed - speed of motor
    */
   public void moveAt(DoubleSupplier speed) {
@@ -95,18 +100,23 @@ public class Climb extends SubsystemBase {
     motor.stopMotor();
   }
 
-  /** @return motor position as double */
-  public double getMotorPosition(){
-    return motor.getRotorPosition().getValueAsDouble();
+  /** @return sensor value (false when triggered) */
+  public boolean getSensorValue() {
+    return sensor.get();
   }
-  
+
   /**
    * Displays value of relative encoder on Shuffleboard
    * @param tab - ShuffleboardTab to add values to
    */
   public void configDashboard(ShuffleboardTab tab) {
-    if(isRight) tab.addDouble("Right Relative Encoder", () -> motor.getPosition().getValueAsDouble());
-    else tab.addDouble("Left Relative Encoder", () -> motor.getPosition().getValueAsDouble());
+    if(isRight){
+      tab.addDouble("Right Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
+      tab.addBoolean("Right Climb Sensor", () -> getSensorValue());
+    } else {
+      tab.addDouble("Left Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
+      tab.addBoolean("Left Climb Sensor", () -> getSensorValue());
+    }      
   }
   
   @Override

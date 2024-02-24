@@ -43,8 +43,6 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   
   // private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
-  private final DigitalInput leftClimbSensor = new DigitalInput(Constants.Climb.LEFT_DIGITAL_INPUT_ID);
-  private final DigitalInput rightClimbSensor = new DigitalInput(Constants.Climb.RIGHT_DIGITAL_INPUT_ID);
   
   public ShuffleboardTab limelightTab = Shuffleboard.getTab("Limelight"), matchTab = Shuffleboard.getTab("Match");
   
@@ -133,7 +131,7 @@ public class RobotContainer {
       new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), leftClimb),
       new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), rightClimb)));
     operatorController.povDown().onTrue(new ParallelCommandGroup(
-      new LowerClimbUntilLatch(leftClimb, leftClimbSensor), new LowerClimbUntilLatch(rightClimb, rightClimbSensor)));
+      new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)));
     operatorController.x().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.stop(), leftClimb), new InstantCommand(() -> rightClimb.stop(), rightClimb)
     ));
