@@ -4,7 +4,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -42,6 +42,9 @@ public class Shooter extends SubsystemBase {
 
     motor.setNeutralMode(NeutralModeValue.Coast);
     motor.getConfigurator().apply(config);
+    
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = 60;
   }
 
   /**
@@ -68,6 +71,15 @@ public class Shooter extends SubsystemBase {
     topRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
     bottomLeftMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
     bottomRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
+  }
+
+  public void configDashboard(ShuffleboardTab tab) {
+    tab.addDouble("Velocity", ()->getVelocity());
+  }
+
+  public double getVelocity(){
+    double averageVelocity = (Math.abs(topLeftMotor.getVelocity().getValueAsDouble())+ Math.abs(topRightMotor.getVelocity().getValueAsDouble()) + Math.abs(bottomLeftMotor.getVelocity().getValueAsDouble()) + Math.abs(bottomRightMotor.getVelocity().getValueAsDouble()))/4.0;
+    return averageVelocity; 
   }
 
   @Override

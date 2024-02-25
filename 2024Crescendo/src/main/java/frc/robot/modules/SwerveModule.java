@@ -124,7 +124,7 @@ public class SwerveModule {
         powerConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.DRIVE_GEAR_RATIO ; 
 
         powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        powerConfig.CurrentLimits.StatorCurrentLimit = 15;
+        powerConfig.CurrentLimits.StatorCurrentLimit = 40;
 
         powerControllerConfig.apply(powerConfig);
 
@@ -146,7 +146,7 @@ public class SwerveModule {
         steerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        steerConfig.CurrentLimits.StatorCurrentLimit = 15;
+        steerConfig.CurrentLimits.StatorCurrentLimit = 40;
 
         steerConfig.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID(); 
         steerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;

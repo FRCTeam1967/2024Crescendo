@@ -237,6 +237,7 @@ public class Swerve extends SubsystemBase{
 
     public void configDashboard(ShuffleboardTab tab){
         tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
+        tab.addBoolean("isReached?", () -> isInRange);
     }
 
 

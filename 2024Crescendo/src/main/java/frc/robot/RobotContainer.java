@@ -73,7 +73,7 @@ public class RobotContainer {
     configureBindings();
     // maintainPosition();
     // vision.configDashboard(limelightTab);
-
+    shooter.configDashboard(matchTab);
     feeder.configDashboard(matchTab);
     swerve.configDashboard(matchTab);
     leftClimb.configDashboard(matchTab);
@@ -126,12 +126,15 @@ public class RobotContainer {
       )
     );
     operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse (new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
-    operatorController.y().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
-      new RunShooter(shooter, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)));
     
+    /*operatorController.y().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
+      new RunShooter(shooter, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)));*/
+    
+    operatorController.y().whileTrue(new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
+
     operatorController.a().onTrue(
       new SequentialCommandGroup(
-        new AmpReverse(swerve).withTimeout(1),
+        new AmpReverse(swerve),
         new ParallelCommandGroup(
           new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
           new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)

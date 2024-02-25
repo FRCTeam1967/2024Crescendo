@@ -13,12 +13,12 @@ import frc.robot.Constants;
 import frc.robot.subsystems.*;
 
 public class AmpReverse extends Command {
-    //private double lastPosition, goalPosition;
+    private double lastPosition, goalPosition;
     private double initialPositionRevs, goalPositionRevs, currentPositionRevs;
     private final Swerve swerve;
 
     private final ProfiledPIDController translateController =
-            new ProfiledPIDController(3, 0, 0.0, Constants.Swerve.SWERVE_TRANSLATION_PID_CONSTRAINTS);
+            new ProfiledPIDController(1.5, 0, 0.0, Constants.Swerve.SWERVE_TRANSLATION_PID_CONSTRAINTS);
 
     public AmpReverse(Swerve swerve) {
         this.swerve = swerve;
@@ -34,8 +34,8 @@ public class AmpReverse extends Command {
         currentPositionRevs = swerve.getEncoderPosition();
 
         translateController.reset(currentPositionRevs, 0);
-        // lastPosition = swerve.getPose().getX();
-        // goalPosition = lastPosition + 0.09525; 
+        lastPosition = swerve.getPose().getX();
+        goalPosition = lastPosition + 0.09525; 
     }
 
   //   private double cleanAndScaleInput(double deadband, double input, double speedScaling) {
@@ -49,8 +49,8 @@ public class AmpReverse extends Command {
 
     public void execute() {
         currentPositionRevs = swerve.getEncoderPosition();
-        //double translateSpeed = translateController.calculate(swerve.getPose().getX(), goalPosition);
-        double translateSpeed = translateController.calculate(currentPositionRevs, goalPositionRevs);
+        double translateSpeed = translateController.calculate(swerve.getPose().getX(), goalPosition);
+        //double translateSpeed = translateController.calculate(currentPositionRevs, goalPositionRevs);
 
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateSpeed, 0, 0, swerve.getRotation2d());
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
