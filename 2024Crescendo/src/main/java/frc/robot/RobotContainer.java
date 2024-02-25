@@ -40,7 +40,7 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Feeder feeder = new Feeder();
    
-  //public Vision vision = new Vision();
+  public Vision vision = new Vision();
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
   private final CommandXboxController operatorController = new CommandXboxController(Xbox.OPERATOR_CONTROLLER_PORT);
@@ -59,8 +59,6 @@ public class RobotContainer {
     swerve.resetGyro();
   }, swerve);
 
-
-  //private final CommandXboxController m_xbox = new CommandXboxController(1);
  
   public RobotContainer() {
     resetSensors();
@@ -72,7 +70,6 @@ public class RobotContainer {
 
     configureBindings();
     // maintainPosition();
-    // vision.configDashboard(limelightTab);
     shooter.configDashboard(matchTab);
     feeder.configDashboard(matchTab);
     swerve.configDashboard(matchTab);
@@ -104,7 +101,7 @@ public class RobotContainer {
     //driverController.leftTrigger().whileTrue(turnToAngle);
 
     //b button
-    driverController.button(2).onTrue(resetGyro);
+    driverController.start().onTrue(resetGyro);
 
     //x button
     driverController.button(3).onTrue(goToDefenseMode);
@@ -125,14 +122,14 @@ public class RobotContainer {
         new RumbleController(operatorController, feeder).withTimeout(2)
       )
     );
-    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse (new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
+    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
     
     /*operatorController.y().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
       new RunShooter(shooter, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)));*/
     
     operatorController.y().whileTrue(new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
 
-    operatorController.a().onTrue(
+    operatorController.a().whileTrue(
       new SequentialCommandGroup(
         new AmpReverse(swerve),
         new ParallelCommandGroup(

@@ -18,13 +18,14 @@ public class AmpReverse extends Command {
     private final Swerve swerve;
 
     private final ProfiledPIDController translateController =
-            new ProfiledPIDController(1.5, 0, 0.0, Constants.Swerve.SWERVE_TRANSLATION_PID_CONSTRAINTS);
+            new ProfiledPIDController(0.8, 0, 0.0, Constants.Swerve.SWERVE_TRANSLATION_PID_CONSTRAINTS);
 
     public AmpReverse(Swerve swerve) {
         this.swerve = swerve;
 
         translateController.setTolerance(0.0001);
         translateController.enableContinuousInput(0, 1);
+        addRequirements(swerve);
     }
 
     public void initialize() {
@@ -35,7 +36,8 @@ public class AmpReverse extends Command {
 
         translateController.reset(currentPositionRevs, 0);
         lastPosition = swerve.getPose().getX();
-        goalPosition = lastPosition + 0.09525; 
+        goalPosition = lastPosition + 0.09525;
+        System.out.println("initalized"); 
     }
 
   //   private double cleanAndScaleInput(double deadband, double input, double speedScaling) {

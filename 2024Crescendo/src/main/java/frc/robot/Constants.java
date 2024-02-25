@@ -151,7 +151,7 @@ public final class Constants {
 
   public static final class Intake {
     public static final int MOTOR_ID = 13;
-    public static final double INTAKE_ROLLER_SPEED = -0.4, EJECT_ROLLER_SPEED = -0.25;
+    public static final double INTAKE_ROLLER_SPEED = -0.6, EJECT_ROLLER_SPEED = -0.25;
   }
 
   public static class Shooter {
