@@ -35,9 +35,10 @@ public class AmpReverse extends Command {
         currentPositionRevs = swerve.getEncoderPosition();
 
         translateController.reset(currentPositionRevs, 0);
-        lastPosition = swerve.getPose().getX();
-        goalPosition = lastPosition + 0.09525;
-        System.out.println("initalized"); 
+        //lastPosition = swerve.getPose().getX();
+        //goalPosition = lastPosition + 0.09525;
+        System.out.println("\n\n\n goalPosition: " + goalPosition); 
+        System.out.println("\n\n\n goalPositionRevs: " + goalPositionRevs); 
     }
 
   //   private double cleanAndScaleInput(double deadband, double input, double speedScaling) {
@@ -51,8 +52,8 @@ public class AmpReverse extends Command {
 
     public void execute() {
         currentPositionRevs = swerve.getEncoderPosition();
-        double translateSpeed = translateController.calculate(swerve.getPose().getX(), goalPosition);
-        //double translateSpeed = translateController.calculate(currentPositionRevs, goalPositionRevs);
+        //double translateSpeed = translateController.calculate(swerve.getPose().getX(), goalPosition);
+        double translateSpeed = translateController.calculate(currentPositionRevs, goalPositionRevs);
 
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateSpeed, 0, 0, swerve.getRotation2d());
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
