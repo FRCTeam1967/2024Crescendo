@@ -57,8 +57,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-   
-  
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -104,9 +102,9 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotContainer.swerve.setNeutralMode(true);
-
-    //m_robotContainer.pivotHoming();
-    //m_robotContainer.maintainPosition();
+    m_robotContainer.resetSensors();
+    m_robotContainer.maintainPivotPosition();
+    m_robotContainer.setClimbEncoderOffset();
   }
 
   /** This function is called periodically during operator control. */

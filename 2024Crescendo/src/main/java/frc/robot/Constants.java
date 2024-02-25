@@ -23,17 +23,16 @@ public final class Constants {
   }
   
   public static class Climb {
-    public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31;
-    public static final int LEFT_MOTOR_PDH_PORT = 18, RIGHT_MOTOR_PDH_PORT = 5;
+    public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31, LEFT_DIGITAL_INPUT_ID = 1;
+    public static final int LEFT_MOTOR_PDH_PORT = 18, RIGHT_MOTOR_PDH_PORT = 5, RIGHT_DIGITAL_INPUT_ID = 0;
     
     public static final double UNWIND_FACTOR = 0.7, WIND_FACTOR = 0.4, DEADBAND = 0.05;
     
     public static final double TOP_ROTATIONS = 80.0, SAFE_ROTATIONS = 0.0, LATCH_ROTATIONS = 120;
     
-    /* current spiking check */
-    public static final double SPIKE_CURRENT = 25, AUTOMATIC_LOWER_SPEED = 0.5, HANG_CURRENT = 15;
+    public static final double LOWER_SPEED = 0.8;
     public static final double CURRENT_LIMIT = 40;
-    
+        
     /* PID values*/
     public static final double UP_kP = 1.0, UP_kI = 0, UP_kD = 0, UP_kS = 0.00, UP_kD_TIME = 0.02;
     public static final double DOWN_kP = 0.85, DOWN_kI = 0, DOWN_kD = 0, DOWN_kD_TIME = 0.02, DOWN_kS = 0.0;
@@ -42,7 +41,7 @@ public final class Constants {
   
   public static class Feeder{
     public static final int LEFT_ID = 17, RIGHT_ID = 18;
-    public static final double FEED_TIME = 5.0, FEED_SPEED = 0.8;
+    public static final double FEED_TIME = 5.0, FEED_SPEED = -0.8, REVERSE_SPEED = 0.4;
   }
 
   public static class Swerve {
@@ -75,6 +74,8 @@ public final class Constants {
     public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = STEER_GEAR_RATIO;
 
     public static final double ANALOG_SAMPLE_DEPTH = 0;
+
+    public static final double REVERSE_OFFSET_REVS = (0.15/(4 * Math.PI) * DRIVE_GEAR_RATIO);
 
     public static final int FL_POWER = 7;
     public static final int FL_STEER = 8;
@@ -127,7 +128,6 @@ public final class Constants {
 
     public static final TrapezoidProfile.Constraints SWERVE_ROTATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(36000, 36000);
     public static final TrapezoidProfile.Constraints SWERVE_TRANSLATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(15, 3);
-
   }
 
   public static class Vision {
@@ -160,11 +160,11 @@ public final class Constants {
 
     public static final double kP = 0.32, kI = 0, kD = 0;
 
-    public static final double SPEAKER_TOP_VELOCITY = 90, SPEAKER_TOP_ACCELERATION = 65;
-    public static final double SPEAKER_BOTTOM_VELOCITY = 90, SPEAKER_BOTTOM_ACCELERATION = 65;
+    public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 65;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 100, SPEAKER_BOTTOM_ACCELERATION = 65;
 
-    public static final double AMP_TOP_VELOCITY = 20, AMP_TOP_ACCELERATION = 8;
-    public static final double AMP_BOTTOM_VELOCITY = 20, AMP_BOTTOM_ACCELERATION = 8;
+    public static final double AMP_TOP_VELOCITY = 13, AMP_TOP_ACCELERATION = 7;
+    public static final double AMP_BOTTOM_VELOCITY = 13, AMP_BOTTOM_ACCELERATION = 7;
   }
   
   public static class Pivot {
@@ -175,6 +175,6 @@ public final class Constants {
     
     public static final double CONVERSION_FACTOR = 1.0/360.0;
     public static final double INTAKE_SAFE = 100 * Constants.Pivot.CONVERSION_FACTOR;
-    public static final double INTAKE_DOWN = 10 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double INTAKE_DOWN = 6 * Constants.Pivot.CONVERSION_FACTOR;
   }
 }

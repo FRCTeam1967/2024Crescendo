@@ -190,6 +190,10 @@ public class SwerveModule {
             powerController.getPosition().getValue()*Constants.Swerve.MK4I_L1_REV_TO_METERS, getState().angle);
     }
 
+    public double getEncoderPosition() {
+        return powerController.getPosition().getValueAsDouble();
+    }
+
     private void addDashboardEntries(ShuffleboardContainer container) {
         container.addNumber("Encoder Position in Degrees", () -> analogEncoder.getAbsolutePosition().getValueAsDouble() * 360);
         container.addNumber("Falcon Position in Rotations", () -> steerController.getPosition().getValueAsDouble() * 360 % 360);

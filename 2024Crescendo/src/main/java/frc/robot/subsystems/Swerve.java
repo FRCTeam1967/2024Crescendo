@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.modules.SwerveModule;
 
@@ -29,11 +30,13 @@ public class Swerve extends SubsystemBase{
     public final SwerveModule backLeft;
     public final SwerveModule backRight;
 
+
     private final ADIS16470_IMU gyro;
     public final SwerveDriveOdometry odometry;
     private Field2d field = new Field2d();
 
     private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
+    private boolean isInRange = false;
 
     private Pose2d pose;
 
@@ -159,6 +162,20 @@ public class Swerve extends SubsystemBase{
         return a * a;
     }
 
+    public boolean isInRange(double goalRevs, double currentRevs){
+        double offsetRevs = (goalRevs-currentRevs);
+        if (offsetRevs > -Constants.Swerve.REVERSE_OFFSET_REVS && offsetRevs < Constants.Swerve.REVERSE_OFFSET_REVS){
+            isInRange = true;
+        } else {
+            isInRange = false;
+        }
+        return isInRange;
+    }
+
+    public double getEncoderPosition(){
+        return frontRight.getEncoderPosition();
+    }
+
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         frontLeft.setState(desiredStates[0]);
         frontRight.setState(desiredStates[1]);
@@ -218,9 +235,14 @@ public class Swerve extends SubsystemBase{
         }
     }
 
+    public void configDashboard(ShuffleboardTab tab){
+        tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
+    }
+
 
     @Override
     public void periodic() {
+        getEncoderPosition();
         frontLeft.periodic();
         frontRight.periodic();
         backLeft.periodic();
@@ -234,9 +256,6 @@ public class Swerve extends SubsystemBase{
 
           //System.out.println(pose);
           field.setRobotPose(pose);
-          
-    
-
     }
 
 }
