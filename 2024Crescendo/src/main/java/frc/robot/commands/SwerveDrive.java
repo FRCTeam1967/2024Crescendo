@@ -15,12 +15,14 @@ public class SwerveDrive extends Command {
     private final Swerve swerve;
     private DoubleSupplier xSupplier, ySupplier, rotationSupplier;
     private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
+    private boolean redAlliance;
 
-   public SwerveDrive (Swerve swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier) {
+   public SwerveDrive (Swerve swerve, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier, boolean redAlliance) {
         this.swerve = swerve;
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
         this.rotationSupplier = rotationSupplier;
+        this.redAlliance = redAlliance;
         addRequirements(swerve);
     }
 
@@ -38,6 +40,11 @@ public class SwerveDrive extends Command {
         double xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
         double ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
         double rotationSpeed = cleanAndScaleInput(0.00, rotationSupplier.getAsDouble(), rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED_IN_RAD);
+        // if (redAlliance){
+        //     xSpeed = -xSpeed;
+        //     ySpeed = -ySpeed;
+        //     rotationSpeed = -rotationSpeed;
+        // }
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, swerve.getRotation2d());
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
         //SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);

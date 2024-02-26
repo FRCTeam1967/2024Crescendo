@@ -43,7 +43,7 @@ public class RunFeederShooter extends Command {
   @Override
   public void execute() {
     shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
-    if (shooter.getVelocity() >= 65){
+    if (shooter.getVelocity() >= Constants.Shooter.SPEAKER_TOP_VELOCITY){
       shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
       feeder.feedFeeder(Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED);
     }

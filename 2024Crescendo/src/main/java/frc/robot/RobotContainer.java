@@ -11,11 +11,14 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import edu.wpi.first.wpilibj2.command.*; //NOT WORKING
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import java.util.Optional;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -39,6 +42,7 @@ public class RobotContainer {
   private final Intake intake = new Intake();  
   private final Shooter shooter = new Shooter();
   private final Feeder feeder = new Feeder();
+  private boolean redAlliance;
    
   public Vision vision = new Vision();
 
@@ -59,7 +63,7 @@ public class RobotContainer {
     swerve.resetGyro();
   }, swerve);
 
- 
+  
   public RobotContainer() {
     resetSensors();
     // CanandEventLoop.getInstance();
@@ -75,6 +79,14 @@ public class RobotContainer {
     swerve.configDashboard(matchTab);
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
+  }
+
+  public void onEnable(Optional<Alliance> alliance){
+    if (alliance.get() == Alliance.Red){
+      redAlliance = true;
+    } else {
+      redAlliance = false;
+    }
   }
 
   public void setClimbEncoderOffset(){
@@ -112,14 +124,14 @@ public class RobotContainer {
     //driverController.a().onTrue(new AmpReverse(swerve));
 
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
-      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
+      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4), redAlliance));
     
     /*OPERATOR CONTROLLER */
     operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(
       new SequentialCommandGroup(
         new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
         new ReverseBeamFeeder(feeder, Constants.Feeder.REVERSE_SPEED, Constants.Feeder.REVERSE_SPEED), 
-        new RumbleController(operatorController, feeder).withTimeout(2)
+        new RumbleController(driverController, operatorController, feeder).withTimeout(2)
       )
     );
     operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
@@ -127,11 +139,12 @@ public class RobotContainer {
     /*operatorController.y().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
       new RunShooter(shooter, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)));*/
     
-    operatorController.y().whileTrue(new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
-
+    operatorController.y().whileTrue(
+      new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
+/*BUTTON A - AMP REVERSE*/
     operatorController.a().whileTrue(
       new SequentialCommandGroup(
-        new AmpReverse(swerve),
+        new AmpReverse(swerve, redAlliance),
         new ParallelCommandGroup(
           new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
           new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)
@@ -155,6 +168,7 @@ public class RobotContainer {
     operatorController.povUp().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), leftClimb),
       new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), rightClimb)));
+      
     operatorController.povDown().onTrue(new ParallelCommandGroup(
       new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)));
     operatorController.x().onTrue(new ParallelCommandGroup(

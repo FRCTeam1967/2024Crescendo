@@ -12,10 +12,12 @@ import frc.robot.subsystems.Feeder;
 
 public class RumbleController extends Command {
   /** Creates a new RumbleController. */
-  private CommandXboxController xbox;
+  private CommandXboxController driverXbox;
+  private CommandXboxController operatorXbox;
   private Feeder feeder;
-  public RumbleController(CommandXboxController xbox, Feeder feeder) {
-    this.xbox = xbox;
+  public RumbleController(CommandXboxController driverXbox, CommandXboxController operatorXbox,Feeder feeder) {
+    this.driverXbox = driverXbox;
+    this.operatorXbox = operatorXbox;
     this.feeder = feeder;
     addRequirements(feeder);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -28,13 +30,15 @@ public class RumbleController extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    xbox.getHID().setRumble(RumbleType.kBothRumble, 0.8);
+    driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0.8);
+    operatorXbox.getHID().setRumble(RumbleType.kBothRumble, 0.8);
   }
 
   // Called once the command ends or is interrupted.
-  @Override
+  @Override 
   public void end(boolean interrupted) {
-    xbox.getHID().setRumble(RumbleType.kBothRumble, 0);
+    driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0);
+    operatorXbox.getHID().setRumble(RumbleType.kBothRumble, 0);
   }
 
   // Returns true when the command should end.

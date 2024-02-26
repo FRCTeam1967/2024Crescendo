@@ -16,27 +16,27 @@ public class AmpReverse extends Command {
     private double lastPosition, goalPosition;
     private double initialPositionRevs, goalPositionRevs, currentPositionRevs;
     private final Swerve swerve;
+    private boolean redAlliance;
 
     private final ProfiledPIDController translateController =
             new ProfiledPIDController(0.8, 0, 0.0, Constants.Swerve.SWERVE_TRANSLATION_PID_CONSTRAINTS);
 
-    public AmpReverse(Swerve swerve) {
+    public AmpReverse(Swerve swerve, boolean redAlliance) {
         this.swerve = swerve;
-
+        this.redAlliance = redAlliance;
         translateController.setTolerance(0.0001);
-        translateController.enableContinuousInput(0, 1);
         addRequirements(swerve);
     }
 
     public void initialize() {
-        initialPositionRevs = swerve.getEncoderPosition();
+        //initialPositionRevs = swerve.getEncoderPosition();
         //goalPositionRevs = initialPositionRevs + ((3.75/(4*Math.PI)) * Constants.Swerve.DRIVE_GEAR_RATIO);
-        goalPositionRevs = initialPositionRevs + 0.3083496;
-        currentPositionRevs = swerve.getEncoderPosition();
+        //goalPositionRevs = initialPositionRevs + Constants.Swerve.SWERVE_AMP_OFFSET;
+        //currentPositionRevs = swerve.getEncoderPosition();
 
-        translateController.reset(currentPositionRevs, 0);
-        //lastPosition = swerve.getPose().getX();
-        //goalPosition = lastPosition + 0.09525;
+        //translateController.reset(currentPositionRevs, 0);
+        lastPosition = swerve.getPose().getY();
+        goalPosition = lastPosition + 0.09525;
         System.out.println("\n\n\n goalPosition: " + goalPosition); 
         System.out.println("\n\n\n goalPositionRevs: " + goalPositionRevs); 
     }
@@ -52,10 +52,12 @@ public class AmpReverse extends Command {
 
     public void execute() {
         currentPositionRevs = swerve.getEncoderPosition();
-        //double translateSpeed = translateController.calculate(swerve.getPose().getX(), goalPosition);
-        double translateSpeed = translateController.calculate(currentPositionRevs, goalPositionRevs);
-
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateSpeed, 0, 0, swerve.getRotation2d());
+        double translateSpeed = translateController.calculate(swerve.getPose().getY(), goalPosition);
+        //double translateSpeed = translateController.calculate(currentPositionRevs, goalPositionRevs);
+        // if (redAlliance){
+        //     translateSpeed = -translateSpeed;
+        // }
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, Math.abs(translateSpeed), 0, swerve.getRotation2d());
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
         swerve.setModuleStates(moduleState);

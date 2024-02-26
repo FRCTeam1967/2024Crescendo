@@ -97,6 +97,8 @@ public final class Constants {
     public static final double WIDTH = Units.inchesToMeters(23);
     public static final double LENGTH = Units.inchesToMeters(23);
 
+    public static final double SWERVE_AMP_OFFSET = 0.3083496;
+
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
 
     public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = (2 / WHEEL_CIRCUMFERENCE) * 2 * Math.PI; 
@@ -160,8 +162,8 @@ public final class Constants {
 
     public static final double kP = 0.32, kI = 0, kD = 0;
 
-    public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 65;
-    public static final double SPEAKER_BOTTOM_VELOCITY = 100, SPEAKER_BOTTOM_ACCELERATION = 65;
+    public static final double SPEAKER_TOP_VELOCITY = 90, SPEAKER_TOP_ACCELERATION = 90;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 90, SPEAKER_BOTTOM_ACCELERATION = 90;
 
     public static final double AMP_TOP_VELOCITY = 13, AMP_TOP_ACCELERATION = 7;
     public static final double AMP_BOTTOM_VELOCITY = 13, AMP_BOTTOM_ACCELERATION = 7;
@@ -174,7 +176,7 @@ public final class Constants {
     public static final double kP = 3, kI = 0, kD = 0, kD_TIME = 0.02;
     
     public static final double CONVERSION_FACTOR = 1.0/360.0;
-    public static final double INTAKE_SAFE = 100 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double INTAKE_SAFE = 110 * Constants.Pivot.CONVERSION_FACTOR;
     public static final double INTAKE_DOWN = 6 * Constants.Pivot.CONVERSION_FACTOR;
   }
 }
