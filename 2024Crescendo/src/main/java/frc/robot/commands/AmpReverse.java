@@ -8,6 +8,9 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
@@ -17,6 +20,7 @@ public class AmpReverse extends Command {
     private double initialPositionRevs, goalPositionRevs, currentPositionRevs;
     private final Swerve swerve;
     private boolean redAlliance;
+    private Timer timer;
 
     private final ProfiledPIDController translateController =
             new ProfiledPIDController(0.8, 0, 0.0, Constants.Swerve.SWERVE_TRANSLATION_PID_CONSTRAINTS);
@@ -36,9 +40,12 @@ public class AmpReverse extends Command {
 
         //translateController.reset(currentPositionRevs, 0);
         lastPosition = swerve.getPose().getY();
-        goalPosition = lastPosition + 0.09525;
+        //goalPosition = lastPosition + 0.09525;
+        goalPosition = lastPosition - Units.inchesToMeters(1);
         System.out.println("\n\n\n goalPosition: " + goalPosition); 
         System.out.println("\n\n\n goalPositionRevs: " + goalPositionRevs); 
+        timer = new Timer();
+        timer.start();
     }
 
   //   private double cleanAndScaleInput(double deadband, double input, double speedScaling) {
@@ -57,10 +64,13 @@ public class AmpReverse extends Command {
         // if (redAlliance){
         //     translateSpeed = -translateSpeed;
         // }
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, Math.abs(translateSpeed), 0, swerve.getRotation2d());
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, -1*Math.abs(translateSpeed), 0, swerve.getRotation2d());
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, (Constants.Swerve.SWERVE_MAX_SPEED)/4);
         swerve.setModuleStates(moduleState);
+
+        SmartDashboard.putNumber("Goal Position", goalPosition);
+        SmartDashboard.putNumber("Current Position", swerve.getPose().getY());
     }
 
 
@@ -70,7 +80,10 @@ public class AmpReverse extends Command {
     }
 
     public boolean isFinished() {
-      return swerve.isInRange(goalPositionRevs, currentPositionRevs);
+        if ((timer.get() >= 0.25) || swerve.isInRange(goalPosition, swerve.getPose().getY())){
+            return true;
+        }
+        return false;
     }
 
 

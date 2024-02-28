@@ -44,7 +44,7 @@ public class Shooter extends SubsystemBase {
     motor.getConfigurator().apply(config);
     
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = 60;
+    config.CurrentLimits.StatorCurrentLimit = 80;
   }
 
   /**

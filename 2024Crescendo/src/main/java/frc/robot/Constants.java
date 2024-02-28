@@ -28,7 +28,7 @@ public final class Constants {
     
     public static final double UNWIND_FACTOR = 0.7, WIND_FACTOR = 0.4, DEADBAND = 0.05;
     
-    public static final double TOP_ROTATIONS = 80.0, SAFE_ROTATIONS = 0.0, LATCH_ROTATIONS = 120;
+    public static final double TOP_ROTATIONS = -130.0, SAFE_ROTATIONS = 0.0, LATCH_ROTATIONS = 120;
     
     public static final double LOWER_SPEED = 0.8;
     public static final double CURRENT_LIMIT = 40;
@@ -69,13 +69,13 @@ public final class Constants {
     public static final double STEER_GEAR_RATIO = 150/7;
     public static final double DRIVE_GEAR_RATIO = 8.14;
     public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
-    public static final double MK4I_L1_REV_TO_METERS = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
+    public static final double MK4I_L1_REV_TO_METERS = WHEEL_CIRCUMFERENCE;
     public static final double RPM_TO_MPS = MK4I_L1_REV_TO_METERS / 60;
     public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = STEER_GEAR_RATIO;
 
     public static final double ANALOG_SAMPLE_DEPTH = 0;
 
-    public static final double REVERSE_OFFSET_REVS = (0.15/(4 * Math.PI) * DRIVE_GEAR_RATIO);
+    public static final double REVERSE_OFFSET_REVS = Units.inchesToMeters(0.15);
 
     public static final int FL_POWER = 7;
     public static final int FL_STEER = 8;
@@ -137,6 +137,7 @@ public final class Constants {
   }
 
   public static class Auto {
+    public static final double PIVOT_INTAKE_TIMEOUT = 3.0, PIVOT_UP_TIMEOUT = 2.0, SHOOT_SPEAKER_TIMEOUT = 0.5;
     public static final double kMaxSpeedMetersPerSecond = 0.5;
     public static final double kMaxAccelerationMetersPerSecondSquared = 0.25;
     public static final double kMaxAngularSpeedDegreesPerSecond = 180;

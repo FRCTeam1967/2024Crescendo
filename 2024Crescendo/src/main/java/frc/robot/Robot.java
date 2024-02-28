@@ -46,7 +46,6 @@ public class Robot extends TimedRobot {
               () -> m_robotContainer.swerve.setNeutralMode(false), // Enable coast mode in drive train
               m_robotContainer.swerve) // command requires subsystem
               .ignoringDisable(true)); // This command can run when the robot is disabled
-
   }
 
   /**

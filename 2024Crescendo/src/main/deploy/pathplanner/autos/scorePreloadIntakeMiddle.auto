@@ -26,13 +26,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "intakeMiddle"
+            "pathName": "leaveZone"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pivotDownIntake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "intakeNote"
+            "name": "pivotUp"
           }
         }
       ]
