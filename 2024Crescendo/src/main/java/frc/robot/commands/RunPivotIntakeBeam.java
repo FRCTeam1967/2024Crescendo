@@ -36,9 +36,9 @@ public class RunPivotIntakeBeam extends Command {
 
   @Override
   public void execute() {
-      pivot.moveTo(Constants.Pivot.INTAKE_DOWN);
-      intake.runMotors(Constants.Intake.INTAKE_ROLLER_SPEED);
-      feeder.feedFeeder(leftSpeed, rightSpeed);
+    pivot.moveTo(Constants.Pivot.INTAKE_DOWN);
+    intake.runMotors(Constants.Intake.INTAKE_ROLLER_SPEED);
+    feeder.feedFeeder(leftSpeed, rightSpeed);
   }
 
   @Override

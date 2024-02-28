@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Optional;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import com.reduxrobotics.canand.CanandEventLoop;
 
@@ -33,7 +34,6 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Feeder;
 
 import frc.robot.commands.*;
-import frc.robot.commands.VisionAlign;
 import frc.robot.Constants.*;
 
 public class RobotContainer {
@@ -45,7 +45,7 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Feeder feeder = new Feeder();
   private boolean redAlliance;
-   
+
   public Vision vision = new Vision();
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
@@ -53,15 +53,15 @@ public class RobotContainer {
 
   public ShuffleboardTab matchTab = Shuffleboard.getTab("Match");
 
-  // FOR AUTO
-  private final Command pivotDownIntake = new RunPivotIntakeBeam(pivot, intake, feeder, 0, 0).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT);
-  private final Command pivotUp = new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE).withTimeout(Constants.Auto.PIVOT_UP_TIMEOUT);
-  private final Command shootSpeaker = new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(Constants.Auto.SHOOT_SPEAKER_TIMEOUT);
-
   SendableChooser<String> autoPathChooser = new SendableChooser<String>(); 
   String autoPath;
 
   public RobotContainer() {
+
+    NamedCommands.registerCommand("pivotDown", new RunPivotIntakeBeam(pivot, intake, feeder, 0, 0).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
+    NamedCommands.registerCommand("pivotUp", new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE).withTimeout(Constants.Auto.PIVOT_UP_TIMEOUT));
+    NamedCommands.registerCommand("shootSpeaker", new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(Constants.Auto.SHOOT_SPEAKER_TIMEOUT));
+
     resetSensors();
     // CanandEventLoop.getInstance();
 
@@ -78,8 +78,10 @@ public class RobotContainer {
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
 
-    autoPathChooser.setDefaultOption("Score Preload, Leave, Intake", "scorePreloadIntakeMiddle");
-    autoPathChooser.addOption("Score Preload, Leave", "scorePreloadScoreMiddle");
+    autoPathChooser.setDefaultOption("Score/Intake", "scorePreloadIntakeMiddle");
+    autoPathChooser.addOption("Score/Score", "scorePreloadScoreMiddle");
+    autoPathChooser.addOption("Score/Hide", "ScoreAndHide");
+    autoPathChooser.addOption("None", "DoNothing");
     matchTab.add("Auto Path", autoPathChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
 
   }
@@ -162,7 +164,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-   return new PathPlannerAuto("scorePreloadIntakeMiddle");
+   return new PathPlannerAuto(autoPathChooser.getSelected());
   }
 
   public void resetSensors() {
