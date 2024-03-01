@@ -39,7 +39,7 @@ public final class Constants {
     public static final double CRUISE_VELOCITY = 100.0, ACCELERATION = 40.0;
   }
   
-  public static class Feeder{
+  public static class Feeder {
     public static final int LEFT_ID = 17, RIGHT_ID = 18;
     public static final double FEED_TIME = 5.0, FEED_SPEED = -0.8, REVERSE_SPEED = 0.2;
   }
@@ -137,7 +137,7 @@ public final class Constants {
   }
 
   public static class Auto {
-    public static final double PIVOT_INTAKE_TIMEOUT = 1.0, PIVOT_UP_TIMEOUT = 1.0, SHOOT_SPEAKER_TIMEOUT = 2.0;
+    public static final double PIVOT_INTAKE_TIMEOUT = 2.0, PIVOT_UP_TIMEOUT = 2.0, SHOOT_SPEAKER_TIMEOUT = 3.0;
     public static final double kMaxSpeedMetersPerSecond = 0.5;
     public static final double kMaxAccelerationMetersPerSecondSquared = 0.25;
     public static final double kMaxAngularSpeedDegreesPerSecond = 180;

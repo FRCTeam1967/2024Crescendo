@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "SideToSide"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "pivotUp"

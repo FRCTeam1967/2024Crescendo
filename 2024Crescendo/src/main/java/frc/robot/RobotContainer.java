@@ -79,9 +79,10 @@ public class RobotContainer {
     rightClimb.configDashboard(matchTab);
 
     autoPathChooser.setDefaultOption("Score/Intake", "scorePreloadIntakeMiddle");
-    autoPathChooser.addOption("Score/Score", "scorePreloadScoreMiddle");
-    autoPathChooser.addOption("Score/Hide", "ScoreAndHide");
-    autoPathChooser.addOption("None", "DoNothing");
+    //autoPathChooser.addOption("Score/Score", "scorePreloadScoreMiddle");
+    //autoPathChooser.addOption("Side/Hide", "ScoreAndHide");
+    autoPathChooser.addOption("Sit/Shoot", "Shoot");
+    autoPathChooser.addOption("Sit", "DoNothing");
     matchTab.add("Auto Path", autoPathChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
 
   }
