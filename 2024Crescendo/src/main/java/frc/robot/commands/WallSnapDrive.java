@@ -28,6 +28,7 @@ public class WallSnapDrive extends Command {
 
         angleController.setTolerance(Constants.Swerve.SWERVE_ROTATION_TOLERANCE);
         angleController.enableContinuousInput(0, 360);
+        addRequirements(swerve);
     }
 
     private double currentHeading() {

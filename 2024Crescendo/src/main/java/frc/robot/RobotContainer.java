@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.Optional;
+import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -64,6 +65,8 @@ public class RobotContainer {
 
   SendableChooser<String> autoPathChooser = new SendableChooser<String>(); 
   String autoPath;
+
+  SendableChooser<DoubleSupplier> ampTimeout = new SendableChooser<DoubleSupplier>(); 
 
   public RobotContainer() {
 
@@ -166,18 +169,18 @@ public class RobotContainer {
 
     operatorController.a().onTrue( //AMP
       new SequentialCommandGroup(
-        new AmpReverseV2(swerve, ()-> 0.2, redAlliance),
+        new AmpReverseV2(swerve, ()-> 0.2 ,redAlliance),
         new ParallelCommandGroup(
           new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
           new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)
-        ).withTimeout(2)
+        ).withTimeout(2)//2
       )
     );
 
-    operatorController.start().whileTrue(new ParallelCommandGroup(
+    /*operatorController.start().whileTrue(new ParallelCommandGroup(
           new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
           new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)
-        ).withTimeout(3));
+        ).withTimeout(3));*/
     
     // CLIMB
     /*operatorController.povUp().onTrue(new ParallelCommandGroup(
@@ -198,7 +201,14 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-   return new PathPlannerAuto(autoPathChooser.getSelected());
+   //return new PathPlannerAuto(autoPathChooser.getSelected());
+   //return new InstantCommand(() -> {});
+   //return new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3);
+   return new SequentialCommandGroup(
+    new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3),
+    new SwerveDrive(swerve, ()-> 0.2, ()-> 0, ()-> 0, redAlliance).withTimeout(2),
+    new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
+    new ReverseBeamFeeder(feeder, Constants.Feeder.REVERSE_SPEED, Constants.Feeder.REVERSE_SPEED));
   }
 
   public void resetSensors() {
