@@ -80,7 +80,7 @@ public class AmpReverse extends Command {
     }
 
     public boolean isFinished() {
-        if ((timer.get() >= 0.25) || swerve.isInRange(goalPosition, swerve.getPose().getY())){
+        if ((timer.get() >= 0.8) || swerve.isInRange(goalPosition, swerve.getPose().getY())){
             return true;
         }
         return false;

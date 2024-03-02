@@ -1,3 +1,9 @@
+
+
+
+
+
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -32,6 +38,7 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Vision;
 
 import frc.robot.commands.*;
 import frc.robot.Constants.*;
@@ -46,7 +53,9 @@ public class RobotContainer {
   private final Feeder feeder = new Feeder();
   private boolean redAlliance;
 
-  public Vision vision = new Vision();
+  private Vision vision = new Vision();
+
+
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
   private final CommandXboxController operatorController = new CommandXboxController(Xbox.OPERATOR_CONTROLLER_PORT);
@@ -64,6 +73,9 @@ public class RobotContainer {
 
     resetSensors();
     // CanandEventLoop.getInstance();
+
+    leftClimb.setToZero();
+    rightClimb.setToZero();
 
     CanandEventLoop.getInstance();
     maintainPivotPosition();
@@ -85,6 +97,11 @@ public class RobotContainer {
     autoPathChooser.addOption("Sit", "DoNothing");
     matchTab.add("Auto Path", autoPathChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
 
+  }
+
+  public void setClimbToZero(){
+    leftClimb.setToZero();
+    rightClimb.setToZero();
   }
 
   public void onEnable(Optional<Alliance> alliance){
@@ -124,7 +141,9 @@ public class RobotContainer {
       )
     );
 
-    //driverController.a().onTrue(new VisionAlign(swerve, vision));
+    operatorController.start().whileTrue(new RunShooter(shooter, -Constants.Shooter.AMP_TOP_VELOCITY, -Constants.Shooter.AMP_TOP_ACCELERATION, -Constants.Shooter.AMP_BOTTOM_VELOCITY, -Constants.Shooter.AMP_BOTTOM_ACCELERATION));
+
+    //driverController.a().onTrue(new VisionAlign(swerve, vision).withTimeout(3));
 
     operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
     operatorController.rightBumper().whileTrue(new ParallelCommandGroup(new RunIntake(intake, -Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -Constants.Feeder.FEED_SPEED, -Constants.Feeder.FEED_SPEED)));
@@ -151,9 +170,13 @@ public class RobotContainer {
         ).withTimeout(3));
     
     // CLIMB
-    operatorController.povUp().onTrue(new ParallelCommandGroup(
+    /*operatorController.povUp().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), leftClimb),
-      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), rightClimb)));
+      new InstantCommand(() -> rightClimb.moveTo(Constants.Climb.TOP_ROTATIONS, false), rightClimb)));*/
+    
+    operatorController.povUp().onTrue(new ParallelCommandGroup(
+      new RaiseClimb(leftClimb, leftClimb.isZero), new RaiseClimb(rightClimb, rightClimb.isZero)));
+
     operatorController.povDown().onTrue(new ParallelCommandGroup(
       new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)));
     operatorController.x().onTrue(new ParallelCommandGroup(

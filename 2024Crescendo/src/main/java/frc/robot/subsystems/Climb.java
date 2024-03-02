@@ -8,12 +8,14 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import java.util.function.DoubleSupplier;
@@ -24,6 +26,8 @@ public class Climb extends SubsystemBase {
   private MotionMagicVoltage request;
   private boolean isRight;
   private DigitalInput sensor;
+
+  public boolean isZero;
   
   /**
    * Creates new Climb
@@ -39,7 +43,9 @@ public class Climb extends SubsystemBase {
     if(isRight) {
       motor.setInverted(true);
       sensor = new DigitalInput(Constants.Climb.RIGHT_DIGITAL_INPUT_ID);
+      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; //was changed SVR practice matches, theoretically should be false
     } else {
+      config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; //was changed SVR practice matches, theoretically should be false
       sensor = new DigitalInput(Constants.Climb.LEFT_DIGITAL_INPUT_ID);
     }
 
@@ -86,6 +92,10 @@ public class Climb extends SubsystemBase {
     if(speed.getAsDouble() < 0) motor.set(speed.getAsDouble() * Constants.Climb.WIND_FACTOR);
     else motor.set(speed.getAsDouble() * Constants.Climb.UNWIND_FACTOR);
   }
+
+  public double getPosition(){
+    return motor.getPosition().getValueAsDouble();
+  }
   
   /**
    * Lower motor at set speed if not in manual mode
@@ -105,6 +115,17 @@ public class Climb extends SubsystemBase {
     return sensor.get();
   }
 
+  public void setToZero(){
+    /*if (!getSensorValue()){
+      motor.setPosition(0);
+      isZero = true;
+    }else{
+      SmartDashboard.putString("zero position?", "no");
+      isZero = false;
+    }*/
+    motor.setPosition(0);
+  }
+
   /**
    * Displays value of relative encoder on Shuffleboard
    * @param tab - ShuffleboardTab to add values to
@@ -113,9 +134,11 @@ public class Climb extends SubsystemBase {
     if(isRight){
       tab.addDouble("Right Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
       tab.addBoolean("Right Climb Sensor", () -> getSensorValue());
+      tab.addDouble("Right Climb Pos", ()-> motor.getPosition().getValueAsDouble());
     } else {
       tab.addDouble("Left Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
       tab.addBoolean("Left Climb Sensor", () -> getSensorValue());
+      tab.addDouble("Left Climb Pos", ()-> motor.getPosition().getValueAsDouble());
     }      
   }
   

@@ -9,11 +9,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
 
-public class LowerClimbUntilLatch extends Command {
+public class RaiseClimb extends Command {
   private Climb climb;
+  private boolean isZero;
 
-  public LowerClimbUntilLatch(Climb _climb) {
+  public RaiseClimb(Climb _climb, boolean isZero) {
     climb = _climb;
+    this.isZero = isZero;
     addRequirements(climb);
   }
 
@@ -23,7 +25,8 @@ public class LowerClimbUntilLatch extends Command {
 
   @Override
   public void execute() {
-    climb.lowerAt(-Constants.Climb.LOWER_SPEED); 
+    //climb.moveTo(Constants.Climb.TOP_ROTATIONS, false);
+    climb.lowerAt(Constants.Climb.LOWER_SPEED); 
   }
 
   @Override
@@ -33,6 +36,18 @@ public class LowerClimbUntilLatch extends Command {
 
   @Override
   public boolean isFinished() {
-    return !climb.getSensorValue();
+    /*if (!isZero){
+      return true;
+    }else if (climb.getPosition() < -180){
+      return true;
+    }else{
+      return false;
+    }*/
+
+    if (climb.getPosition() < -135){
+      return true;
+    }else{
+      return false;
+    }
   }
 }
