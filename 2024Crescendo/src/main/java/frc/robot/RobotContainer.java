@@ -154,9 +154,19 @@ public class RobotContainer {
     //SHOOTER + FEEDER
     operatorController.y().whileTrue( //SPEAKER
       new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION));
+    // operatorController.a().onTrue( //AMP
+    //   new SequentialCommandGroup(
+    //     new AmpReverse(swerve, redAlliance),
+    //     new ParallelCommandGroup(
+    //       new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
+    //       new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)
+    //     ).withTimeout(2)
+    //   )
+    // );
+
     operatorController.a().onTrue( //AMP
       new SequentialCommandGroup(
-        new AmpReverse(swerve, redAlliance),
+        new AmpReverseV2(swerve, ()-> 0.2, redAlliance),
         new ParallelCommandGroup(
           new RunFeeder(feeder, (Constants.Feeder.FEED_SPEED), (Constants.Feeder.FEED_SPEED)),
           new RunShooter(shooter, Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION)
