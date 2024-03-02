@@ -50,7 +50,7 @@ public class RaiseClimb extends Command {
       return false;
     }*/
 
-    if ((climb.getPosition() < -75) || (timer.get() >= 2.5)){
+    if ((timer.get() >= 2.5)){
       return true;
     }else{
       return false;

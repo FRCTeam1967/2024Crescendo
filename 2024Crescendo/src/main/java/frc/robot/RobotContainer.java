@@ -203,12 +203,12 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
    //return new PathPlannerAuto(autoPathChooser.getSelected());
    //return new InstantCommand(() -> {});
-   //return new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3);
-   return new SequentialCommandGroup(
-    new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3),
-    new SwerveDrive(swerve, ()-> 0.2, ()-> 0, ()-> 0, redAlliance).withTimeout(2),
-    new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
-    new ReverseBeamFeeder(feeder, Constants.Feeder.REVERSE_SPEED, Constants.Feeder.REVERSE_SPEED));
+   return new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3);
+  //  return new SequentialCommandGroup(
+  //   new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3),
+  //   new SwerveDrive(swerve, ()-> 0.2, ()-> 0, ()-> 0, redAlliance).withTimeout(2),
+  //   new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
+  //   new ReverseBeamFeeder(feeder, Constants.Feeder.REVERSE_SPEED, Constants.Feeder.REVERSE_SPEED));
   }
 
   public void resetSensors() {
@@ -219,6 +219,10 @@ public class RobotContainer {
     swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
           swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
         });;
+  }
+
+  public void resetSwerveGyro(){
+    swerve.resetGyro();
   }
 
 }

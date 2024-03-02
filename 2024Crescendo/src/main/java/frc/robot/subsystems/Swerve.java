@@ -195,6 +195,10 @@ public class Swerve extends SubsystemBase{
         gyro.setGyroAngle(gyro.getYawAxis(), 0);
     }
 
+    public double getGyro () {
+        return gyro.getAngle(gyro.getYawAxis());
+    }
+
     public void goToAngle(double angleInDegrees){
         SwerveModuleState fixedDegree = new SwerveModuleState(0, Rotation2d.fromDegrees(angleInDegrees));
         frontLeft.setState(fixedDegree);
@@ -239,6 +243,7 @@ public class Swerve extends SubsystemBase{
         tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
         tab.addDouble("pose position x", () -> getPose().getX());
         tab.addDouble("pose position y", () -> getPose().getY());
+        tab.addDouble("Gyro Yaw Axis", () -> getGyro());
         tab.addBoolean("isReached?", () -> isInRange);
     }
 

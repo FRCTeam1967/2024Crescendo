@@ -64,7 +64,7 @@ public class AmpReverseV2 extends Command {
 
     @Override
     public boolean isFinished() {
-      if (timer.get() >= 0.5){
+      if (timer.get() >= 1){
         return true;
       }
         return false;
