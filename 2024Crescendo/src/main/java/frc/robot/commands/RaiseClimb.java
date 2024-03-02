@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.Constants;
@@ -12,6 +13,7 @@ import frc.robot.subsystems.Climb;
 public class RaiseClimb extends Command {
   private Climb climb;
   private boolean isZero;
+  private Timer timer;
 
   public RaiseClimb(Climb _climb, boolean isZero) {
     climb = _climb;
@@ -21,7 +23,10 @@ public class RaiseClimb extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer = new Timer();
+    timer.start();
+  }
 
   @Override
   public void execute() {
@@ -31,6 +36,7 @@ public class RaiseClimb extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    timer.stop();
     climb.stop();
   }
 
@@ -44,7 +50,7 @@ public class RaiseClimb extends Command {
       return false;
     }*/
 
-    if (climb.getPosition() < -135){
+    if ((climb.getPosition() < -75) || (timer.get() >= 2.5)){
       return true;
     }else{
       return false;

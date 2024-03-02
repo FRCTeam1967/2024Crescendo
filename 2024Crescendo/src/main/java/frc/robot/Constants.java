@@ -163,11 +163,11 @@ public final class Constants {
 
     public static final double kP = 0.32, kI = 0, kD = 0;
 
-    public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 100;
-    public static final double SPEAKER_BOTTOM_VELOCITY = 100, SPEAKER_BOTTOM_ACCELERATION = 100;
+    public static final double SPEAKER_TOP_VELOCITY = 1, SPEAKER_TOP_ACCELERATION = 1;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 1, SPEAKER_BOTTOM_ACCELERATION = 1;
 
-    public static final double AMP_TOP_VELOCITY = 13, AMP_TOP_ACCELERATION = 7;
-    public static final double AMP_BOTTOM_VELOCITY = 13, AMP_BOTTOM_ACCELERATION = 7;
+    public static final double AMP_TOP_VELOCITY = 0.15, AMP_TOP_ACCELERATION = 0.15;
+    public static final double AMP_BOTTOM_VELOCITY = 0.15, AMP_BOTTOM_ACCELERATION = 0.15;
   }
   
   public static class Pivot {

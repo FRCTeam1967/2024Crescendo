@@ -31,7 +31,7 @@ public class RunFeederShooter extends Command {
     this.bottomVelocity = bottomVelocity;
     this.bottomAcceleration = bottomAcceleration;
     this.feeder = feeder;
-    addRequirements(this.shooter);
+    addRequirements(this.shooter, this.feeder);
   }
 
   @Override
@@ -43,7 +43,7 @@ public class RunFeederShooter extends Command {
   @Override
   public void execute() {
     shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
-    if (shooter.getVelocity() >= 65){
+    if (shooter.getVelocity() >= 90){
       shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
       feeder.feedFeeder(Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED);
     }

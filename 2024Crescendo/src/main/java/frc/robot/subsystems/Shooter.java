@@ -36,9 +36,9 @@ public class Shooter extends SubsystemBase {
    * @param config - configuration to use
    */
   private void configMotor(TalonFX motor, TalonFXConfiguration config) {
-    config.Slot0.kP = Constants.Shooter.kP;
+    /*config.Slot0.kP = Constants.Shooter.kP;
     config.Slot0.kI = Constants.Shooter.kI;
-    config.Slot0.kD = Constants.Shooter.kD;
+    config.Slot0.kD = Constants.Shooter.kD;*/
 
     motor.setNeutralMode(NeutralModeValue.Coast);
     motor.getConfigurator().apply(config);
@@ -55,22 +55,32 @@ public class Shooter extends SubsystemBase {
    * @param bottomAcceleration
    */
   public void runShooter(double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration) {
-    topLeftMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
+    /*topLeftMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
     topRightMotor.setControl(new VelocityVoltage(topVelocity, topAcceleration, false, 0.0, 0, false, false, false));
     bottomLeftMotor
         .setControl(new VelocityVoltage(-bottomVelocity, -bottomAcceleration, false, 0.0, 0, false, false, false));
     bottomRightMotor
-        .setControl(new VelocityVoltage(bottomVelocity, bottomAcceleration, false, 0.0, 0, false, false, false));
+        .setControl(new VelocityVoltage(bottomVelocity, bottomAcceleration, false, 0.0, 0, false, false, false));*/
+
+    topLeftMotor.set(-topVelocity);
+    topRightMotor.set(topAcceleration);
+    bottomLeftMotor.set(-bottomVelocity);
+    bottomRightMotor.set(bottomAcceleration);
   }
 
   /**
    * Stops all shooter motors
    */
   public void stopMotors() {
-    topLeftMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
+    /*topLeftMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
     topRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
     bottomLeftMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
-    bottomRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
+    bottomRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));*/
+
+    topLeftMotor.stopMotor();
+    topRightMotor.stopMotor();
+    bottomLeftMotor.stopMotor();
+    bottomRightMotor.stopMotor();
   }
 
   public void configDashboard(ShuffleboardTab tab) {
