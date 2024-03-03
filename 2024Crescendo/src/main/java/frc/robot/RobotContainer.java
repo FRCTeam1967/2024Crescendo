@@ -57,13 +57,22 @@ public class RobotContainer {
   private Vision vision = new Vision();
 
 
+  public static final String shootSit = "Shoot/Sit";
+  public static final String leave = "Leave";
+  public static final String shootLeave = "Shoot/Leave";
+
+
+
+
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
   private final CommandXboxController operatorController = new CommandXboxController(Xbox.OPERATOR_CONTROLLER_PORT);
 
   public ShuffleboardTab matchTab = Shuffleboard.getTab("Match");
 
-  SendableChooser<String> autoPathChooser = new SendableChooser<String>(); 
+  SendableChooser<String> autoPathChooser2 = new SendableChooser<String>(); 
+
+
   String autoPath;
 
   SendableChooser<DoubleSupplier> ampTimeout = new SendableChooser<DoubleSupplier>(); 
@@ -93,13 +102,17 @@ public class RobotContainer {
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
 
-    autoPathChooser.setDefaultOption("Score/Intake", "scorePreloadIntakeMiddle");
+    /*autoPathChooser.setDefaultOption("Score/Intake", "scorePreloadIntakeMiddle");
     //autoPathChooser.addOption("Score/Score", "scorePreloadScoreMiddle");
     //autoPathChooser.addOption("Side/Hide", "ScoreAndHide");
     autoPathChooser.addOption("Sit/Shoot", "Shoot");
     autoPathChooser.addOption("Sit", "DoNothing");
-    matchTab.add("Auto Path", autoPathChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+    matchTab.add("Auto Path", autoPathChooser).withWidget(BuiltInWidgets.kComboBoxChooser);*/
 
+    autoPathChooser2.setDefaultOption(shootSit, shootSit);
+    autoPathChooser2.addOption(leave, leave);
+    autoPathChooser2.addOption(shootLeave, shootLeave);
+    matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
   }
 
   public void setClimbToZero(){
@@ -201,14 +214,47 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
+    String auto = autoPathChooser2.getSelected();
    //return new PathPlannerAuto(autoPathChooser.getSelected());
    //return new InstantCommand(() -> {});
-   return new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3);
-  //  return new SequentialCommandGroup(
+   
+   //return ScoreSit();
+   //return Leave();
+   //return ScoreLeave();
+  
+  
+   //  return new SequentialCommandGroup(
   //   new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3),
   //   new SwerveDrive(swerve, ()-> 0.2, ()-> 0, ()-> 0, redAlliance).withTimeout(2),
   //   new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
   //   new ReverseBeamFeeder(feeder, Constants.Feeder.REVERSE_SPEED, Constants.Feeder.REVERSE_SPEED));
+
+        switch (auto) {
+          case shootSit:
+            return ShootSit();
+          case leave:
+            return Leave();
+          case shootLeave:
+            return ShootLeave();
+          default:
+            return ShootSit();
+        }
+
+  }
+
+  public Command ShootSit(){
+    return new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3);
+  }
+
+  public Command Leave(){
+    return new SwerveDrive(swerve, ()->0.3, ()->0, ()->0, redAlliance).withTimeout(2);
+  }
+
+  public Command ShootLeave(){
+     return new SequentialCommandGroup(new RunFeederShooter(shooter, feeder, 
+              Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, 
+              Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3), 
+            new SwerveDrive(swerve, ()->0.3, ()->0, ()->0, redAlliance).withTimeout(2));
   }
 
   public void resetSensors() {

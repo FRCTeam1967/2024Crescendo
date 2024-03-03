@@ -18,6 +18,8 @@ public class AmpReverseV2 extends Command {
     private DoubleSupplier ySupplier;
     private SlewRateLimiter yLimiter;
     private Timer timer;
+    private double initialPos;
+    private double finalPos;
     private boolean redAlliance;
 
 
@@ -31,6 +33,9 @@ public class AmpReverseV2 extends Command {
     public void initialize() {
         timer = new Timer();
         timer.start();
+        initialPos = swerve.getEncoderPosition();
+        finalPos = initialPos + 0.32495117;
+        finalPos = initialPos + 0.16807819;
     }
 
     private double cleanAndScaleInput(double deadband, double input, SlewRateLimiter limiter, double speedScaling) {
@@ -64,7 +69,7 @@ public class AmpReverseV2 extends Command {
 
     @Override
     public boolean isFinished() {
-      if (timer.get() >= 1){
+      if ((timer.get() >= 1) || (swerve.getEncoderPosition() >= finalPos)){
         return true;
       }
         return false;
