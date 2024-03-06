@@ -69,7 +69,7 @@ public class AmpReverseV2 extends Command {
 
     @Override
     public boolean isFinished() {
-      if ((timer.get() >= 1) || (swerve.getEncoderPosition() >= finalPos)){
+      if ((timer.get() >= 0.6)){
         return true;
       }
         return false;

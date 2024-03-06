@@ -79,9 +79,9 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    NamedCommands.registerCommand("pivotDown", new RunPivotIntakeBeam(pivot, intake, feeder, 0, 0).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
-    NamedCommands.registerCommand("pivotUp", new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE).withTimeout(Constants.Auto.PIVOT_UP_TIMEOUT));
-    NamedCommands.registerCommand("shootSpeaker", new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(Constants.Auto.SHOOT_SPEAKER_TIMEOUT));
+    // NamedCommands.registerCommand("pivotDown", new RunPivotIntakeBeam(pivot, intake, feeder, 0, 0).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
+    // NamedCommands.registerCommand("pivotUp", new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE).withTimeout(Constants.Auto.PIVOT_UP_TIMEOUT));
+    // NamedCommands.registerCommand("shootSpeaker", new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(Constants.Auto.SHOOT_SPEAKER_TIMEOUT));
 
     resetSensors();
     // CanandEventLoop.getInstance();
@@ -109,10 +109,10 @@ public class RobotContainer {
     autoPathChooser.addOption("Sit", "DoNothing");
     matchTab.add("Auto Path", autoPathChooser).withWidget(BuiltInWidgets.kComboBoxChooser);*/
 
-    autoPathChooser2.setDefaultOption(shootSit, shootSit);
-    autoPathChooser2.addOption(leave, leave);
-    autoPathChooser2.addOption(shootLeave, shootLeave);
-    matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
+    // autoPathChooser2.setDefaultOption(shootSit, shootSit);
+    // autoPathChooser2.addOption(leave, leave);
+    // autoPathChooser2.addOption(shootLeave, shootLeave);
+    //matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
   }
 
   public void setClimbToZero(){
@@ -214,7 +214,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    String auto = autoPathChooser2.getSelected();
+    //String auto = autoPathChooser2.getSelected();
    //return new PathPlannerAuto(autoPathChooser.getSelected());
    //return new InstantCommand(() -> {});
    
@@ -229,16 +229,18 @@ public class RobotContainer {
   //   new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
   //   new ReverseBeamFeeder(feeder, Constants.Feeder.REVERSE_SPEED, Constants.Feeder.REVERSE_SPEED));
 
-        switch (auto) {
-          case shootSit:
-            return ShootSit();
-          case leave:
-            return Leave();
-          case shootLeave:
-            return ShootLeave();
-          default:
-            return ShootSit();
-        }
+        // switch (auto) {
+        //   case shootSit:
+        //     return ShootSit();
+        //   case leave:
+        //     return Leave();
+        //   case shootLeave:
+        //     return ShootLeave();
+        //   default:
+        //     return ShootSit();
+        // }
+
+      return TwoNote();
 
   }
 
@@ -246,15 +248,55 @@ public class RobotContainer {
     return new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3);
   }
 
+  public Command RightAngleShoot(){
+    return new SequentialCommandGroup(
+           new SwerveDrive(swerve, ()->0, ()->0, ()->-0.2, redAlliance).withTimeout(0.25),
+           new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY,
+           Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY,
+           Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)).withTimeout(5);
+ }
+
+ public Command LeftAngleShoot(){
+    return new SequentialCommandGroup(
+           new SwerveDrive(swerve, ()->0, ()->0, ()->0.2, redAlliance).withTimeout(0.25),
+           new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY,
+           Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY,
+           Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION)).withTimeout(5);
+ }
+
   public Command Leave(){
-    return new SwerveDrive(swerve, ()->0.3, ()->0, ()->0, redAlliance).withTimeout(2);
+    return new SwerveDrive(swerve, ()->0, ()->-0.2, ()->0, redAlliance).withTimeout(1);
   }
 
-  public Command ShootLeave(){
+  public Command TwoNote(){
      return new SequentialCommandGroup(new RunFeederShooter(shooter, feeder, 
               Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, 
-              Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(3), 
-            new SwerveDrive(swerve, ()->0.3, ()->0, ()->0, redAlliance).withTimeout(2));
+              Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(1),
+        new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
+        new SwerveDrive(swerve, ()->0.3, ()->0, ()->0, redAlliance)).withTimeout(1.5),
+        new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(2),
+        new SwerveDrive(swerve, ()->-0.3, ()->0, ()->0, redAlliance).withTimeout(1.75),
+        new RunFeederShooter(shooter, feeder, 
+              Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, 
+              Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(1));
+  }
+
+  public Command ThreeNote(){
+     return new SequentialCommandGroup(new RunFeederShooter(shooter, feeder, 
+              Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, 
+              Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(1),
+        new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
+        new SwerveDrive(swerve, ()->0.3, ()->0, ()->0, redAlliance)).withTimeout(1.5),
+        new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(2),
+        new SwerveDrive(swerve, ()->-0.3, ()->0, ()->0, redAlliance).withTimeout(1.75),
+        new RunFeederShooter(shooter, feeder, 
+              Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, 
+              Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(1),
+        new SwerveDrive(swerve, ()->0.3, ()->0, ()->0, redAlliance).withTimeout(0.6),
+        new SwerveDrive(swerve, ()->0, ()->-0.3, ()->0, redAlliance).withTimeout(1),
+        new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED), 
+        new SwerveDrive(swerve, ()->0.3, ()->0, ()->0, redAlliance)).withTimeout(0.9),
+        new RunPivotIntakeBeam(pivot, intake, feeder, Constants.Feeder.FEED_SPEED, Constants.Feeder.FEED_SPEED).withTimeout(2));
   }
 
   public void resetSensors() {

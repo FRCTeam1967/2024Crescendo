@@ -166,8 +166,8 @@ public final class Constants {
     public static final double SPEAKER_TOP_VELOCITY = 1, SPEAKER_TOP_ACCELERATION = 1;
     public static final double SPEAKER_BOTTOM_VELOCITY = 1, SPEAKER_BOTTOM_ACCELERATION = 1;
 
-    public static final double AMP_TOP_VELOCITY = 0.15, AMP_TOP_ACCELERATION = 0.15;
-    public static final double AMP_BOTTOM_VELOCITY = 0.15, AMP_BOTTOM_ACCELERATION = 0.15;
+    public static final double AMP_TOP_VELOCITY = 0.08, AMP_TOP_ACCELERATION = 0.08;
+    public static final double AMP_BOTTOM_VELOCITY = 0.08, AMP_BOTTOM_ACCELERATION = 0.08;
   }
   
   public static class Pivot {
