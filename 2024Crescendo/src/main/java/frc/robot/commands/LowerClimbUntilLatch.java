@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
 
 public class LowerClimbUntilLatch extends Command {
@@ -17,13 +16,12 @@ public class LowerClimbUntilLatch extends Command {
     addRequirements(climb);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
   @Override
   public void execute() {
-    climb.lowerAt(-Constants.Climb.LOWER_SPEED); 
+    climb.runMotors(true); 
   }
 
   @Override

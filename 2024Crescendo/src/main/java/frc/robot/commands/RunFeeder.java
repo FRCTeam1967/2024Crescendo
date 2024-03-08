@@ -9,18 +9,16 @@ import frc.robot.subsystems.*;
 
 public class RunFeeder extends Command {
   private Feeder feeder;
-  private double leftSpeed, rightSpeed;
+  private double speed;
   
   /**
    * Creates a new RunFeeder
    * @param feeder - Feeder object
-   * @param leftSpeed
-   * @param rightSpeed
+   * @param speed
    */
-  public RunFeeder(Feeder feeder, double leftSpeed, double rightSpeed) {
+  public RunFeeder(Feeder feeder, double speed) {
     this.feeder = feeder;
-    this.leftSpeed = leftSpeed;
-    this.rightSpeed = rightSpeed;
+    this.speed = speed;
     addRequirements(this.feeder);
   }
 
@@ -29,7 +27,7 @@ public class RunFeeder extends Command {
 
   @Override
   public void execute() {
-    feeder.feedFeeder(leftSpeed, rightSpeed);
+    feeder.feedFeeder(speed);
   }
 
   @Override

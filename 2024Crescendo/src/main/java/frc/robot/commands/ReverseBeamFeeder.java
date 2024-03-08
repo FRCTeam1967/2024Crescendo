@@ -5,22 +5,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.*;
 
 public class ReverseBeamFeeder extends Command {
   private Feeder feeder;
-  private double leftSpeed, rightSpeed;
   
   /**
    * Creates a new RunFeeder
    * @param feeder - Feeder object
-   * @param leftSpeed
-   * @param rightSpeed
    */
-  public ReverseBeamFeeder(Feeder feeder, double leftSpeed, double rightSpeed) {
+  public ReverseBeamFeeder(Feeder feeder) {
     this.feeder = feeder;
-    this.leftSpeed = leftSpeed;
-    this.rightSpeed = rightSpeed;
     addRequirements(this.feeder);
   }
 
@@ -29,7 +25,7 @@ public class ReverseBeamFeeder extends Command {
 
   @Override
   public void execute() {
-    feeder.feedFeeder(leftSpeed, rightSpeed);
+    feeder.feedFeeder(Constants.Feeder.REVERSE_SPEED);
   }
 
   @Override

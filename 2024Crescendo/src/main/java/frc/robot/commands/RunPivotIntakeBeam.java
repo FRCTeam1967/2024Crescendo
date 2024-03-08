@@ -5,29 +5,24 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.*;
 import frc.robot.Constants;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class RunPivotIntakeBeam extends Command {
   private Feeder feeder;
   private Intake intake;
   private Pivot pivot;
-  private double leftSpeed, rightSpeed;
   
   /**
-   * Creates a new RunFeeder
+   * Creates a new RunPivotIntakeBeam
+   * @param pivot - Pivot object
+   * @param intake - Intake object
    * @param feeder - Feeder object
-   * @param leftSpeed
-   * @param rightSpeed
    */
-  public RunPivotIntakeBeam(Pivot pivot, Intake intake, Feeder feeder, double leftSpeed, double rightSpeed) {
+  public RunPivotIntakeBeam(Pivot pivot, Intake intake, Feeder feeder) {
     this.intake = intake;
     this.feeder = feeder;
     this.pivot = pivot;
-    this.leftSpeed = leftSpeed;
-    this.rightSpeed = rightSpeed;
     addRequirements(this.pivot, this.intake, this.feeder);
   }
 
@@ -38,7 +33,7 @@ public class RunPivotIntakeBeam extends Command {
   public void execute() {
     pivot.moveTo(Constants.Pivot.INTAKE_DOWN);
     intake.runMotors(Constants.Intake.INTAKE_ROLLER_SPEED);
-    feeder.feedFeeder(leftSpeed, rightSpeed);
+    feeder.feedFeeder(Constants.Feeder.FEED_SPEED);
   }
 
   @Override

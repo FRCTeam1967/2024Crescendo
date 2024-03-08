@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
 
 public class RunShooter extends Command {
@@ -14,18 +15,23 @@ public class RunShooter extends Command {
   /**
    * Creates a new RunShooter
    * @param shooter - Shooter object
-   * @param topVelocity
-   * @param topAcceleration
-   * @param bottomVelocity
-   * @param bottomAcceleration
+   * @param speaker - true if shooting into speaker, false if shooting into amp
    */
-  public RunShooter(Shooter shooter, double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration) {
+  public RunShooter(Shooter shooter, boolean speaker) {
     this.shooter = shooter;
-    this.topVelocity = topVelocity;
-    this.topAcceleration = topAcceleration;
-    this.bottomVelocity = bottomVelocity;
-    this.bottomAcceleration = bottomAcceleration;
     addRequirements(this.shooter);
+
+    if(speaker){
+      topVelocity = Constants.Shooter.SPEAKER_TOP_VELOCITY;
+      topAcceleration = Constants.Shooter.SPEAKER_TOP_ACCELERATION;
+      bottomVelocity = Constants.Shooter.SPEAKER_BOTTOM_VELOCITY;
+      bottomAcceleration = Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION;
+    } else {
+      topVelocity = Constants.Shooter.AMP_TOP_VELOCITY;
+      topAcceleration = Constants.Shooter.AMP_TOP_ACCELERATION;
+      bottomVelocity = Constants.Shooter.AMP_BOTTOM_VELOCITY;
+      bottomAcceleration = Constants.Shooter.AMP_BOTTOM_ACCELERATION;
+    }
   }
 
   @Override

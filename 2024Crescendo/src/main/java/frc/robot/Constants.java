@@ -9,33 +9,20 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
- */
 public final class Constants {
   public static class Xbox {
     public static final int DRIVER_CONTROLLER_PORT = 0, OPERATOR_CONTROLLER_PORT = 1;
   }
   
   public static class Climb {
-    public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31, LEFT_DIGITAL_INPUT_ID = 1;
-    public static final int LEFT_MOTOR_PDH_PORT = 18, RIGHT_MOTOR_PDH_PORT = 5, RIGHT_DIGITAL_INPUT_ID = 0;
-    
+    public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31;
+    public static final int LEFT_DIGITAL_INPUT_ID = 1, RIGHT_DIGITAL_INPUT_ID = 0;
     public static final double UNWIND_FACTOR = 0.7, WIND_FACTOR = 0.4, DEADBAND = 0.05;
-    
-    public static final double TOP_ROTATIONS = -130.0, SAFE_ROTATIONS = 0.0, LATCH_ROTATIONS = 120;
-    
-    public static final double LOWER_SPEED = 0.8;
+
+    public static final double RAISE_SPEED = 0.8, LOWER_SPEED = 0.8, RAISE_TIME = 2.5;
     public static final double CURRENT_LIMIT = 40;
-        
-    /* PID values*/
-    public static final double UP_kP = 1.0, UP_kI = 0, UP_kD = 0, UP_kS = 0.00, UP_kD_TIME = 0.02;
-    public static final double DOWN_kP = 0.85, DOWN_kI = 0, DOWN_kD = 0, DOWN_kD_TIME = 0.02, DOWN_kS = 0.0;
+    
+    public static final double kP = 1.0, kI = 0, kD = 0, kS = 0.00, kD_TIME = 0.02;
     public static final double CRUISE_VELOCITY = 100.0, ACCELERATION = 40.0;
   }
   
@@ -45,24 +32,19 @@ public final class Constants {
   }
 
   public static class Swerve {
-    public static final double POWER_kS = 0.2;//0.14; //0.14 best
-    public static final double POWER_kV = 8;//0.9; //1.8, 1., 0.8 //in volts
-    public static final double POWER_kA = 0.1;//0.1; 
-    public static final double POWER_kP = 0.01;//0.01; //0.2 //in rotations
+    public static final double POWER_kS = 0.2;
+    public static final double POWER_kV = 8;
+    public static final double POWER_kA = 0.1;
+    public static final double POWER_kP = 0.01;
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
-    public static final double STEER_kS = 0.1;//0.05;//0.15;//0.13; // 0.6, 0.8, 0.7, 0.15 (still moving)
-    public static final double STEER_kV = 30;//35;//2.1; // 0.5, 0, 0.1, 1
-    public static final double STEER_kA = 15;//15;//0.1; //typically small (Ryan)
-    public static final double STEER_kP = 12.5;//12.5;//3; // 1.2, 0.8, 0.1 (1868: 2.4)
+    public static final double STEER_kS = 0.1;
+    public static final double STEER_kV = 30;
+    public static final double STEER_kA = 15;
+    public static final double STEER_kP = 12.5;
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
-
-    public static final int pigeonID = 1;
-
-    public static final int climbLeftEncoderIdx = 30;
-    public static final int climbRightEncoderIdx = 31;
 
     //0.319024 = circumference in meters
     //12.8:1 = rotor to sensor ratio
@@ -73,31 +55,18 @@ public final class Constants {
     public static final double RPM_TO_MPS = MK4I_L1_REV_TO_METERS / 60;
     public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = STEER_GEAR_RATIO;
 
-    public static final double ANALOG_SAMPLE_DEPTH = 0;
-
     public static final double REVERSE_OFFSET_REVS = Units.inchesToMeters(0.15);
 
-    public static final int FL_POWER = 7;
-    public static final int FL_STEER = 8;
-    public static final int FL_ENCODER = 4;
-
-    public static final int FR_POWER = 1;
-    public static final int FR_STEER = 2;
-    public static final int FR_ENCODER = 1;
-
-    public static final int BL_POWER = 5;
-    public static final int BL_STEER = 6;
-    public static final int BL_ENCODER = 3;
-
-    public static final int BR_POWER = 3;
-    public static final int BR_STEER = 4;
-    public static final int BR_ENCODER = 2;
+    public static final int FL_POWER = 7, FL_STEER = 8, FL_ENCODER = 4;
+    public static final int FR_POWER = 1, FR_STEER = 2, FR_ENCODER = 1;
+    public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
+    public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
     public static final double SWERVE_MAX_SPEED = 4.1695;//0.3; //4.1695 mps //3 for driver
-    public static final double WIDTH = Units.inchesToMeters(23);
-    public static final double LENGTH = Units.inchesToMeters(23);
+    public static final double WIDTH = Units.inchesToMeters(23), LENGTH = Units.inchesToMeters(23);
 
     public static final double SWERVE_AMP_OFFSET = 0.3083496;
+    public static final double AMP_REVERSE = 0.2;
 
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
 
@@ -109,23 +78,14 @@ public final class Constants {
     public static Translation2d m_backLeftLocation = new Translation2d(-LENGTH / 2, WIDTH / 2);
     public static Translation2d m_backRightLocation = new Translation2d(-LENGTH / 2, -WIDTH / 2);
 
-
     public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = new SwerveDriveKinematics(
-      //fl
-        m_frontLeftLocation,
-      //fr
-        m_frontRightLocation,
-      //bl
-        m_backLeftLocation,
-      //br
-        m_backRightLocation
+      m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
 
     SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
-
-
+    
     public static final double SWERVE_ROTATION_TOLERANCE = 5;
 
     public static final TrapezoidProfile.Constraints SWERVE_ROTATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(36000, 36000);

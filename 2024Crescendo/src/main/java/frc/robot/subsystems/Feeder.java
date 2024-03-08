@@ -17,11 +17,10 @@ public class Feeder extends SubsystemBase {
   private CANSparkMax leftMotor, rightMotor;
   private DigitalInput sensor;
 
-  /** Creates new Feeder */
+  /** Create new Feeder */
   public Feeder() {
     leftMotor = new CANSparkMax (Constants.Feeder.LEFT_ID, MotorType.kBrushless); 
     rightMotor = new CANSparkMax(Constants.Feeder.RIGHT_ID, MotorType.kBrushless);
-
     sensor = new DigitalInput(8);
   }
   
@@ -30,9 +29,9 @@ public class Feeder extends SubsystemBase {
    * @param leftSpeed
    * @param rightSpeed
    */
-  public void feedFeeder(double leftSpeed, double rightSpeed){
-    leftMotor.set(leftSpeed);
-    rightMotor.set(rightSpeed);
+  public void feedFeeder(double speed){
+    leftMotor.set(speed);
+    rightMotor.set(speed);
   }
 
   /** Stops feeder motors */
@@ -46,7 +45,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public void configDashboard(ShuffleboardTab tab){
-    tab.addBoolean("Beam Broken?", ()-> isBroken());
+    tab.addBoolean("Beam Broken?", ()->isBroken());
   }
 
   @Override
