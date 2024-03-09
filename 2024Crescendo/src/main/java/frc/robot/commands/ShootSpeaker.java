@@ -41,7 +41,7 @@ public class ShootSpeaker extends Command {
   @Override
   public void execute() {
     shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
-    if (shooter.getVelocity() >= 90){
+    if (shooter.getAverageVelocity() >= 90){
       shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
       feeder.feedFeeder(Constants.Feeder.FEED_SPEED);
     }

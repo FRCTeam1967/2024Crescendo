@@ -121,13 +121,20 @@ public final class Constants {
     public static final int TOP_LEFT_MOTOR_ID = 20, TOP_RIGHT_MOTOR_ID = 21;
     public static final int BOTTOM_LEFT_MOTOR_ID = 19, BOTTOM_RIGHT_MOTOR_ID = 22;
 
-    public static final double kP = 0.32, kI = 0, kD = 0;
+    public static final double kP = 0.32, kI = 0, kD = 0, kV = 0.07, kA = 0.06;
 
-    public static final double SPEAKER_TOP_VELOCITY = 1, SPEAKER_TOP_ACCELERATION = 1;
-    public static final double SPEAKER_BOTTOM_VELOCITY = 1, SPEAKER_BOTTOM_ACCELERATION = 1;
+    public static final double A_TOP_SPEED = 0.162;
+    public static final double A_BOTTOM_SPEED = 0.162;
 
-    public static final double AMP_TOP_VELOCITY = 0.08, AMP_TOP_ACCELERATION = 0.08;
-    public static final double AMP_BOTTOM_VELOCITY = 0.08, AMP_BOTTOM_ACCELERATION = 0.08;
+    public static final double AMP_TOP_VELOCITY = 12.5, AMP_TOP_ACCELERATION = 15;
+    public static final double AMP_BOTTOM_VELOCITY = 12.5, AMP_BOTTOM_ACCELERATION = 15;
+
+
+    public static final double S_TOP_SPEED = 1;
+    public static final double S_BOTTOM_SPEED = 1;
+
+    public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 90;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 100, SPEAKER_BOTTOM_ACCELERATION = 90;
   }
   
   public static class Pivot {
