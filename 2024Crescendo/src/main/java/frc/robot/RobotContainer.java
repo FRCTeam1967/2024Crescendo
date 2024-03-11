@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -138,6 +139,7 @@ public class RobotContainer {
     ));
 
     operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
+    // MDS: P3: This is eject, right? Does the intake need to be down to do that?
     operatorController.rightBumper().whileTrue(new ParallelCommandGroup(new RunIntake(intake, -Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -Constants.Feeder.FEED_SPEED)));
     
     //SHOOTER + FEEDER
@@ -209,10 +211,23 @@ public class RobotContainer {
  }
 
   public Command Leave(){
+    // MDS: P2: Shouldn't this be applied to the X axis and not the Y?
     return new SwerveDrive(swerve, ()->0, ()->-0.2, ()->0).withTimeout(1);
   }
 
   public Command TwoNote(){
+    // MDS: P2: Reformat so people can quickly see where the nested commands are:
+    // return new SequentialCommandGroup(
+    //   new ShootSpeaker(shooter, feeder).withTimeout(1),
+    //   new ParallelCommandGroup(
+    //     new RunPivotIntakeBeam(pivot, intake, feeder), 
+    //     new SwerveDrive(swerve, ()->0.3, ()->0, ()->0)
+    //   ).withTimeout(1.5),
+    //   new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(2),
+    //   new SwerveDrive(swerve, ()->-0.3, ()->0, ()->0).withTimeout(1.75),
+    //   new ShootSpeaker(shooter, feeder).withTimeout(1)
+    // );
+    
     return new SequentialCommandGroup(
       new ShootSpeaker(shooter, feeder).withTimeout(1),
       new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), 
@@ -224,6 +239,7 @@ public class RobotContainer {
   }
 
   public Command ThreeNote(){
+    // MDS: P2: Reformat so people can quickly see where the nested commands are:
     return new SequentialCommandGroup(
       new ShootSpeaker(shooter, feeder).withTimeout(1),
       new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), 
@@ -244,6 +260,9 @@ public class RobotContainer {
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();
     swerve.backRight.resetEncoder();
+    // MDS: P3: Not sure why we need to do this when just starting up. But you'd probably want to reset odometry here
+    // if the motors can have positions from the last time you deployed code. Maybe:
+    //   swerve.resetOdometry(new Pose2d());
     swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;

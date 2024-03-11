@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.NetworkTableInstance.NetworkMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,6 +40,7 @@ public class Climb extends SubsystemBase {
     
     isRight = (motorID == Constants.Climb.RIGHT_MOTOR_ID);
     if(isRight) {
+      // MDS: P2: This is actually the opposite of what gets set on the config object. We should just delete this line.
       motor.setInverted(true);
       sensor = new DigitalInput(Constants.Climb.RIGHT_DIGITAL_INPUT_ID);
       config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -47,6 +49,8 @@ public class Climb extends SubsystemBase {
       sensor = new DigitalInput(Constants.Climb.LEFT_DIGITAL_INPUT_ID);
     }
     
+    // MDS: P2: This gets overridden when the configuration object is applied. Change this to:
+    //   config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     motor.setNeutralMode(NeutralModeValue.Brake);
 
     config.Slot0.kP = Constants.Climb.kP;
@@ -84,6 +88,7 @@ public class Climb extends SubsystemBase {
    * @param lower - true if lowering climb
    */
   public void runMotors(boolean lower){
+    // MDS: P1: Both speeds are positive... Surely one of values passed to set() should be negative?
     if(lower) motor.set(Constants.Climb.LOWER_SPEED);
     else motor.set(Constants.Climb.RAISE_SPEED);
   }

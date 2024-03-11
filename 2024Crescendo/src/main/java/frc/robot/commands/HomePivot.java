@@ -33,6 +33,9 @@ public class HomePivot extends Command {
 
   @Override
   public boolean isFinished() {
+    // MDS: P3: This seems weird to be in the isFinished() method. Generally, isFinished() shouldn't have side effects
+    // (modify state). This seems like you'd want this all to be in initialize or execute, and that isFinished() would return
+    // true always. Do we really need to wait for the profile if we just set the goal and state to be the same? 
     pivot.setpoint.velocity = 0;
     pivot.setpoint.position = pivot.getAbsPos();
     pivot.goal.velocity = 0;

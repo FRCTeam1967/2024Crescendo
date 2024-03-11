@@ -39,6 +39,11 @@ public class AmpReverse extends Command {
   @Override
   public void execute() {
     double ySpeed = cleanAndScaleInput(0.00, Constants.Swerve.AMP_REVERSE, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
+    // MDS: P3: I think this was working, but I don't understand why. We're using field relative speeds, so the X axis is between the alliance
+    // walls. But the amp is on the side wall, so wouldn't we want to be changing the y value, or be using 
+    // robot-relative speeds (where X is forward) since we can assume (?) the driver drove into the amp shooter first? In the latter case,
+    // that would just be creating a ChassisSpeeds object directly -- i.e.:
+    //   ChassisSpeeds chassisSpeeds = new ChassisSpeeds(ySpeed, 0, 0);
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, 0, 0, swerve.getRotation2d());
     SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     swerve.setModuleStates(moduleState);

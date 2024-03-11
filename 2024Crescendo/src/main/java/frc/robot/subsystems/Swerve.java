@@ -30,6 +30,7 @@ public class Swerve extends SubsystemBase{
   public final SwerveDriveOdometry odometry;
   private Field2d field = new Field2d();
 
+  // MDS: P3: Limiters aren't used; delete?
   private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
   private boolean isInRange = false;
 
@@ -68,6 +69,8 @@ public class Swerve extends SubsystemBase{
           new PIDConstants(0.0001, 0.0, 0.0), // Translation PID constants
           new PIDConstants(Constants.Auto.kPThetaController, 0.0, 0.0), // Rotation PID constants
           0.3, // Max module speed, in m/s
+          // MDS: P2: Where did this come from? Wouldn't it be (InchesToMeters(23) / 2) * sqrt(2) since we're square, so we have a 45-45-90 triangle?
+          // I come up with a different number, but it's close.
           0.41309, // Drive base radius in meters. Distance from robot center to furthest module.
           new ReplanningConfig() // Default path replanning config. See the API for the options here
     ), () -> {
@@ -89,9 +92,11 @@ public class Swerve extends SubsystemBase{
 
   /** @return Rotation2d object with desired angle based on degrees from gyro */
   public Rotation2d getRotation2d() {
+    // MDS: P3: Rotation2d.fromDegrees(getYaw()) ? 
     return Rotation2d.fromDegrees(gyro.getAngle(gyro.getYawAxis()));
   }
 
+  // MDS: P3: This is the same as getGyro() below. We don't really need both.
   public double getYaw() {
     return gyro.getAngle(gyro.getYawAxis());
   }
@@ -159,6 +164,12 @@ public class Swerve extends SubsystemBase{
   }
 
   public void resetGyro () {
+    // MDS: P2: This is going to screw up odometry. Maybe we just don't care about using it if this ever happens? 
+    // We could do something like this to keep the current position on the field:
+    //   swerveOdometry.resetPosition(getRotation2d(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    // but if the driver needs to use this button, we've probably been feeding bad data into odometry already so I'm 
+    // not sure it's worth it.
+
     gyro.setGyroAngle(gyro.getYawAxis(), 0);
   }
 
@@ -214,8 +225,10 @@ public class Swerve extends SubsystemBase{
     backLeft.periodic();
     backRight.periodic();
 
+    // MDS: P3: No, it's local and not used. Delete.
     var gyroAngle = getRotation2d(); //TODO: is this used anywhere?
 
+    // MDS: P3: pose = odometry.update(getRotation2d(), getModulePositions());
     pose = odometry.update(getRotation2d(), new SwerveModulePosition[] {
       frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
     });

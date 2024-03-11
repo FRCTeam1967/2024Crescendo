@@ -94,6 +94,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    // MDS: P2: Why do we need to call this every 40ms? 
     m_robotContainer.swerve.setNeutralMode(true);
   }
 

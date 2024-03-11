@@ -22,6 +22,8 @@ public class VisionAlign extends Command {
 
     translateController.setTolerance(0.0001);
     translateController.enableContinuousInput(0, 1);
+
+    // MDS: P2: Shouldn't this require the Swerve and Vision subsystems? 
   }
 
   public void initialize() {
@@ -30,6 +32,7 @@ public class VisionAlign extends Command {
   }
 
   public void execute() {
+    // MDS: P3: What's the magic number?
     double translateSpeed = translateController.calculate(swerve.getPose().getY(), lastPosition+(vision.getOffset()*0.0254));
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, translateSpeed, 0, swerve.getRotation2d());
     

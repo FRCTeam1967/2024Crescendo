@@ -48,6 +48,7 @@ public final class Constants {
 
     //0.319024 = circumference in meters
     //12.8:1 = rotor to sensor ratio
+    // MDS: P1: STEER_GEAR_RATIO is wrong because of integer math. Make this 150.0/7.0. 
     public static final double STEER_GEAR_RATIO = 150/7;
     public static final double DRIVE_GEAR_RATIO = 8.14;
     public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
@@ -62,9 +63,11 @@ public final class Constants {
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
+    // MDS: P3: Include unit in constant or at least add a comment. Looks like this is m/s?
     public static final double SWERVE_MAX_SPEED = 4.1695;//0.3; //4.1695 mps //3 for driver
     public static final double WIDTH = Units.inchesToMeters(23), LENGTH = Units.inchesToMeters(23);
 
+    // MDS: P3: Include unit in constant or at least add a comment. I don't know what either of these do
     public static final double SWERVE_AMP_OFFSET = 0.3083496;
     public static final double AMP_REVERSE = 0.2;
 
@@ -82,10 +85,12 @@ public final class Constants {
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
 
+    // MDS: P3: This duplicates the above and is not used. Delete it.
     SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
     
+    // MDS: P3: Units? 
     public static final double SWERVE_ROTATION_TOLERANCE = 5;
 
     public static final TrapezoidProfile.Constraints SWERVE_ROTATION_PID_CONSTRAINTS = new TrapezoidProfile.Constraints(36000, 36000);
@@ -109,11 +114,13 @@ public final class Constants {
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
+    // MDS: P3: Why not write it out: 180.0 / Math.PI ? 
     public static final double RADIANS_TO_DEGREES = 57.29578;
   } 
 
   public static final class Intake {
     public static final int MOTOR_ID = 13;
+    // MDS: P2: I'd think intake and eject would have opposite signs. Maybe I don't know what they're doing.
     public static final double INTAKE_ROLLER_SPEED = -0.6, EJECT_ROLLER_SPEED = -0.25;
   }
 
@@ -139,10 +146,15 @@ public final class Constants {
   
   public static class Pivot {
     public static final int PIVOT_ID = 14, ENCODER_ID = 23;
+    // MDS: P3: This fine because they're both integers, but for good measure, gear ratios should use doubles -- e.g., 50.0/1.0
     public static final double GEAR_RATIO = 50/1;
 
     public static final double kP = 3, kI = 0, kD = 0, kD_TIME = 0.02;
     
+    // MDS: P3: DEGREES_TO_REVOLUTIONS?
+    // MDS: P3: As an aside, I find it easier to think about these kinds of constants if you create a helper class that
+    // provides conversions. You can create static methods like Conversions.DegreesToRevolutions() and Conversions.RevolutionsToDegrees()
+    // and then you don't have to remember if you multiply or divide by the constant every time you use it.
     public static final double CONVERSION_FACTOR = 1.0/360.0;
     public static final double INTAKE_SAFE = 110 * Constants.Pivot.CONVERSION_FACTOR;
     public static final double INTAKE_DOWN = 6 * Constants.Pivot.CONVERSION_FACTOR;

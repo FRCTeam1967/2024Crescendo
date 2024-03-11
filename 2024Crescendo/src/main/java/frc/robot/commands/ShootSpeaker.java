@@ -41,6 +41,20 @@ public class ShootSpeaker extends Command {
   @Override
   public void execute() {
     shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
+    // MDS: P2: A few things here. First, since you can (but don't currently) have top
+    // and bottom velcoities that are different, taking the average is weird. Either commit
+    // to always having the same, or make take the top and bottom averages separately. 
+    // Second, you have this hard coded 90 here that doesn't change if you sent the velocities
+    // to 50 or 180. It should probably be a percentage of the target the velocity(-ies).
+    // Third, if we're in the middle of shooting, and the speeds drop below 90 as the note goes
+    // through, we don't want to stop running the feeder. We should probably have a property
+    // like reachedShootingSpeed that starts out False in initialize(), and once the average 
+    // velocity gets to the point we want, set it to True. Then change the condition here to:
+    //   if (reachedShooterSpeed || shooter.getAverageVelocity() >= 0.9 * speakerVelocity) {
+    //       reachedShooterSpeed = true;
+    //       shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
+    //       feeder.feedFeeder(Constants.Feeder.FEED_SPEED);
+    //   }
     if (shooter.getAverageVelocity() >= 90){
       shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
       feeder.feedFeeder(Constants.Feeder.FEED_SPEED);

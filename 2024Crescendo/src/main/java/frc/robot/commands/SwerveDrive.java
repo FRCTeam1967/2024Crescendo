@@ -50,6 +50,8 @@ public class SwerveDrive extends Command {
     return false;
   }
 
+  // MDS: P3: This is used more than once. It would be good to put it in a MathUtil library. Though you can also
+  // use copySign -- i.e., Math.copySign(a * a, a);
   public static double signedSquare(double a) {
     if (a < 0) return -(a * a);
     else return a * a;
