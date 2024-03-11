@@ -74,8 +74,11 @@ public class SwerveModule {
         var cancoderConfig = analogEncoder.getConfigurator();
 
         // MDS: P2: Shouldn't we also be setting this to have SensorDirectionValue.CounterClockwise_Positive? 
+        // Actually that's the default, but since we're using it as the motor's sensor, and the motor is in a 
+        // different orientation, does it need to be different? 
         // Maybe this is working without that because the steer motor is getting uninverted in brake/coast mode below?
         // But even though those offset each other, that probably screws up left/right with respect to PathPlanner?
+
         ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
 
         // MDS: P3: These should reall go into Constants, and you should be able to pick between the two robots
