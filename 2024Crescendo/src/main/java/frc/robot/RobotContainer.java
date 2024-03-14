@@ -122,6 +122,7 @@ public class RobotContainer {
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.runManual(() -> operatorController.getRightY()), rightClimb));
     intake.setDefaultCommand(new RunIntake(intake, 0));
     feeder.setDefaultCommand(new RunFeeder(feeder, 0));
+    shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
     driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 

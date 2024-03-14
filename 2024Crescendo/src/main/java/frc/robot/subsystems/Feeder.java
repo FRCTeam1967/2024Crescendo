@@ -21,7 +21,7 @@ public class Feeder extends SubsystemBase {
   public Feeder() {
     leftMotor = new CANSparkMax (Constants.Feeder.LEFT_ID, MotorType.kBrushless); 
     rightMotor = new CANSparkMax(Constants.Feeder.RIGHT_ID, MotorType.kBrushless);
-    sensor = new DigitalInput(8);
+    sensor = new DigitalInput(Constants.Feeder.BEAM_ID);
   }
   
   /**

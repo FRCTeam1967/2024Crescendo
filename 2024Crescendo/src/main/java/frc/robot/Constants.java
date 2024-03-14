@@ -29,6 +29,7 @@ public final class Constants {
   public static class Feeder {
     public static final int LEFT_ID = 17, RIGHT_ID = 18;
     public static final double FEED_TIME = 5.0, FEED_SPEED = -0.8, REVERSE_SPEED = 0.2;
+    public static final int BEAM_ID = 8;
   }
 
   public static class Swerve {
@@ -135,16 +136,18 @@ public final class Constants {
 
     public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 90;
     public static final double SPEAKER_BOTTOM_VELOCITY = 100, SPEAKER_BOTTOM_ACCELERATION = 90;
+
+    public static final double THRESHOLD_SPEED = 100;
   }
   
   public static class Pivot {
     public static final int PIVOT_ID = 14, ENCODER_ID = 23;
-    public static final double GEAR_RATIO = 50/1;
+    public static final double GEAR_RATIO = 50.0/1.0;
 
     public static final double kP = 3, kI = 0, kD = 0, kD_TIME = 0.02;
     
-    public static final double CONVERSION_FACTOR = 1.0/360.0;
-    public static final double INTAKE_SAFE = 110 * Constants.Pivot.CONVERSION_FACTOR;
-    public static final double INTAKE_DOWN = 6 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
+    public static final double INTAKE_SAFE = 110 * Constants.Pivot.DEGREES_TO_REVOLUTIONS;
+    public static final double INTAKE_DOWN = 6 * Constants.Pivot.DEGREES_TO_REVOLUTIONS;
   }
 }

@@ -29,15 +29,15 @@ public class HomePivot extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {}
-
-  @Override
-  public boolean isFinished() {
+  public void end(boolean interrupted) {
     pivot.setpoint.velocity = 0;
     pivot.setpoint.position = pivot.getAbsPos();
     pivot.goal.velocity = 0;
     pivot.goal.position = pivot.getAbsPos();
+  }
 
+  @Override
+  public boolean isFinished() {
     SmartDashboard.putString("Did we finish", "yes");
 
     return pivot.isReached();
