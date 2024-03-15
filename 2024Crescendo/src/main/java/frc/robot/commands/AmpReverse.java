@@ -12,6 +12,7 @@ public class AmpReverse extends Command {
   private final Swerve swerve;
   private SlewRateLimiter yLimiter;
   private Timer timer;
+  private double initialEncPosition;
 
   /**
    * Creates a new AmpReverse
@@ -24,8 +25,7 @@ public class AmpReverse extends Command {
   }
 
   public void initialize() {
-    timer = new Timer();
-    timer.start();
+    initialEncPosition = swerve.backLeft.getEncoderPosition();
   }
 
   private double cleanAndScaleInput(double deadband, double input, SlewRateLimiter limiter, double speedScaling) {
@@ -47,11 +47,12 @@ public class AmpReverse extends Command {
   @Override
   public void end (boolean interrupted) {
     swerve.stopModules();
-    timer.stop();
+    // timer.stop();
   }
 
   @Override
   public boolean isFinished() {
-    return timer.get() >= 0.6;
+    // return timer.get() >= 0.6;
+    return swerve.backLeft.getEncoderPosition() <= initialEncPosition - 8.14;
   }
 }

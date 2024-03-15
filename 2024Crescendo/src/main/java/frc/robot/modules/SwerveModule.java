@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 
 // import statements
@@ -29,7 +30,7 @@ import frc.robot.Constants;
 public class SwerveModule {
     
     private TalonFX powerController;
-    private TalonFX steerController;
+    public TalonFX steerController;
     public CANcoder analogEncoder;
 
 
@@ -52,18 +53,6 @@ public class SwerveModule {
     public SwerveModule(String name, int powerIdx, int steerIdx, int encoderIdx, ShuffleboardLayout container) {
         this.name = name;
 
-        if (name == "BackLeft") {
-            tuningTab.addNumber("YES Current Angle", () -> Currangle);
-            tuningTab.addNumber("YES Desired", () -> desiredd);
-            tuningTab.addNumber("YES Delta", () -> deltaa);
-            tuningTab.addNumber("YES Optimized Angle", () -> optimizedAngle);
-
-            tuningTab.addNumber("NO Current Angle", () -> NOCurrangle);
-            tuningTab.addNumber("NO Desired", () -> NOdesiredd);
-            tuningTab.addNumber("NO Delta", () -> NOdeltaa);
-            tuningTab.addNumber("NO Optimized Angle", () -> NOoptimizedAngle);
-        }
-
         // instantiate
         powerController = new TalonFX(powerIdx, "Canivore");
         steerController = new TalonFX(steerIdx, "Canivore");
@@ -74,39 +63,31 @@ public class SwerveModule {
         var cancoderConfig = analogEncoder.getConfigurator();
 
         ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+        ccdConfigs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
         if (name == "FrontLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = -133.857/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.FL_OFFSET;
+            tuningTab.addNumber("FL Power Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
         }
 
         if (name == "FrontRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = 61.5234/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.FR_OFFSET;
+            tuningTab.addNumber("FR Power Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
         }
 
         if (name == "BackLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = 113.203/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.BL_OFFSET;
+            tuningTab.addNumber("BL Power Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
         }
 
         if (name == "BackRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = -19.5996/360;
+            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.BR_OFFSET;
+            tuningTab.addNumber("BR Power Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
         }
 
-
-        // if (name == "FrontLeft") {
-        //     ccdConfigs.MagnetSensor.MagnetOffset = 171.738281/360;
-        // }
-
-        // if (name == "FrontRight") {
-        //     ccdConfigs.MagnetSensor.MagnetOffset = -60.820313/360;
-        // }
-
-        // if (name == "BackLeft") {
-        //     ccdConfigs.MagnetSensor.MagnetOffset = 122.695313/360;
-        // }
-
-        // if (name == "BackRight") {
-        //     ccdConfigs.MagnetSensor.MagnetOffset = -153.808484/360;
-        // }
+        if (name == "BackLeft") {
+            tuningTab.addNumber("BL Power Motor Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
+        }
 
         cancoderConfig.apply(ccdConfigs);
 
@@ -120,6 +101,8 @@ public class SwerveModule {
         powerConfig.Slot0.kP = Constants.Swerve.POWER_kP; 
         powerConfig.Slot0.kI = Constants.Swerve.POWER_kI; 
         powerConfig.Slot0.kD = Constants.Swerve.POWER_kD; 
+
+        //powerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         powerConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.DRIVE_GEAR_RATIO ; 
 
@@ -181,22 +164,22 @@ public class SwerveModule {
 
     //check to make sure steerController.getPosition will give us the angle?
     public SwerveModuleState getState() {
-        return new SwerveModuleState(powerController.getPosition().getValue()*Constants.Swerve.RPM_TO_MPS,
-        Rotation2d.fromRotations(steerController.getPosition().getValue()));
+        return new SwerveModuleState(powerController.getVelocity().getValueAsDouble()*Constants.Swerve.WHEEL_CIRCUMFERENCE,
+        Rotation2d.fromRotations(steerController.getPosition().getValue())); //maybe don't use getPosition() ??
     }
 
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-            powerController.getPosition().getValue()*Constants.Swerve.MK4I_L1_REV_TO_METERS, getState().angle);
+            (powerController.getRotorPosition().getValueAsDouble()/Constants.Swerve.DRIVE_GEAR_RATIO)*Constants.Swerve.WHEEL_CIRCUMFERENCE, getState().angle);
     }
 
     public double getEncoderPosition() {
-        return powerController.getPosition().getValueAsDouble();
+        return powerController.getRotorPosition().getValueAsDouble();
     }
 
     private void addDashboardEntries(ShuffleboardContainer container) {
         container.addNumber("Encoder Position in Degrees", () -> analogEncoder.getAbsolutePosition().getValueAsDouble() * 360);
-        container.addNumber("Falcon Position in Rotations", () -> steerController.getPosition().getValueAsDouble() * 360 % 360);
+        container.addNumber("Falcon Position in Rotations", () -> (steerController.getPosition().getValueAsDouble() * 360) % 360);
         container.addNumber("Current Velocity", () -> this.getState().speedMetersPerSecond);
 
     }
@@ -249,7 +232,7 @@ public class SwerveModule {
     public void brakeMode() {
 
         var powerControllerConfig = powerController.getConfigurator();
-        var steerControllerConfig = powerController.getConfigurator();
+        var steerControllerConfig = steerController.getConfigurator();
         
         var brakeModeConfig = new MotorOutputConfigs();
         brakeModeConfig.NeutralMode = NeutralModeValue.Brake;
@@ -262,7 +245,7 @@ public class SwerveModule {
     public void coastMode() {
 
         var powerControllerConfig = powerController.getConfigurator();
-        var steerControllerConfig = powerController.getConfigurator();
+        var steerControllerConfig = steerController.getConfigurator();
         
         var coastModeConfig = new MotorOutputConfigs();
         coastModeConfig.NeutralMode = NeutralModeValue.Coast;

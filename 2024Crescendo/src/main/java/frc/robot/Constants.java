@@ -41,14 +41,14 @@ public final class Constants {
 
     public static final double STEER_kS = 0.1;
     public static final double STEER_kV = 30;
-    public static final double STEER_kA = 15;
-    public static final double STEER_kP = 12.5;
+    public static final double STEER_kA = 0;
+    public static final double STEER_kP = 0;
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
 
     //0.319024 = circumference in meters
     //12.8:1 = rotor to sensor ratio
-    public static final double STEER_GEAR_RATIO = 150/7;
+    public static final double STEER_GEAR_RATIO = 150.0/7.0;
     public static final double DRIVE_GEAR_RATIO = 8.14;
     public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
     public static final double MK4I_L1_REV_TO_METERS = WHEEL_CIRCUMFERENCE;
@@ -65,6 +65,11 @@ public final class Constants {
     public static final double SWERVE_MAX_SPEED = 4.1695;//0.3; //4.1695 mps //3 for driver
     public static final double WIDTH = Units.inchesToMeters(23), LENGTH = Units.inchesToMeters(23);
 
+    public static final double FL_OFFSET = 171.507813/360;
+    public static final double FR_OFFSET = -59.050391/360;
+    public static final double BL_OFFSET = 119.619141/360;
+    public static final double BR_OFFSET = -150.820313/360;
+
     public static final double SWERVE_AMP_OFFSET = 0.3083496;
     public static final double AMP_REVERSE = 0.2;
 
@@ -79,10 +84,6 @@ public final class Constants {
     public static Translation2d m_backRightLocation = new Translation2d(-LENGTH / 2, -WIDTH / 2);
 
     public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = new SwerveDriveKinematics(
-      m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
-    );
-
-    SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
     
@@ -109,7 +110,7 @@ public final class Constants {
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
-    public static final double RADIANS_TO_DEGREES = 57.29578;
+    public static final double RADIANS_TO_DEGREES = 180.0/Math.PI;
   } 
 
   public static final class Intake {

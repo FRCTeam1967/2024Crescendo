@@ -79,6 +79,13 @@ public class Swerve extends SubsystemBase{
       else return false;
     }, this);
   }
+
+  public void runSteerController(){
+    backLeft.steerController.setPosition(90.0/360.0);
+    frontLeft.steerController.setPosition(90.0/360.0);
+    backRight.steerController.setPosition(90.0/360.0);
+    frontRight.steerController.setPosition(90.0/360.0);
+  }
   
   public void stopModules() {
     frontLeft.stop();
@@ -139,10 +146,6 @@ public class Swerve extends SubsystemBase{
     return isInRange;
   }
 
-  public double getEncoderPosition(){
-    return frontRight.getEncoderPosition();
-  }
-
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     frontLeft.setState(desiredStates[0]);
     frontRight.setState(desiredStates[1]);
@@ -160,6 +163,10 @@ public class Swerve extends SubsystemBase{
 
   public void resetGyro () {
     gyro.setGyroAngle(gyro.getYawAxis(), 0);
+  }
+
+  public void returnPwrEncoder() {
+    backLeft.getPosition();
   }
 
   public double getGyro () {
@@ -198,17 +205,16 @@ public class Swerve extends SubsystemBase{
     }
   }
 
-  public void configDashboard(ShuffleboardTab tab){
-    tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
-    tab.addDouble("pose position x", () -> getPose().getX());
-    tab.addDouble("pose position y", () -> getPose().getY());
-    tab.addDouble("Gyro Yaw Axis", () -> getGyro());
-    tab.addBoolean("isReached?", () -> isInRange);
-  }
+  // public void configDashboard(ShuffleboardTab tab){
+  //   tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
+  //   tab.addDouble("pose position x", () -> getPose().getX());
+  //   tab.addDouble("pose position y", () -> getPose().getY());
+  //   tab.addDouble("Gyro Yaw Axis", () -> getGyro());
+  //   tab.addBoolean("isReached?", () -> isInRange);
+  // }
 
   @Override
   public void periodic() {
-    getEncoderPosition();
     frontLeft.periodic();
     frontRight.periodic();
     backLeft.periodic();
