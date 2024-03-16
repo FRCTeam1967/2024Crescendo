@@ -30,7 +30,7 @@ import frc.robot.Constants;
 public class SwerveModule {
     
     private TalonFX powerController;
-    public TalonFX steerController;
+    private TalonFX steerController;
     public CANcoder analogEncoder;
 
 
@@ -53,6 +53,18 @@ public class SwerveModule {
     public SwerveModule(String name, int powerIdx, int steerIdx, int encoderIdx, ShuffleboardLayout container) {
         this.name = name;
 
+        if (name == "BackLeft") {
+            tuningTab.addNumber("YES Current Angle", () -> Currangle);
+            tuningTab.addNumber("YES Desired", () -> desiredd);
+            tuningTab.addNumber("YES Delta", () -> deltaa);
+            tuningTab.addNumber("YES Optimized Angle", () -> optimizedAngle);
+
+            tuningTab.addNumber("NO Current Angle", () -> NOCurrangle);
+            tuningTab.addNumber("NO Desired", () -> NOdesiredd);
+            tuningTab.addNumber("NO Delta", () -> NOdeltaa);
+            tuningTab.addNumber("NO Optimized Angle", () -> NOoptimizedAngle);
+        }
+
         // instantiate
         powerController = new TalonFX(powerIdx, "Canivore");
         steerController = new TalonFX(steerIdx, "Canivore");
@@ -65,29 +77,39 @@ public class SwerveModule {
         ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
         ccdConfigs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
+
         if (name == "FrontLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.FL_OFFSET;
-            tuningTab.addNumber("FL Power Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
+            ccdConfigs.MagnetSensor.MagnetOffset = 171.507813/360;
         }
 
         if (name == "FrontRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.FR_OFFSET;
-            tuningTab.addNumber("FR Power Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
+            ccdConfigs.MagnetSensor.MagnetOffset = -59.050391/360;
         }
 
         if (name == "BackLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.BL_OFFSET;
-            tuningTab.addNumber("BL Power Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
+            ccdConfigs.MagnetSensor.MagnetOffset = 119.619141/360;
         }
 
         if (name == "BackRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.BR_OFFSET;
-            tuningTab.addNumber("BR Power Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
+            ccdConfigs.MagnetSensor.MagnetOffset = -150.820313/360;
         }
 
-        if (name == "BackLeft") {
-            tuningTab.addNumber("BL Power Motor Encoder", () -> powerController.getRotorPosition().getValueAsDouble());
-        }
+
+        // if (name == "FrontLeft") {
+        //     ccdConfigs.MagnetSensor.MagnetOffset = 171.738281/360;
+        // }
+
+        // if (name == "FrontRight") {
+        //     ccdConfigs.MagnetSensor.MagnetOffset = -60.820313/360;
+        // }
+
+        // if (name == "BackLeft") {
+        //     ccdConfigs.MagnetSensor.MagnetOffset = 122.695313/360;
+        // }
+
+        // if (name == "BackRight") {
+        //     ccdConfigs.MagnetSensor.MagnetOffset = -153.808484/360;
+        // }
 
         cancoderConfig.apply(ccdConfigs);
 
@@ -101,8 +123,6 @@ public class SwerveModule {
         powerConfig.Slot0.kP = Constants.Swerve.POWER_kP; 
         powerConfig.Slot0.kI = Constants.Swerve.POWER_kI; 
         powerConfig.Slot0.kD = Constants.Swerve.POWER_kD; 
-
-        //powerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         powerConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.DRIVE_GEAR_RATIO ; 
 
@@ -122,9 +142,10 @@ public class SwerveModule {
         steerConfig.Slot0.kI = Constants.Swerve.STEER_kI; 
         steerConfig.Slot0.kD = Constants.Swerve.STEER_kD; 
 
-        steerConfig.MotionMagic.MotionMagicCruiseVelocity = 3; //rps (4)
-        steerConfig.MotionMagic.MotionMagicAcceleration = 10; //rps/s
-        steerConfig.MotionMagic.MotionMagicJerk = 0; //rps/s/s
+        // steerConfig.MotionMagic.MotionMagicCruiseVelocity = 3; //rps (4)
+        // steerConfig.MotionMagic.MotionMagicAcceleration = 10; //rps/s
+        // steerConfig.MotionMagic.MotionMagicJerk = 0; //rps/s/s
+
         steerConfig.Feedback.SensorToMechanismRatio = 1;
         steerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
@@ -133,7 +154,6 @@ public class SwerveModule {
 
         steerConfig.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID(); 
         steerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        steerConfig.Feedback.SensorToMechanismRatio = 1;
 
         steerConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
@@ -165,10 +185,13 @@ public class SwerveModule {
     //check to make sure steerController.getPosition will give us the angle?
     public SwerveModuleState getState() {
         return new SwerveModuleState(powerController.getVelocity().getValueAsDouble()*Constants.Swerve.WHEEL_CIRCUMFERENCE,
-        Rotation2d.fromRotations(steerController.getPosition().getValue())); //maybe don't use getPosition() ??
+        Rotation2d.fromRotations(steerController.getPosition().getValue()));
     }
 
     public SwerveModulePosition getPosition() {
+        /*return new SwerveModulePosition(
+            powerController.getPosition().getValue()*Constants.Swerve.MK4I_L1_REV_TO_METERS, getState().angle);*/
+
         return new SwerveModulePosition(
             (powerController.getRotorPosition().getValueAsDouble()/Constants.Swerve.DRIVE_GEAR_RATIO)*Constants.Swerve.WHEEL_CIRCUMFERENCE, getState().angle);
     }
@@ -179,7 +202,7 @@ public class SwerveModule {
 
     private void addDashboardEntries(ShuffleboardContainer container) {
         container.addNumber("Encoder Position in Degrees", () -> analogEncoder.getAbsolutePosition().getValueAsDouble() * 360);
-        container.addNumber("Falcon Position in Rotations", () -> (steerController.getPosition().getValueAsDouble() * 360) % 360);
+        container.addNumber("Falcon Position in Rotations", () -> steerController.getPosition().getValueAsDouble() * 360 % 360);
         container.addNumber("Current Velocity", () -> this.getState().speedMetersPerSecond);
 
     }
@@ -231,27 +254,38 @@ public class SwerveModule {
 
     public void brakeMode() {
 
-        var powerControllerConfig = powerController.getConfigurator();
-        var steerControllerConfig = steerController.getConfigurator();
-        
-        var brakeModeConfig = new MotorOutputConfigs();
-        brakeModeConfig.NeutralMode = NeutralModeValue.Brake;
+       //var powerControllerConfig = powerController.getConfigurator();
+        //var steerControllerConfig = powerController.getConfigurator();
 
-        powerControllerConfig.apply(brakeModeConfig);
-        steerControllerConfig.apply(brakeModeConfig);
+        /*When we do var steerControllerConfig = steerController.getConfigurator();, 
+        we get the jittering problem*/
+        
+        powerController.setNeutralMode(NeutralModeValue.Brake);
+        steerController.setNeutralMode(NeutralModeValue.Brake);
+        //var brakeModeConfig = new MotorOutputConfigs();
+        //brakeModeConfig.NeutralMode = NeutralModeValue.Brake;
+
+        //powerControllerConfig.apply(brakeModeConfig);
+        //steerControllerConfig.apply(brakeModeConfig);
         
     }
 
     public void coastMode() {
 
-        var powerControllerConfig = powerController.getConfigurator();
-        var steerControllerConfig = steerController.getConfigurator();
-        
-        var coastModeConfig = new MotorOutputConfigs();
-        coastModeConfig.NeutralMode = NeutralModeValue.Coast;
+        //var powerControllerConfig = powerController.getConfigurator();
+        //var steerControllerConfig = powerController.getConfigurator();
 
-        powerControllerConfig.apply(coastModeConfig);
-        steerControllerConfig.apply(coastModeConfig);
+        /*When we do var steerControllerConfig = steerController.getConfigurator();, 
+        we get the jittering problem*/
+
+        powerController.setNeutralMode(NeutralModeValue.Coast);
+        steerController.setNeutralMode(NeutralModeValue.Coast);
+        
+        // var coastModeConfig = new MotorOutputConfigs();
+        // coastModeConfig.NeutralMode = NeutralModeValue.Coast;
+
+        // powerControllerConfig.apply(coastModeConfig);
+        // steerControllerConfig.apply(coastModeConfig);
         
     }
 

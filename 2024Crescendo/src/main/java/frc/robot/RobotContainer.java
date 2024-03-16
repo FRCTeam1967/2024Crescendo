@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -19,7 +20,6 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import com.reduxrobotics.canand.CanandEventLoop;
@@ -35,13 +35,13 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
-  //private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
-  //private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
-  //private final Pivot pivot = new Pivot();
+  // private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
+  // private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
+  // private final Pivot pivot = new Pivot();
   public final Swerve swerve = new Swerve();
-  //private final Intake intake = new Intake();  
-  //private final Shooter shooter = new Shooter();
-  //private final Feeder feeder = new Feeder();
+  // private final Intake intake = new Intake();  
+  // private final Shooter shooter = new Shooter();
+  // private final Feeder feeder = new Feeder();
   private Vision vision = new Vision();
 
   private boolean redAlliance;
@@ -64,20 +64,20 @@ public class RobotContainer {
     // NamedCommands.registerCommand("shootSpeaker", new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(Constants.Auto.SHOOT_SPEAKER_TIMEOUT));
 
     resetSensors();
-    //leftClimb.setToZero();
-    //rightClimb.setToZero();
+    // leftClimb.setToZero();
+    // rightClimb.setToZero();
 
     CanandEventLoop.getInstance();
     maintainPivotPosition();
-    //pivot.setBrakeMode();
+    // pivot.setBrakeMode();
 
     configureBindings();
 
-    //shooter.configDashboard(matchTab);
-    //feeder.configDashboard(matchTab);
-    // swerve.configDashboard(matchTab);
-    //leftClimb.configDashboard(matchTab);
-    //rightClimb.configDashboard(matchTab);
+    // shooter.configDashboard(matchTab);
+    // feeder.configDashboard(matchTab);
+    swerve.configDashboard(matchTab);
+    // leftClimb.configDashboard(matchTab);
+    // rightClimb.configDashboard(matchTab);
 
     // autoPathChooser.setDefaultOption("Score/Intake", "scorePreloadIntakeMiddle");
     // autoPathChooser.addOption("Score/Score", "scorePreloadScoreMiddle");
@@ -93,8 +93,8 @@ public class RobotContainer {
   }
 
   public void setClimbToZero(){
-    //leftClimb.setToZero();
-    //rightClimb.setToZero();
+    // leftClimb.setToZero();
+    // rightClimb.setToZero();
   }
 
   public void onEnable(Optional<Alliance> alliance){
@@ -103,8 +103,8 @@ public class RobotContainer {
   }
 
   public void setClimbEncoderOffset(){
-    //leftClimb.setEncoderOffset();
-    //rightClimb.setEncoderOffset();
+    // leftClimb.setEncoderOffset();
+    // rightClimb.setEncoderOffset();
   }
   
   public void maintainPivotPosition(){
@@ -116,18 +116,21 @@ public class RobotContainer {
     // pivot.goal.position = pivot.getAbsPos();
   }
 
+  
+
   private void configureBindings() {
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
       () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
-    //leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.runManual(() -> operatorController.getLeftY()), leftClimb));
-    //rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.runManual(() -> operatorController.getRightY()), rightClimb));
+    // leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.runManual(() -> operatorController.getLeftY()), leftClimb));
+    // rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.runManual(() -> operatorController.getRightY()), rightClimb));
     // intake.setDefaultCommand(new RunIntake(intake, 0));
     // feeder.setDefaultCommand(new RunFeeder(feeder, 0));
+    // shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
-
-    driverController.a().onTrue(new AmpReverse(swerve));
     driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
+
+    driverController.a().onTrue(new AmpReverse(swerve));
 
     //TODO: adjust WallSnapDrive for diff alliance
     driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
@@ -189,65 +192,62 @@ public class RobotContainer {
     //     return ShootSit();
     // }
 
-
-    // return new PathPlannerAuto("Tester");
-    return TwoNote();
+    return null;
   }
 
   /* USED WHILE FIGURING OUT TRAJECTORY/PATH PLANNER */
-//   public Command ShootSit(){
-//     return new ShootSpeaker(shooter, feeder).withTimeout(3);
-//   }
-
-//   public Command RightAngleShoot(){
-//     return new SequentialCommandGroup(
-//       new SwerveDrive(swerve, ()->0, ()->0, ()->-0.2).withTimeout(0.25),
-//       new ShootSpeaker(shooter, feeder)
-//     ).withTimeout(5);
-//  }
-
-//  public Command LeftAngleShoot(){
-//     return new SequentialCommandGroup(
-//       new SwerveDrive(swerve, ()->0, ()->0, ()->0.2).withTimeout(0.25),
-//       new ShootSpeaker(shooter, feeder)
-//     ).withTimeout(5);
-//  }
-
-//   public Command Leave(){
-//     return new SwerveDrive(swerve, ()->0, ()->-0.2, ()->0).withTimeout(1);
-//   }
-
-  public Command TwoNote(){
-    return new InstantCommand(()->swerve.runSteerController());
-    // return new SequentialCommandGroup(
-    //   //new ShootSpeaker(shooter, feeder).withTimeout(1),
-    //   //new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), 
-    //   new SwerveDrive(swerve, ()->0, ()->0, ()->0.3).withTimeout(5),
-    //   //new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(2),
-    //   new SwerveDrive(swerve, ()->-0.3, ()->0, ()->0).withTimeout(1.75)
-    //   //new ShootSpeaker(shooter, feeder).withTimeout(1)
-    // );
+  /*public Command ShootSit(){
+    return new ShootSpeaker(shooter, feeder).withTimeout(3);
   }
 
+  public Command RightAngleShoot(){
+    return new SequentialCommandGroup(
+      new SwerveDrive(swerve, ()->0, ()->0, ()->-0.2).withTimeout(0.25),
+      new ShootSpeaker(shooter, feeder)
+    ).withTimeout(5);
+ }
 
+ public Command LeftAngleShoot(){
+    return new SequentialCommandGroup(
+      new SwerveDrive(swerve, ()->0, ()->0, ()->0.2).withTimeout(0.25),
+      new ShootSpeaker(shooter, feeder)
+    ).withTimeout(5);
+ }
 
-  // public Command ThreeNote(){
-  //   return new SequentialCommandGroup(
-  //     new ShootSpeaker(shooter, feeder).withTimeout(1),
-  //     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), 
-  //     new SwerveDrive(swerve, ()->0.3, ()->0, ()->0)).withTimeout(1.5),
-  //     new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(2),
-  //     new SwerveDrive(swerve, ()->-0.3, ()->0, ()->0).withTimeout(1.75),
-  //     new ShootSpeaker(shooter, feeder).withTimeout(1),
-  //     new SwerveDrive(swerve, ()->0.3, ()->0, ()->0).withTimeout(0.6),
-  //     new SwerveDrive(swerve, ()->0, ()->-0.3, ()->0).withTimeout(1),
-  //     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), 
-  //     new SwerveDrive(swerve, ()->0.3, ()->0, ()->0)).withTimeout(0.9),
-  //     new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(2)
-  //   );
-  // }
+  public Command Leave(){
+    return new SwerveDrive(swerve, ()->0, ()->-0.2, ()->0).withTimeout(1);
+  }
+
+  public Command TwoNote(){
+    return new SequentialCommandGroup(
+      new ShootSpeaker(shooter, feeder).withTimeout(1),
+      new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), 
+      new SwerveDrive(swerve, ()->0.3, ()->0, ()->0)).withTimeout(1.5),
+      new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(2),
+      new SwerveDrive(swerve, ()->-0.3, ()->0, ()->0).withTimeout(1.75),
+      new ShootSpeaker(shooter, feeder).withTimeout(1)
+    );
+  }
+
+  public Command ThreeNote(){
+    return new SequentialCommandGroup(
+      new ShootSpeaker(shooter, feeder).withTimeout(1),
+      new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), 
+      new SwerveDrive(swerve, ()->0.3, ()->0, ()->0)).withTimeout(1.5),
+      new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(2),
+      new SwerveDrive(swerve, ()->-0.3, ()->0, ()->0).withTimeout(1.75),
+      new ShootSpeaker(shooter, feeder).withTimeout(1),
+      new SwerveDrive(swerve, ()->0.3, ()->0, ()->0).withTimeout(0.6),
+      new SwerveDrive(swerve, ()->0, ()->-0.3, ()->0).withTimeout(1),
+      new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), 
+      new SwerveDrive(swerve, ()->0.3, ()->0, ()->0)).withTimeout(0.9),
+      new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(2)
+    );
+  }*/
 
   public void resetSensors() {
+    swerve.resetOdometry(new Pose2d());
+
     swerve.frontLeft.resetEncoder();
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();

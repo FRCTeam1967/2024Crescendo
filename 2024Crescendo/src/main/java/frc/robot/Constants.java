@@ -29,6 +29,7 @@ public final class Constants {
   public static class Feeder {
     public static final int LEFT_ID = 17, RIGHT_ID = 18;
     public static final double FEED_TIME = 5.0, FEED_SPEED = -0.8, REVERSE_SPEED = 0.2;
+    public static final int BEAM_ID = 8;
   }
 
   public static class Swerve {
@@ -41,8 +42,8 @@ public final class Constants {
 
     public static final double STEER_kS = 0.1;
     public static final double STEER_kV = 30;
-    public static final double STEER_kA = 0;
-    public static final double STEER_kP = 0;
+    public static final double STEER_kA = 15;
+    public static final double STEER_kP = 12.5;
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;
 
@@ -62,15 +63,10 @@ public final class Constants {
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
-    public static final double SWERVE_MAX_SPEED = 4.1695;//0.3; //4.1695 mps //3 for driver
+    public static final double SWERVE_MAX_SPEED = 4.1695; //m/s
     public static final double WIDTH = Units.inchesToMeters(23), LENGTH = Units.inchesToMeters(23);
 
-    public static final double FL_OFFSET = 171.507813/360;
-    public static final double FR_OFFSET = -59.050391/360;
-    public static final double BL_OFFSET = 119.619141/360;
-    public static final double BR_OFFSET = -150.820313/360;
-
-    public static final double SWERVE_AMP_OFFSET = 0.3083496;
+    public static final double SWERVE_AMP_OFFSET = 0.3083496; //rotations of encoder
     public static final double AMP_REVERSE = 0.2;
 
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
@@ -136,16 +132,18 @@ public final class Constants {
 
     public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 90;
     public static final double SPEAKER_BOTTOM_VELOCITY = 100, SPEAKER_BOTTOM_ACCELERATION = 90;
+
+    public static final double THRESHOLD_SPEED = 100;
   }
   
   public static class Pivot {
     public static final int PIVOT_ID = 14, ENCODER_ID = 23;
-    public static final double GEAR_RATIO = 50/1;
+    public static final double GEAR_RATIO = 50.0/1.0;
 
     public static final double kP = 3, kI = 0, kD = 0, kD_TIME = 0.02;
     
-    public static final double CONVERSION_FACTOR = 1.0/360.0;
-    public static final double INTAKE_SAFE = 110 * Constants.Pivot.CONVERSION_FACTOR;
-    public static final double INTAKE_DOWN = 6 * Constants.Pivot.CONVERSION_FACTOR;
+    public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
+    public static final double INTAKE_SAFE = 110 * Constants.Pivot.DEGREES_TO_REVOLUTIONS;
+    public static final double INTAKE_DOWN = 6 * Constants.Pivot.DEGREES_TO_REVOLUTIONS;
   }
 }
