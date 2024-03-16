@@ -43,8 +43,8 @@ public class AmpReverse extends Command {
     SmartDashboard.putNumber("Initial Position", initialEncPosition);
     SmartDashboard.putNumber("Goal Position", goalPos);
 
-    double ySpeed = cleanAndScaleInput(0.00, Constants.Swerve.AMP_REVERSE, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, 0, 0, swerve.getRotation2d());
+    double ySpeed = cleanAndScaleInput(0.00, Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
+    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0, swerve.getRotation2d());
     SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     swerve.setModuleStates(moduleState);
   }
@@ -52,13 +52,11 @@ public class AmpReverse extends Command {
   @Override
   public void end (boolean interrupted) {
     swerve.stopModules();
-    // timer.stop();
   }
 
   @Override
   public boolean isFinished() {
-    // return timer.get() >= 0.6;
-    if ((swerve.backLeft.getEncoderPosition() >= initialEncPosition + 8.14) || (swerve.backLeft.getEncoderPosition() <= initialEncPosition - 8.14)){
+    if ((swerve.backLeft.getEncoderPosition() >= initialEncPosition + Constants.Swerve.REVERSE_OFFSET/Constants.Swerve.METERS_TO_ENC_COUNT) || (swerve.backLeft.getEncoderPosition() <= initialEncPosition - Constants.Swerve.REVERSE_OFFSET/Constants.Swerve.METERS_TO_ENC_COUNT)){
       return true;
     }
     return false;

@@ -33,47 +33,54 @@ public final class Constants {
   }
 
   public static class Swerve {
-    public static final double POWER_kS = 0.2;
-    public static final double POWER_kV = 8;
-    public static final double POWER_kA = 0.1;
-    public static final double POWER_kP = 0.01;
+    //motor/encoder ids
+    public static final int FL_POWER = 7, FL_STEER = 8, FL_ENCODER = 4;
+    public static final int FR_POWER = 1, FR_STEER = 2, FR_ENCODER = 1;
+    public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
+    public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
+
+    //offsets
+    public static final double FL_OFFSET = 171.507813/360;
+    public static final double FR_OFFSET = -59.050391/360;
+    public static final double BL_OFFSET = 119.619141/360;
+    public static final double BR_OFFSET = -150.820313/360;
+
+    //pid values
+    public static final double POWER_kS = 0;//0.14; 
+    public static final double POWER_kV = 0;//1.25; 
+    public static final double POWER_kA = 0; 
+    public static final double POWER_kP = 0;//0.25;
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
-    public static final double STEER_kS = 0.1;
-    public static final double STEER_kV = 30;
-    public static final double STEER_kA = 15;
-    public static final double STEER_kP = 12.5;
+    public static final double STEER_kS = 0; //0.1
+    public static final double STEER_kV = 0; //30
+    public static final double STEER_kA = 0; // 15
+    public static final double STEER_kP = 75; //12.5
     public static final double STEER_kI = 0;
-    public static final double STEER_kD = 0;
+    public static final double STEER_kD = 0.5;
 
-    //0.319024 = circumference in meters
-    //12.8:1 = rotor to sensor ratio
+    //gear ratios + meter conversions
     public static final double STEER_GEAR_RATIO = 150.0/7.0;
     public static final double DRIVE_GEAR_RATIO = 8.14;
     public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
     public static final double MK4I_L1_REV_TO_METERS = WHEEL_CIRCUMFERENCE;
     public static final double RPM_TO_MPS = MK4I_L1_REV_TO_METERS / 60;
     public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = STEER_GEAR_RATIO;
+    public static final double REVERSE_OFFSET = Units.inchesToMeters(2) * Math.PI;
+    public static final double METERS_TO_ENC_COUNT = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
 
-    public static final double REVERSE_OFFSET_REVS = Units.inchesToMeters(0.15);
-
-    public static final int FL_POWER = 7, FL_STEER = 8, FL_ENCODER = 4;
-    public static final int FR_POWER = 1, FR_STEER = 2, FR_ENCODER = 1;
-    public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
-    public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
-
+    //distances/measurements
     public static final double SWERVE_MAX_SPEED = 4.1695; //m/s
     public static final double WIDTH = Units.inchesToMeters(23), LENGTH = Units.inchesToMeters(23);
-
     public static final double SWERVE_AMP_OFFSET = 0.3083496; //rotations of encoder
-    public static final double AMP_REVERSE = 0.2;
+    public static final double AMP_REVERSE_JS_INPUT = 0.2; //joystick input
 
+    //max speeds
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
-
     public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = (2 / WHEEL_CIRCUMFERENCE) * 2 * Math.PI; 
-    public static final double SWERVE_DEADBAND = 0.05;
 
+    //kinematics
     public static Translation2d m_frontLeftLocation = new Translation2d(LENGTH / 2, WIDTH / 2);
     public static Translation2d m_frontRightLocation = new Translation2d(LENGTH / 2, -WIDTH / 2);
     public static Translation2d m_backLeftLocation = new Translation2d(-LENGTH / 2, WIDTH / 2);

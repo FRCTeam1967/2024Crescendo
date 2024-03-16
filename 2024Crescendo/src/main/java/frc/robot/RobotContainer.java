@@ -119,6 +119,7 @@ public class RobotContainer {
   
 
   private void configureBindings() {
+    //DEFAULT COMMANDS
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
       () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
     // leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.runManual(() -> operatorController.getLeftY()), leftClimb));
@@ -127,13 +128,13 @@ public class RobotContainer {
     // feeder.setDefaultCommand(new RunFeeder(feeder, 0));
     // shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
+    //CHASSIS
     driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
-
     driverController.a().onTrue(new AmpReverse(swerve));
 
-    //TODO: adjust WallSnapDrive for diff alliance
     driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
+    //adjust for blue alliance 
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
     
     //INTAKE + PIVOT + FEEDER
