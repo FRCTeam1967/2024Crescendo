@@ -13,8 +13,8 @@ import frc.robot.subsystems.Shooter;
 public class ShootSpeaker extends Command {
   private Shooter shooter;
   private Feeder feeder;
-  private double topVelocity, topAcceleration,  bottomVelocity, bottomAcceleration;
-  private Timer timer;
+  private double topVelocity, topAcceleration, bottomVelocity, bottomAcceleration;
+  private boolean reachedShooterSpeed = false;
   
   /**
    * Creates a new ShootSpeaker
@@ -33,15 +33,13 @@ public class ShootSpeaker extends Command {
   }
 
   @Override
-  public void initialize() {
-    timer = new Timer();
-    timer.start();
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
     shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
-    if (shooter.getAverageVelocity() >= 90){
+    if (reachedShooterSpeed || shooter.getAverageTopVelocity() >= Constants.Shooter.THRESHOLD_SPEED*0.9) {
+      reachedShooterSpeed = true;
       shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
       feeder.feedFeeder(Constants.Feeder.FEED_SPEED);
     }

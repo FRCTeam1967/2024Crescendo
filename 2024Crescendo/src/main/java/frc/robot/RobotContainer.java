@@ -122,11 +122,12 @@ public class RobotContainer {
     //DEFAULT COMMANDS
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
       () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
-    // leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.runManual(() -> operatorController.getLeftY()), leftClimb));
-    // rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.runManual(() -> operatorController.getRightY()), rightClimb));
-    // intake.setDefaultCommand(new RunIntake(intake, 0));
-    // feeder.setDefaultCommand(new RunFeeder(feeder, 0));
-    // shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
+
+    leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.runManual(() -> operatorController.getLeftY()), leftClimb));
+    rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.runManual(() -> operatorController.getRightY()), rightClimb));
+    intake.setDefaultCommand(new RunIntake(intake, 0));
+    feeder.setDefaultCommand(new RunFeeder(feeder, 0));
+    shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
     //CHASSIS
     driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));

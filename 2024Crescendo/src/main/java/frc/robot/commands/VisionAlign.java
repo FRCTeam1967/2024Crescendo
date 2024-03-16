@@ -22,6 +22,7 @@ public class VisionAlign extends Command {
 
     translateController.setTolerance(0.0001);
     translateController.enableContinuousInput(0, 1);
+    addRequirements(swerve, vision);
   }
 
   public void initialize() {
