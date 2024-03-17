@@ -35,13 +35,13 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
-  // private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
-  // private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
-  // private final Pivot pivot = new Pivot();
+  private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
+  private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
+  private final Pivot pivot = new Pivot();
   public final Swerve swerve = new Swerve();
-  // private final Intake intake = new Intake();  
-  // private final Shooter shooter = new Shooter();
-  // private final Feeder feeder = new Feeder();
+  private final Intake intake = new Intake();  
+  private final Shooter shooter = new Shooter();
+  private final Feeder feeder = new Feeder();
   private Vision vision = new Vision();
 
   private boolean redAlliance;
@@ -64,20 +64,20 @@ public class RobotContainer {
     // NamedCommands.registerCommand("shootSpeaker", new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(Constants.Auto.SHOOT_SPEAKER_TIMEOUT));
 
     resetSensors();
-    // leftClimb.setToZero();
-    // rightClimb.setToZero();
+    leftClimb.setToZero();
+    rightClimb.setToZero();
 
     CanandEventLoop.getInstance();
     maintainPivotPosition();
-    // pivot.setBrakeMode();
+    pivot.setBrakeMode();
 
     configureBindings();
 
-    // shooter.configDashboard(matchTab);
-    // feeder.configDashboard(matchTab);
+    shooter.configDashboard(matchTab);
+    feeder.configDashboard(matchTab);
     swerve.configDashboard(matchTab);
-    // leftClimb.configDashboard(matchTab);
-    // rightClimb.configDashboard(matchTab);
+    leftClimb.configDashboard(matchTab);
+    rightClimb.configDashboard(matchTab);
 
     // autoPathChooser.setDefaultOption("Score/Intake", "scorePreloadIntakeMiddle");
     // autoPathChooser.addOption("Score/Score", "scorePreloadScoreMiddle");
@@ -93,8 +93,8 @@ public class RobotContainer {
   }
 
   public void setClimbToZero(){
-    // leftClimb.setToZero();
-    // rightClimb.setToZero();
+    leftClimb.setToZero();
+    rightClimb.setToZero();
   }
 
   public void onEnable(Optional<Alliance> alliance){
@@ -103,17 +103,17 @@ public class RobotContainer {
   }
 
   public void setClimbEncoderOffset(){
-    // leftClimb.setEncoderOffset();
-    // rightClimb.setEncoderOffset();
+    leftClimb.setEncoderOffset();
+    rightClimb.setEncoderOffset();
   }
   
   public void maintainPivotPosition(){
-    // pivot.setRelToAbs();
+    pivot.setRelToAbs();
 
-    // pivot.setpoint.velocity = 0;
-    // pivot.setpoint.position = pivot.getAbsPos();
-    // pivot.goal.velocity = 0;
-    // pivot.goal.position = pivot.getAbsPos();
+    pivot.setpoint.velocity = 0;
+    pivot.setpoint.position = pivot.getAbsPos();
+    pivot.goal.velocity = 0;
+    pivot.goal.position = pivot.getAbsPos();
   }
 
   
@@ -139,33 +139,33 @@ public class RobotContainer {
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
     
     //INTAKE + PIVOT + FEEDER
-    // operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(
-    //   new RunPivotIntakeBeam(pivot, intake, feeder),
-    //   new ReverseBeamFeeder(feeder),
-    //   new RumbleController(driverController, operatorController).withTimeout(2)
-    // ));
+    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(
+      new RunPivotIntakeBeam(pivot, intake, feeder),
+      new ReverseBeamFeeder(feeder),
+      new RumbleController(driverController, operatorController).withTimeout(2)
+    ));
 
-    //operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
-    //operatorController.rightBumper().whileTrue(new ParallelCommandGroup(new RunIntake(intake, -Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -Constants.Feeder.FEED_SPEED)));
+    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
+    operatorController.rightBumper().whileTrue(new ParallelCommandGroup(new RunIntake(intake, -Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -Constants.Feeder.FEED_SPEED)));
     
     //SHOOTER + FEEDER
-    // operatorController.y().whileTrue(new ShootSpeaker(shooter, feeder));
-    // operatorController.a().onTrue(new SequentialCommandGroup(
-    //   new AmpReverse(swerve),
-    //   new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false))
-    // ));
+    operatorController.y().whileTrue(new ShootSpeaker(shooter, feeder));
+    operatorController.a().onTrue(new SequentialCommandGroup(
+      new AmpReverse(swerve),
+      new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false))
+    ));
 
     //CLIMB
-    // operatorController.povUp().onTrue(new ParallelCommandGroup( //TODO: replace with MotionMagic?
-    //   new InstantCommand(() -> leftClimb.runMotors(false), leftClimb).withTimeout(Constants.Climb.RAISE_TIME),
-    //   new InstantCommand(() -> rightClimb.runMotors(false), rightClimb).withTimeout(Constants.Climb.RAISE_TIME)
-    // ));
-    // operatorController.povDown().onTrue(new ParallelCommandGroup(
-    //   new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)
-    // ));
-    // operatorController.x().onTrue(new ParallelCommandGroup(
-    //   new InstantCommand(() -> leftClimb.stop(), leftClimb), new InstantCommand(() -> rightClimb.stop(), rightClimb)
-    // ));
+    operatorController.povUp().onTrue(new ParallelCommandGroup( //TODO: replace with MotionMagic?
+      new InstantCommand(() -> leftClimb.runMotors(false), leftClimb).withTimeout(Constants.Climb.RAISE_TIME),
+      new InstantCommand(() -> rightClimb.runMotors(false), rightClimb).withTimeout(Constants.Climb.RAISE_TIME)
+    ));
+    operatorController.povDown().onTrue(new ParallelCommandGroup(
+      new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)
+    ));
+    operatorController.x().onTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> leftClimb.stop(), leftClimb), new InstantCommand(() -> rightClimb.stop(), rightClimb)
+    ));
   }
 
   public Command getAutonomousCommand() {
