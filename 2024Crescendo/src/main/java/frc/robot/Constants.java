@@ -16,7 +16,7 @@ public final class Constants {
   
   public static class Climb {
     public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31;
-    public static final int LEFT_DIGITAL_INPUT_ID = 1, RIGHT_DIGITAL_INPUT_ID = 0;
+    public static final int LEFT_DIGITAL_INPUT_ID = 9, RIGHT_DIGITAL_INPUT_ID = 0;
     public static final double UNWIND_FACTOR = 0.7, WIND_FACTOR = 0.4, DEADBAND = 0.05;
 
     public static final double RAISE_SPEED = 0.8, LOWER_SPEED = 0.8, RAISE_TIME = 2.5;
@@ -46,17 +46,17 @@ public final class Constants {
     public static final double BR_OFFSET = -150.820313/360;
 
     //pid values
-    public static final double POWER_kS = 0;//0.14; 
-    public static final double POWER_kV = 0;//1.25; 
+    public static final double POWER_kS = 0.14;//0.14; 
+    public static final double POWER_kV = 1.25;//1.25; 
     public static final double POWER_kA = 0; 
-    public static final double POWER_kP = 0;//0.25;
+    public static final double POWER_kP = 0.25;//0.25;
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
     public static final double STEER_kS = 0; //0.1
     public static final double STEER_kV = 0; //30
     public static final double STEER_kA = 0; // 15
-    public static final double STEER_kP = 75; //12.5
+    public static final double STEER_kP = 12.5; //75
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0.5;
 
@@ -137,17 +137,17 @@ public final class Constants {
     public static final double S_TOP_SPEED = 1;
     public static final double S_BOTTOM_SPEED = 1;
 
-    public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 90;
-    public static final double SPEAKER_BOTTOM_VELOCITY = 100, SPEAKER_BOTTOM_ACCELERATION = 90;
+    public static final double SPEAKER_TOP_VELOCITY = 80, SPEAKER_TOP_ACCELERATION = 70;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 60, SPEAKER_BOTTOM_ACCELERATION = 50;
 
-    public static final double THRESHOLD_SPEED = 100;
+    public static final double THRESHOLD_SPEED = 80;
   }
   
   public static class Pivot {
     public static final int PIVOT_ID = 14, ENCODER_ID = 23;
     public static final double GEAR_RATIO = 50.0/1.0;
 
-    public static final double kP = 3, kI = 0, kD = 0, kD_TIME = 0.02;
+    public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02;
     
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
     public static final double INTAKE_SAFE = 110 * Constants.Pivot.DEGREES_TO_REVOLUTIONS;

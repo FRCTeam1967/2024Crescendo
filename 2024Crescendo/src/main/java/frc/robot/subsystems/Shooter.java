@@ -28,8 +28,8 @@ public class Shooter extends SubsystemBase {
     config.Slot0.kD = Constants.Shooter.kD;
     config.Slot0.kV = Constants.Shooter.kV;
     config.Slot0.kA = Constants.Shooter.kA;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = 60;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 8;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     topLeftMotor.getConfigurator().apply(config);

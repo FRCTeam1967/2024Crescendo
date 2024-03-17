@@ -13,7 +13,7 @@ public class AmpReverse extends Command {
   private final Swerve swerve;
   private SlewRateLimiter yLimiter;
   private Timer timer;
-  private double initialEncPosition, goalPos;
+  private double initialEncPosition;
 
   /**
    * Creates a new AmpReverse
@@ -27,7 +27,6 @@ public class AmpReverse extends Command {
 
   public void initialize() {
     initialEncPosition = swerve.backLeft.getEncoderPosition();
-    goalPos = initialEncPosition + 8.14;
   }
 
   private double cleanAndScaleInput(double deadband, double input, SlewRateLimiter limiter, double speedScaling) {
@@ -41,9 +40,8 @@ public class AmpReverse extends Command {
   @Override
   public void execute() {
     SmartDashboard.putNumber("Initial Position", initialEncPosition);
-    SmartDashboard.putNumber("Goal Position", goalPos);
 
-    double ySpeed = cleanAndScaleInput(0.00, Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
+    double ySpeed = cleanAndScaleInput(0.00, -Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0, swerve.getRotation2d());
     SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     swerve.setModuleStates(moduleState);
