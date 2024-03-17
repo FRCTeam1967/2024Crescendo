@@ -152,7 +152,7 @@ public class RobotContainer {
     operatorController.y().whileTrue(new ShootSpeaker(shooter, feeder));
     operatorController.a().onTrue(new SequentialCommandGroup(
       new AmpReverse(swerve),
-      new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false))
+      new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1)
     ));
 
     //CLIMB

@@ -39,11 +39,18 @@ public final class Constants {
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
-    //offsets
-    public static final double FL_OFFSET = 171.507813/360;
-    public static final double FR_OFFSET = -59.050391/360;
-    public static final double BL_OFFSET = 119.619141/360;
-    public static final double BR_OFFSET = -150.820313/360;
+
+    //compbot offsets
+    public static final double FL_OFFSET = -133.2421/360;
+    public static final double FR_OFFSET = 59.7656/360;
+    public static final double BL_OFFSET = 115.6640/360;
+    public static final double BR_OFFSET = -19.0722/360;
+
+    //janky offsets
+    // public static final double FL_OFFSET = 171.507813/360;
+    // public static final double FR_OFFSET = -59.050391/360;
+    // public static final double BL_OFFSET = 119.619141/360;
+    // public static final double BR_OFFSET = -150.820313/360;
 
     //pid values
     public static final double POWER_kS = 0.14;//0.14; 
@@ -56,7 +63,7 @@ public final class Constants {
     public static final double STEER_kS = 0; //0.1
     public static final double STEER_kV = 0; //30
     public static final double STEER_kA = 0; // 15
-    public static final double STEER_kP = 12.5; //75
+    public static final double STEER_kP = 100; //75
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0.5;
 
@@ -74,7 +81,7 @@ public final class Constants {
     public static final double SWERVE_MAX_SPEED = 4.1695; //m/s
     public static final double WIDTH = Units.inchesToMeters(23), LENGTH = Units.inchesToMeters(23);
     public static final double SWERVE_AMP_OFFSET = 0.3083496; //rotations of encoder
-    public static final double AMP_REVERSE_JS_INPUT = 0.2; //joystick input
+    public static final double AMP_REVERSE_JS_INPUT = 0.4; //joystick input
 
     //max speeds
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
@@ -130,8 +137,8 @@ public final class Constants {
     public static final double A_TOP_SPEED = 0.162;
     public static final double A_BOTTOM_SPEED = 0.162;
 
-    public static final double AMP_TOP_VELOCITY = 12.5, AMP_TOP_ACCELERATION = 15;
-    public static final double AMP_BOTTOM_VELOCITY = 12.5, AMP_BOTTOM_ACCELERATION = 15;
+    public static final double AMP_TOP_VELOCITY = 10, AMP_TOP_ACCELERATION = 12;
+    public static final double AMP_BOTTOM_VELOCITY = 10, AMP_BOTTOM_ACCELERATION = 12;
 
 
     public static final double S_TOP_SPEED = 1;
