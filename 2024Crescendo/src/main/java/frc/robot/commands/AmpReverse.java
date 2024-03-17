@@ -4,6 +4,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
@@ -12,6 +13,7 @@ public class AmpReverse extends Command {
   private final Swerve swerve;
   private SlewRateLimiter yLimiter;
   private Timer timer;
+  private double initialEncPosition, goalPos;
 
   /**
    * Creates a new AmpReverse
@@ -24,8 +26,8 @@ public class AmpReverse extends Command {
   }
 
   public void initialize() {
-    timer = new Timer();
-    timer.start();
+    initialEncPosition = swerve.backLeft.getEncoderPosition();
+    goalPos = initialEncPosition + 8.14;
   }
 
   private double cleanAndScaleInput(double deadband, double input, SlewRateLimiter limiter, double speedScaling) {
@@ -38,8 +40,11 @@ public class AmpReverse extends Command {
     
   @Override
   public void execute() {
-    double ySpeed = cleanAndScaleInput(0.00, Constants.Swerve.AMP_REVERSE, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, 0, 0, swerve.getRotation2d());
+    SmartDashboard.putNumber("Initial Position", initialEncPosition);
+    SmartDashboard.putNumber("Goal Position", goalPos);
+
+    double ySpeed = cleanAndScaleInput(0.00, Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
+    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0, swerve.getRotation2d());
     SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     swerve.setModuleStates(moduleState);
   }
@@ -47,11 +52,13 @@ public class AmpReverse extends Command {
   @Override
   public void end (boolean interrupted) {
     swerve.stopModules();
-    timer.stop();
   }
 
   @Override
   public boolean isFinished() {
-    return timer.get() >= 0.6;
+    if ((swerve.backLeft.getEncoderPosition() >= initialEncPosition + Constants.Swerve.REVERSE_OFFSET/Constants.Swerve.METERS_TO_ENC_COUNT) || (swerve.backLeft.getEncoderPosition() <= initialEncPosition - Constants.Swerve.REVERSE_OFFSET/Constants.Swerve.METERS_TO_ENC_COUNT)){
+      return true;
+    }
+    return false;
   }
 }

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -115,20 +116,26 @@ public class RobotContainer {
     pivot.goal.position = pivot.getAbsPos();
   }
 
+  
+
   private void configureBindings() {
+    //DEFAULT COMMANDS
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
       () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
+
     leftClimb.setDefaultCommand(new RunCommand(() -> leftClimb.runManual(() -> operatorController.getLeftY()), leftClimb));
     rightClimb.setDefaultCommand(new RunCommand(() -> rightClimb.runManual(() -> operatorController.getRightY()), rightClimb));
     intake.setDefaultCommand(new RunIntake(intake, 0));
     feeder.setDefaultCommand(new RunFeeder(feeder, 0));
     shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
+    //CHASSIS
     driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
+    driverController.a().onTrue(new AmpReverse(swerve));
 
-    //TODO: adjust WallSnapDrive for diff alliance
     driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
+    //adjust for blue alliance 
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
     
     //INTAKE + PIVOT + FEEDER
@@ -187,11 +194,11 @@ public class RobotContainer {
     //     return ShootSit();
     // }
 
-    return TwoNote();
+    return null;
   }
 
   /* USED WHILE FIGURING OUT TRAJECTORY/PATH PLANNER */
-  public Command ShootSit(){
+  /*public Command ShootSit(){
     return new ShootSpeaker(shooter, feeder).withTimeout(3);
   }
 
@@ -238,9 +245,11 @@ public class RobotContainer {
       new SwerveDrive(swerve, ()->0.3, ()->0, ()->0)).withTimeout(0.9),
       new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(2)
     );
-  }
+  }*/
 
   public void resetSensors() {
+    swerve.resetOdometry(new Pose2d());
+
     swerve.frontLeft.resetEncoder();
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();

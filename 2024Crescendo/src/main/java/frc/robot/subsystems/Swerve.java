@@ -16,9 +16,11 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.modules.SwerveModule;
 
@@ -132,12 +134,6 @@ public class Swerve extends SubsystemBase{
     else return a * a;
   }
 
-  public boolean isInRange(double goalRevs, double currentRevs){
-    double offsetRevs = (goalRevs-currentRevs);
-    if (offsetRevs > -Constants.Swerve.REVERSE_OFFSET_REVS && offsetRevs < Constants.Swerve.REVERSE_OFFSET_REVS) isInRange = true;
-    else isInRange = false;
-    return isInRange;
-  }
 
   public double getEncoderPosition(){
     return frontRight.getEncoderPosition();
@@ -204,6 +200,14 @@ public class Swerve extends SubsystemBase{
     tab.addDouble("pose position y", () -> getPose().getY());
     tab.addDouble("Gyro Yaw Axis", () -> getGyro());
     tab.addBoolean("isReached?", () -> isInRange);
+
+    SmartDashboard.putNumber("Steer kS", 1);
+    SmartDashboard.putNumber("Steer kV", 1);
+
+    //tab.addDouble("steer reference", () -> frontLeft.getSteerReference().getValueAsDouble())
+      //.withWidget(BuiltInWidgets.kGraph);
+    //tab.addDouble("steer rot?", () -> frontLeft.getSteerPosition())
+      //.withWidget(BuiltInWidgets.kGraph);
   }
 
   @Override
