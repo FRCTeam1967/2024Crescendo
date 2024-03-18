@@ -70,11 +70,11 @@ public final class Constants {
     //gear ratios + meter conversions
     public static final double STEER_GEAR_RATIO = 150.0/7.0;
     public static final double DRIVE_GEAR_RATIO = 8.14;
-    public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4) * Math.PI;
+    public static final double WHEEL_CIRCUMFERENCE = Units.inchesToMeters(4.0) * Math.PI;
     public static final double MK4I_L1_REV_TO_METERS = WHEEL_CIRCUMFERENCE;
-    public static final double RPM_TO_MPS = MK4I_L1_REV_TO_METERS / 60;
+    public static final double RPM_TO_MPS = MK4I_L1_REV_TO_METERS / 60.0;
     public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = STEER_GEAR_RATIO;
-    public static final double REVERSE_OFFSET = Units.inchesToMeters(2) * Math.PI;
+    public static final double REVERSE_OFFSET = Units.inchesToMeters(2.0) * Math.PI;
     public static final double METERS_TO_ENC_COUNT = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
 
     //distances/measurements
@@ -84,8 +84,8 @@ public final class Constants {
     public static final double AMP_REVERSE_JS_INPUT = 0.4; //joystick input
 
     //max speeds
-    public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2)) * 2 * Math.PI;
-    public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = (2 / WHEEL_CIRCUMFERENCE) * 2 * Math.PI; 
+    public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2.0)) * 2.0 * Math.PI;
+    public static final double SWERVE_ROTATION_MAX_SPEED_IN_RAD = (SWERVE_MAX_SPEED / ROTATION_CIRCLE_CIRCUMFERENCE) * 2.0 * Math.PI; 
 
     //kinematics
     public static Translation2d m_frontLeftLocation = new Translation2d(LENGTH / 2, WIDTH / 2);

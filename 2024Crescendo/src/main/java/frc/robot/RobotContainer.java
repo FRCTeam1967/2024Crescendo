@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -44,7 +44,7 @@ public class RobotContainer {
   private final Feeder feeder = new Feeder();
   private Vision vision = new Vision();
 
-  private boolean redAlliance;
+  public static boolean redAlliance;
 
   public static final String shootSit = "Shoot/Sit", leave = "Leave", shootLeave = "Shoot/Leave";
 
@@ -55,8 +55,6 @@ public class RobotContainer {
 
   SendableChooser<String> autoPathChooser2 = new SendableChooser<String>(); 
   String autoPath;
-
-  SendableChooser<DoubleSupplier> ampTimeout = new SendableChooser<DoubleSupplier>(); 
 
   public RobotContainer() {
     // NamedCommands.registerCommand("pivotDown", new RunPivotIntakeBeam(pivot, intake, feeder, 0, 0).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
@@ -71,20 +69,15 @@ public class RobotContainer {
     maintainPivotPosition();
     pivot.setBrakeMode();
 
+    vision.configDashboard(matchTab);
+
     configureBindings();
 
     shooter.configDashboard(matchTab);
     feeder.configDashboard(matchTab);
     swerve.configDashboard(matchTab);
     // leftClimb.configDashboard(matchTab);
-    // rightClimb.configDashboard(matchTab);
-
-    // autoPathChooser.setDefaultOption("Score/Intake", "scorePreloadIntakeMiddle");
-    // autoPathChooser.addOption("Score/Score", "scorePreloadScoreMiddle");
-    // autoPathChooser.addOption("Side/Hide", "ScoreAndHide");
-    // autoPathChooser.addOption("Sit/Shoot", "Shoot");
-    // autoPathChooser.addOption("Sit", "DoNothing");
-    // matchTab.add("Auto Path", autoPathChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+    // rightClimb.configDashboard(matchTab)
 
     // autoPathChooser2.setDefaultOption(shootSit, shootSit);
     // autoPathChooser2.addOption(leave, leave);
@@ -132,7 +125,7 @@ public class RobotContainer {
     //CHASSIS
     driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
-    driverController.a().onTrue(new AmpReverse(swerve));
+    driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
 
     driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
     //adjust for blue alliance 
@@ -150,8 +143,11 @@ public class RobotContainer {
     
     //SHOOTER + FEEDER
     operatorController.y().whileTrue(new ShootSpeaker(shooter, feeder));
+
+    operatorController.b().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1.5));
+
     operatorController.a().onTrue(new SequentialCommandGroup(
-      new AmpReverse(swerve),
+      new AmpReverse(swerve,redAlliance),
       new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1)
     ));
 
@@ -169,7 +165,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // String auto = autoPathChooser2.getSelected();
+    //autoPath = autoPathChooser2.getSelected().toString();
     // return new PathPlannerAuto(autoPathChooser.getSelected());
     // return new InstantCommand(() -> {});
    
@@ -183,16 +179,16 @@ public class RobotContainer {
     //   new ReverseBeamFeeder(feeder, Constants.Feeder.REVERSE_SPEED, Constants.Feeder.REVERSE_SPEED)
     // );
 
-    // switch (auto) {
-    //   case shootSit:
-    //     return ShootSit();
-    //   case leave:
-    //     return Leave();
-    //   case shootLeave:
-    //     return TwoNote();
-    //   default:
-    //     return ShootSit();
-    // }
+    /*switch (autoPath) {
+      case shootSit:
+        return ShootSit();
+      case leave:
+        return Leave();
+      case shootLeave:
+        return TwoNote();
+      default:
+        return ShootSit();
+    }*/
 
     return null;
   }

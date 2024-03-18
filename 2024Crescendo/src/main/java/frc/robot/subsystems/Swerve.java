@@ -220,7 +220,7 @@ public class Swerve extends SubsystemBase{
 
     var gyroAngle = getRotation2d(); //TODO: is this used anywhere?
 
-    pose = odometry.update(getRotation2d(), new SwerveModulePosition[] {
+    pose = odometry.update(gyroAngle, new SwerveModulePosition[] {
       frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
     });
 

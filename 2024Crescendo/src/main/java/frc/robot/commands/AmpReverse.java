@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Swerve;
 
 public class AmpReverse extends Command {
@@ -20,13 +21,14 @@ public class AmpReverse extends Command {
    * @param swerve - Swerve object
    * @param ySupplier - DoubleSupplier for speed
    */
-  public AmpReverse(Swerve swerve) {
+  public AmpReverse(Swerve swerve, boolean isRedAlliance) {
     this.swerve = swerve;
     addRequirements(swerve);
   }
 
   public void initialize() {
     initialEncPosition = swerve.backLeft.getEncoderPosition();
+
   }
 
   private double cleanAndScaleInput(double deadband, double input, SlewRateLimiter limiter, double speedScaling) {
@@ -41,10 +43,20 @@ public class AmpReverse extends Command {
   public void execute() {
     SmartDashboard.putNumber("Initial Position", initialEncPosition);
 
-    double ySpeed = cleanAndScaleInput(0.00, -Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0, swerve.getRotation2d());
-    SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-    swerve.setModuleStates(moduleState);
+    if(RobotContainer.redAlliance){
+      double ySpeed = cleanAndScaleInput(0.00, Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
+      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0, swerve.getRotation2d());
+      SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
+      swerve.setModuleStates(moduleState);
+    }else{
+      double ySpeed = cleanAndScaleInput(0.00, -Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
+      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0, swerve.getRotation2d());
+      SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
+      swerve.setModuleStates(moduleState);
+    }
+
+    SmartDashboard.putBoolean("What Alliance", RobotContainer.redAlliance);
+    
   }
 
   @Override
