@@ -23,7 +23,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class Climb extends SubsystemBase {
   private TalonFX motor;
   private TalonFXConfiguration config;
-  private MotionMagicVoltage request;
+  // private MotionMagicVoltage request;
   private boolean isRight;
   private DigitalInput sensor;
   
@@ -35,11 +35,10 @@ public class Climb extends SubsystemBase {
   public Climb(int motorID) {
     motor = new TalonFX(motorID);
     config = new TalonFXConfiguration();
-    request = new MotionMagicVoltage(0, false, 0.0, 0, false, false, false);
+    // request = new MotionMagicVoltage(0, false, 0.0, 0, false, false, false);
     
     isRight = (motorID == Constants.Climb.RIGHT_MOTOR_ID);
     if(isRight) {
-      motor.setInverted(true);
       sensor = new DigitalInput(Constants.Climb.RIGHT_DIGITAL_INPUT_ID);
       config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     } else {
@@ -47,71 +46,60 @@ public class Climb extends SubsystemBase {
       sensor = new DigitalInput(Constants.Climb.LEFT_DIGITAL_INPUT_ID);
     }
     
-    motor.setNeutralMode(NeutralModeValue.Brake);
+    // config.Slot0.kP = Constants.Climb.kP;
+    // config.Slot0.kI = Constants.Climb.kI;
+    // config.Slot0.kD = Constants.Climb.kD;
+    // config.Slot0.kS = Constants.Climb.kS;
+    // config.MotionMagic.MotionMagicCruiseVelocity = Constants.Climb.CRUISE_VELOCITY;
+    // config.MotionMagic.MotionMagicAcceleration = Constants.Climb.ACCELERATION;
 
-    config.Slot0.kP = Constants.Climb.kP;
-    config.Slot0.kI = Constants.Climb.kI;
-    config.Slot0.kD = Constants.Climb.kD;
-    config.Slot0.kS = Constants.Climb.kS;
-    config.MotionMagic.MotionMagicCruiseVelocity = Constants.Climb.CRUISE_VELOCITY;
-    config.MotionMagic.MotionMagicAcceleration = Constants.Climb.ACCELERATION;
-    
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(Constants.Climb.CURRENT_LIMIT));
-    
     motor.getConfigurator().apply(config);
   }
   
-  /** Sets zero position of encoder to just above the latch position of the telescoping arm */
+  /** Zeros encoder at starting position (just above the latch position of the telescoping arm) */
   public void setEncoderOffset() {
     motor.setPosition(0);
   }
-
-  /**
-   * Moves robot to new height using Motion Magic
-   * @param pos - desired position to go to in rotations
-   */
-  public void moveTo(double pos) {
-    motor.setControl(request.withPosition(pos).withSlot(0));
-  }
-
-  /** @return position of motor */
-  public double getPosition(){
-    return motor.getPosition().getValueAsDouble();
-  }
   
-  /**
-   * Lower motor at set speed if not in manual mode
-   * @param lower - true if lowering climb
-   */
-  public void runMotors(boolean lower){
-    if(lower) motor.set(Constants.Climb.LOWER_SPEED);
-    else motor.set(Constants.Climb.RAISE_SPEED);
-  }
-
   /**
    * @param speed - speed of motor
    */
-  public void runManual(DoubleSupplier speed) {
-    double deadbandedSpeed = MathUtil.applyDeadband(speed.getAsDouble(), Constants.Climb.DEADBAND); //TODO: test if values update properly
-
-    if(deadbandedSpeed < 0) motor.set(deadbandedSpeed * Constants.Climb.WIND_FACTOR);
-    else motor.set(deadbandedSpeed * Constants.Climb.UNWIND_FACTOR);
+  public void runMotor(DoubleSupplier speed) {
+    double deadbandedSpeed = MathUtil.applyDeadband(speed.getAsDouble(), Constants.Climb.DEADBAND);
+    
+    if(deadbandedSpeed > 0){
+      if(getEncoderCount() > Constants.Climb.TOP_ROTATIONS) motor.set(deadbandedSpeed * Constants.Climb.UNWIND_FACTOR);
+    } else {
+      motor.set(deadbandedSpeed * Constants.Climb.UNWIND_FACTOR);
+    }
   }
 
+  // public void lower() {
+  //   motor.set(Constants.Climb.LOWER_SPEED);
+  // }
+    
+  /** Moves climb arm to top height using Motion Magic */
+  // public void goToTop() {
+  //   motor.setControl(request.withPosition(Constants.Climb.TOP_ROTATIONS).withSlot(0));
+  // }
+  
   /** Stops climb motor */
   public void stop() {
     motor.stopMotor();
   }
 
+  /** @return motor rotor position */
+  public double getEncoderCount(){
+    return motor.getRotorPosition().getValueAsDouble();
+  }
+  
   /** @return sensor value (false when triggered) */
   public boolean getSensorValue() {
     return sensor.get();
   }
-
-  public void setToZero(){
-    motor.setPosition(0);
-  }
-
+  
   /**
    * Displays value of relative encoder on Shuffleboard
    * @param tab - ShuffleboardTab to add values to
@@ -120,11 +108,9 @@ public class Climb extends SubsystemBase {
     if(isRight){
       tab.addDouble("Right Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
       tab.addBoolean("Right Climb Sensor", () -> getSensorValue());
-      tab.addDouble("Right Climb Pos", ()-> motor.getPosition().getValueAsDouble());
     } else {
       tab.addDouble("Left Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
       tab.addBoolean("Left Climb Sensor", () -> getSensorValue());
-      tab.addDouble("Left Climb Pos", ()-> motor.getPosition().getValueAsDouble());
     }      
   }
   

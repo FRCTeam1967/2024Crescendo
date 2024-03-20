@@ -107,7 +107,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    m_robotContainer.setClimbToZero();
     m_robotContainer.swerve.setNeutralMode(true);
     m_robotContainer.resetSensors();
     m_robotContainer.maintainPivotPosition();

@@ -4,15 +4,18 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
 
-public class LowerClimbUntilLatch extends Command {
+public class ManualClimb extends Command {
   private Climb climb;
+  private DoubleSupplier speed;
   
-  public LowerClimbUntilLatch(Climb _climb) {
+  public ManualClimb(DoubleSupplier _speed, Climb _climb) {
     climb = _climb;
+    speed = _speed;
     addRequirements(climb);
   }
   
@@ -21,7 +24,7 @@ public class LowerClimbUntilLatch extends Command {
   
   @Override
   public void execute() {
-    climb.runMotor(() -> Constants.Climb.LOWER_SPEED);
+    climb.runMotor(speed);
   }
   
   @Override

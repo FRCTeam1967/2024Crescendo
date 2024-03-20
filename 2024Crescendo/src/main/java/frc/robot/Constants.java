@@ -17,9 +17,9 @@ public final class Constants {
   public static class Climb {
     public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31;
     public static final int LEFT_DIGITAL_INPUT_ID = 9, RIGHT_DIGITAL_INPUT_ID = 0;
-    public static final double UNWIND_FACTOR = 0.7, WIND_FACTOR = 0.4, DEADBAND = 0.05;
+    public static final double UNWIND_FACTOR = 1.0, WIND_FACTOR = 0.5, DEADBAND = 0.05;
 
-    public static final double RAISE_SPEED = 0.8, LOWER_SPEED = 0.8, RAISE_TIME = 2.5;
+    public static final double LOWER_SPEED = 0.65, TOP_ROTATIONS = -120.0;
     public static final double CURRENT_LIMIT = 40;
     
     public static final double kP = 1.0, kI = 0, kD = 0, kS = 0.00, kD_TIME = 0.02;
@@ -38,7 +38,6 @@ public final class Constants {
     public static final int FR_POWER = 1, FR_STEER = 2, FR_ENCODER = 1;
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
-
 
     //compbot offsets
     public static final double FL_OFFSET = -133.2421/360;
@@ -114,9 +113,7 @@ public final class Constants {
     public static final double kMaxAngularSpeedDegreesPerSecond = 180;
     public static final double kMaxAngularSpeedDegreesPerSecondSquared = 180;
 
-    public static final double kPXController = 25;
-    public static final double kPYController = 30;
-    public static final double kPThetaController = 7.5;
+    public static final double kPXController = 25, kPYController = 30, kPThetaController = 7.5;
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
@@ -125,7 +122,7 @@ public final class Constants {
 
   public static final class Intake {
     public static final int MOTOR_ID = 13;
-    public static final double INTAKE_ROLLER_SPEED = -0.6, EJECT_ROLLER_SPEED = -0.25;
+    public static final double INTAKE_ROLLER_SPEED = -0.6;
   }
 
   public static class Shooter {
@@ -133,20 +130,19 @@ public final class Constants {
     public static final int BOTTOM_LEFT_MOTOR_ID = 19, BOTTOM_RIGHT_MOTOR_ID = 22;
 
     public static final double kP = 0.32, kI = 0, kD = 0, kV = 0.07, kA = 0.06;
-
+    
     public static final double A_TOP_SPEED = 0.162;
     public static final double A_BOTTOM_SPEED = 0.162;
-
+    
     public static final double AMP_TOP_VELOCITY = 10, AMP_TOP_ACCELERATION = 12;
     public static final double AMP_BOTTOM_VELOCITY = 10, AMP_BOTTOM_ACCELERATION = 12;
-
-
+    
     public static final double S_TOP_SPEED = 1;
     public static final double S_BOTTOM_SPEED = 1;
-
+    
     public static final double SPEAKER_TOP_VELOCITY = 80, SPEAKER_TOP_ACCELERATION = 70;
     public static final double SPEAKER_BOTTOM_VELOCITY = 60, SPEAKER_BOTTOM_ACCELERATION = 50;
-
+    
     public static final double THRESHOLD_SPEED = 80;
   }
   
