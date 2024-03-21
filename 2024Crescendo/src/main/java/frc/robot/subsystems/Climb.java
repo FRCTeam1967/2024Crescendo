@@ -15,7 +15,6 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -23,9 +22,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class Climb extends SubsystemBase {
   private TalonFX motor;
   private TalonFXConfiguration config;
-  // private MotionMagicVoltage request;
   private boolean isRight;
   private DigitalInput sensor;
+  private boolean enabled;
   
   /**
    * Creates new Climb
@@ -35,7 +34,7 @@ public class Climb extends SubsystemBase {
   public Climb(int motorID) {
     motor = new TalonFX(motorID);
     config = new TalonFXConfiguration();
-    // request = new MotionMagicVoltage(0, false, 0.0, 0, false, false, false);
+    enabled = false;
     
     isRight = (motorID == Constants.Climb.RIGHT_MOTOR_ID);
     if(isRight) {
@@ -45,20 +44,13 @@ public class Climb extends SubsystemBase {
       config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
       sensor = new DigitalInput(Constants.Climb.LEFT_DIGITAL_INPUT_ID);
     }
-    
-    // config.Slot0.kP = Constants.Climb.kP;
-    // config.Slot0.kI = Constants.Climb.kI;
-    // config.Slot0.kD = Constants.Climb.kD;
-    // config.Slot0.kS = Constants.Climb.kS;
-    // config.MotionMagic.MotionMagicCruiseVelocity = Constants.Climb.CRUISE_VELOCITY;
-    // config.MotionMagic.MotionMagicAcceleration = Constants.Climb.ACCELERATION;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(Constants.Climb.CURRENT_LIMIT));
     motor.getConfigurator().apply(config);
   }
   
-  /** Zeros encoder at starting position (just above the latch position of the telescoping arm) */
+  /** Zeros encoder at starting position (latched) */
   public void setEncoderOffset() {
     motor.setPosition(0);
   }
@@ -69,21 +61,19 @@ public class Climb extends SubsystemBase {
   public void runMotor(DoubleSupplier speed) {
     double deadbandedSpeed = MathUtil.applyDeadband(speed.getAsDouble(), Constants.Climb.DEADBAND);
     
-    if(deadbandedSpeed > 0){
-      if(getEncoderCount() > Constants.Climb.TOP_ROTATIONS) motor.set(deadbandedSpeed * Constants.Climb.UNWIND_FACTOR);
-    } else {
-      motor.set(deadbandedSpeed * Constants.Climb.UNWIND_FACTOR);
-    }
+    if(deadbandedSpeed > 0) motor.set(deadbandedSpeed * Constants.Climb.UNWIND_FACTOR);
+    else motor.set(deadbandedSpeed * Constants.Climb.WIND_FACTOR);
   }
 
-  // public void lower() {
-  //   motor.set(Constants.Climb.LOWER_SPEED);
-  // }
-    
-  /** Moves climb arm to top height using Motion Magic */
-  // public void goToTop() {
-  //   motor.setControl(request.withPosition(Constants.Climb.TOP_ROTATIONS).withSlot(0));
-  // }
+  /** Changes permission to run climb motors */
+  public void changeStatus() {
+    enabled = !enabled;
+  }
+
+  /** @return mode - true means climbing is allowed */
+  public boolean isEnabled(){
+    return enabled;
+  }
   
   /** Stops climb motor */
   public void stop() {

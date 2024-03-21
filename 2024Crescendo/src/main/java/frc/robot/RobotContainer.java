@@ -104,8 +104,8 @@ public class RobotContainer {
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
       () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
     
-    leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), leftClimb));
-    rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), rightClimb));
+    leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), rightClimb));
+    rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), leftClimb));
     
     intake.setDefaultCommand(new RunIntake(intake, 0));
     feeder.setDefaultCommand(new RunFeeder(feeder, 0));
@@ -140,9 +140,9 @@ public class RobotContainer {
     
     //CLIMB
     operatorController.x().onTrue(new ParallelCommandGroup(new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)));
-    // operatorController.povUp().onTrue(new ParallelCommandGroup(
-    //   new InstantCommand(() -> leftClimb.goToTop(), leftClimb), new InstantCommand(() -> rightClimb.goToTop(), rightClimb)
-    // ));
+    operatorController.leftBumper().onTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> leftClimb.changeStatus(), leftClimb), new InstantCommand(() -> rightClimb.changeStatus(), rightClimb)
+    ));
   }
 
   public Command getAutonomousCommand() {

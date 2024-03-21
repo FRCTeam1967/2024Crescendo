@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.Climb;
 
 public class ManualClimb extends Command {
@@ -24,7 +25,10 @@ public class ManualClimb extends Command {
   
   @Override
   public void execute() {
-    climb.runMotor(speed);
+    if(climb.isEnabled() && !climb.getSensorValue()
+    && ((speed.getAsDouble() > 0 && climb.getEncoderCount() > Constants.Climb.TOP_ROTATIONS) || speed.getAsDouble() < 0)){
+      climb.runMotor(speed);
+    }
   }
   
   @Override
@@ -34,6 +38,6 @@ public class ManualClimb extends Command {
   
   @Override
   public boolean isFinished() {
-    return !climb.getSensorValue();
+    return false;
   }
 }
