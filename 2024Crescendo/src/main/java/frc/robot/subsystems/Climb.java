@@ -87,7 +87,7 @@ public class Climb extends SubsystemBase {
   
   /** @return sensor value (false when triggered) */
   public boolean getSensorValue() {
-    return sensor.get();
+    return !sensor.get();
   }
   
   /**
@@ -98,6 +98,7 @@ public class Climb extends SubsystemBase {
     if(isRight){
       tab.addDouble("Right Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
       tab.addBoolean("Right Climb Sensor", () -> getSensorValue());
+      tab.addBoolean("Enabled On", () -> isEnabled());
     } else {
       tab.addDouble("Left Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
       tab.addBoolean("Left Climb Sensor", () -> getSensorValue());

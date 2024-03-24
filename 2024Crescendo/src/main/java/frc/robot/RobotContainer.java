@@ -104,8 +104,8 @@ public class RobotContainer {
     swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
       () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
     
-    leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), rightClimb));
-    rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), leftClimb));
+    leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), leftClimb));
+    rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));
     
     intake.setDefaultCommand(new RunIntake(intake, 0));
     feeder.setDefaultCommand(new RunFeeder(feeder, 0));
@@ -139,10 +139,12 @@ public class RobotContainer {
     ));
     
     //CLIMB
-    operatorController.x().onTrue(new ParallelCommandGroup(new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)));
+    operatorController.x().whileTrue(new ParallelCommandGroup(new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)));
     operatorController.leftBumper().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.changeStatus(), leftClimb), new InstantCommand(() -> rightClimb.changeStatus(), rightClimb)
     ));
+    // leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), leftClimb));
+    // rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));
   }
 
   public Command getAutonomousCommand() {

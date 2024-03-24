@@ -25,9 +25,12 @@ public class ManualClimb extends Command {
   
   @Override
   public void execute() {
-    if(climb.isEnabled() && !climb.getSensorValue()
-    && ((speed.getAsDouble() > 0 && climb.getEncoderCount() > Constants.Climb.TOP_ROTATIONS) || speed.getAsDouble() < 0)){
+    if(climb.isEnabled() && !climb.getSensorValue() && climb.getEncoderCount() > Constants.Climb.TOP_ROTATIONS){
       climb.runMotor(speed);
+    } else if(climb.isEnabled() && climb.getSensorValue() && speed.getAsDouble() < 0){
+      climb.runMotor(speed);
+    } else {
+      climb.stop();
     }
   }
   
