@@ -67,10 +67,10 @@ public class Swerve extends SubsystemBase{
       this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       this::driveRobotRelative , // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-          new PIDConstants(0.0001, 0.0, 0.0), // Translation PID constants
+          new PIDConstants(0.00001, 0.0, 0.0), // Translation PID constants
           new PIDConstants(Constants.Auto.kPThetaController, 0.0, 0.0), // Rotation PID constants
           0.3, // Max module speed, in m/s
-          0.41309, // Drive base radius in meters. Distance from robot center to furthest module.
+          0.41309, // Drive base radius in meters. Distance from robot center to furthest module. 
           new ReplanningConfig() // Default path replanning config. See the API for the options here
     ), () -> {
       // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -194,12 +194,23 @@ public class Swerve extends SubsystemBase{
     }
   }
 
+  public void setGyroAngle(double degrees){
+    gyro.setGyroAngleZ(degrees);
+  }
+
   public void configDashboard(ShuffleboardTab tab){
     tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
     tab.addDouble("pose position x", () -> getPose().getX());
     tab.addDouble("pose position y", () -> getPose().getY());
     tab.addDouble("Gyro Yaw Axis", () -> getGyro());
     tab.addBoolean("isReached?", () -> isInRange);
+
+    tab.addDouble("Encoder Meters Moved", ()->getEncoderPosition() * Constants.Swerve.METERS_TO_ENC_COUNT);
+    tab.addDouble("FR Distance Meters", ()-> frontRight.getPosition().distanceMeters);
+    tab.addDouble("FL Distance Meters", ()-> frontLeft.getPosition().distanceMeters);
+    tab.addDouble("BR Distance Meters", ()-> backRight.getPosition().distanceMeters);
+    tab.addDouble("BL Distance Meters", ()-> backLeft.getPosition().distanceMeters);
+
 
     SmartDashboard.putNumber("Steer kS", 1);
     SmartDashboard.putNumber("Steer kV", 1);
@@ -225,6 +236,7 @@ public class Swerve extends SubsystemBase{
     });
 
     //System.out.println(pose);
-    field.setRobotPose(pose);
+    SmartDashboard.putData("Field", field);
+    field.setRobotPose(odometry.getPoseMeters());
   }
 }

@@ -49,7 +49,14 @@ public final class Constants {
     // public static final double FL_OFFSET = 171.507813/360;
     // public static final double FR_OFFSET = -59.050391/360;
     // public static final double BL_OFFSET = 119.619141/360;
+    // //public static final double BR_OFFSET = (-150.820313-180)/360;
     // public static final double BR_OFFSET = -150.820313/360;
+
+    // public static final double FL_OFFSET = -10.0195/360;
+    // public static final double FR_OFFSET = 117.6855/360;
+    // public static final double BL_OFFSET = -52.7343/360;
+    // public static final double BR_OFFSET = 27.1582/360;
+
 
     //pid values
     public static final double POWER_kS = 0.14;//0.14; 
@@ -75,6 +82,7 @@ public final class Constants {
     public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = STEER_GEAR_RATIO;
     public static final double REVERSE_OFFSET = Units.inchesToMeters(2.0) * Math.PI;
     public static final double METERS_TO_ENC_COUNT = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
+    
 
     //distances/measurements
     public static final double SWERVE_MAX_SPEED = 4.1695; //m/s

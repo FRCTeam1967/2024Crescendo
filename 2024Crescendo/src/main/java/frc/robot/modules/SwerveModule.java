@@ -178,6 +178,7 @@ public class SwerveModule {
         container.addNumber("Str Position in Rotations", () -> steerController.getPosition().getValueAsDouble() * 360 % 360);
         container.addNumber("Current Velocity", () -> this.getState().speedMetersPerSecond);
         container.addNumber("Current Angle in Deg", () -> this.getState().angle.getDegrees());
+        //container.addDouble("Get Position", () -> backlegetPosition().getValueAsDouble());
     }
 
     public SwerveModuleState optimize (SwerveModuleState desiredState, Rotation2d currentAngle) {
