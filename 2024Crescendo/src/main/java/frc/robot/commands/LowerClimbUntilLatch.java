@@ -21,7 +21,7 @@ public class LowerClimbUntilLatch extends Command {
   
   @Override
   public void execute() {
-    if (!climb.isLocked() && !climb.getSensorValue()) {
+    if (!climb.isLocked() && !climb.magnetSensed()) {
       climb.runMotor(() -> Constants.Climb.LOWER_SPEED);
     }
   }
@@ -33,6 +33,6 @@ public class LowerClimbUntilLatch extends Command {
   
   @Override
   public boolean isFinished() {
-    return climb.getSensorValue();
+    return climb.magnetSensed();
   }
 }

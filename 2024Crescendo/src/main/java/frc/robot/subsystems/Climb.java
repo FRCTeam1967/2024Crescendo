@@ -84,7 +84,7 @@ public class Climb extends SubsystemBase {
   }
   
   /** @return sensor value (true when triggered) */
-  public boolean getSensorValue() {
+  public boolean magnetSensed() {
     return !sensor.get();
   }
   
@@ -95,11 +95,11 @@ public class Climb extends SubsystemBase {
   public void configDashboard(ShuffleboardTab tab) {
     if(isRight){
       tab.addDouble("Right Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
-      tab.addBoolean("Right Climb Sensor", () -> getSensorValue());
+      tab.addBoolean("Right Climb Magnet Sensed", () -> magnetSensed());
       tab.addBoolean("Locked", () -> isLocked());
     } else {
       tab.addDouble("Left Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
-      tab.addBoolean("Left Climb Sensor", () -> getSensorValue());
+      tab.addBoolean("Left Climb Magnet Sensed", () -> magnetSensed());
     }      
   }
   

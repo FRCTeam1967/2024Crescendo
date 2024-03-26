@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -13,7 +12,6 @@ import frc.robot.subsystems.Swerve;
 public class AmpReverse extends Command {
   private final Swerve swerve;
   private SlewRateLimiter yLimiter;
-  private Timer timer;
   private double initialEncPosition;
 
   /**
@@ -66,9 +64,6 @@ public class AmpReverse extends Command {
 
   @Override
   public boolean isFinished() {
-    if ((swerve.backLeft.getEncoderPosition() >= initialEncPosition + Constants.Swerve.REVERSE_OFFSET/Constants.Swerve.METERS_TO_ENC_COUNT) || (swerve.backLeft.getEncoderPosition() <= initialEncPosition - Constants.Swerve.REVERSE_OFFSET/Constants.Swerve.METERS_TO_ENC_COUNT)){
-      return true;
-    }
-    return false;
+    return ((swerve.backLeft.getEncoderPosition() >= initialEncPosition + Constants.Swerve.REVERSE_OFFSET/Constants.Swerve.METERS_TO_ENC_COUNT) || (swerve.backLeft.getEncoderPosition() <= initialEncPosition - Constants.Swerve.REVERSE_OFFSET/Constants.Swerve.METERS_TO_ENC_COUNT));
   }
 }
