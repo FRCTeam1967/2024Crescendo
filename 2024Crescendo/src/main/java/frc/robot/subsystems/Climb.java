@@ -24,7 +24,7 @@ public class Climb extends SubsystemBase {
   private TalonFXConfiguration config;
   private boolean isRight;
   private DigitalInput sensor;
-  private boolean enabled;
+  private boolean locked;
   
   /**
    * Creates new Climb
@@ -34,7 +34,7 @@ public class Climb extends SubsystemBase {
   public Climb(int motorID) {
     motor = new TalonFX(motorID);
     config = new TalonFXConfiguration();
-    enabled = false;
+    locked = true;
     
     isRight = (motorID == Constants.Climb.RIGHT_MOTOR_ID);
     if(isRight) {
@@ -55,9 +55,7 @@ public class Climb extends SubsystemBase {
     motor.setPosition(0);
   }
   
-  /**
-   * @param speed - speed of motor
-   */
+  /** @param speed - speed of motor */
   public void runMotor(DoubleSupplier speed) {
     double deadbandedSpeed = MathUtil.applyDeadband(speed.getAsDouble(), Constants.Climb.DEADBAND);
     
@@ -67,12 +65,12 @@ public class Climb extends SubsystemBase {
 
   /** Changes permission to run climb motors */
   public void changeStatus() {
-    enabled = !enabled;
+    locked = !locked;
   }
 
-  /** @return mode - true means climbing is allowed */
-  public boolean isEnabled(){
-    return enabled;
+  /** @return mode - true means climbing is not allowed */
+  public boolean isLocked(){
+    return locked;
   }
   
   /** Stops climb motor */
@@ -85,7 +83,7 @@ public class Climb extends SubsystemBase {
     return motor.getRotorPosition().getValueAsDouble();
   }
   
-  /** @return sensor value (false when triggered) */
+  /** @return sensor value (true when triggered) */
   public boolean getSensorValue() {
     return !sensor.get();
   }
@@ -98,7 +96,7 @@ public class Climb extends SubsystemBase {
     if(isRight){
       tab.addDouble("Right Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
       tab.addBoolean("Right Climb Sensor", () -> getSensorValue());
-      tab.addBoolean("Enabled On", () -> isEnabled());
+      tab.addBoolean("Locked", () -> isLocked());
     } else {
       tab.addDouble("Left Climb Rel Encoder", () -> motor.getRotorPosition().getValueAsDouble());
       tab.addBoolean("Left Climb Sensor", () -> getSensorValue());

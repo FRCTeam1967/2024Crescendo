@@ -21,7 +21,7 @@ public class LowerClimbUntilLatch extends Command {
   
   @Override
   public void execute() {
-    if (climb.isEnabled() && !climb.getSensorValue()) {
+    if (!climb.isLocked() && !climb.getSensorValue()) {
       climb.runMotor(() -> Constants.Climb.LOWER_SPEED);
     }
   }
