@@ -39,6 +39,7 @@ public class Pivot extends SubsystemBase {
     pidController.setP(Constants.Pivot.kP);
     pidController.setI(Constants.Pivot.kI);
     pidController.setD(Constants.Pivot.kD);
+
     pidController.setOutputRange(-0.2, 0.2);
 
     relativeEncoder = pivotMotor.getEncoder();

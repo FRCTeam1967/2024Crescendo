@@ -82,7 +82,6 @@ public final class Constants {
     public static final double SENSOR_ROTATION_TO_MOTOR_RATIO = STEER_GEAR_RATIO;
     public static final double REVERSE_OFFSET = Units.inchesToMeters(2.0) * Math.PI;
     public static final double METERS_TO_ENC_COUNT = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
-    
 
     //distances/measurements
     public static final double SWERVE_MAX_SPEED = 4.1695; //m/s
@@ -126,6 +125,8 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
     public static final double RADIANS_TO_DEGREES = 180.0/Math.PI;
+
+    public static final double LEFT_ANGLE = 60, RIGHT_ANGLE = -60;
   } 
 
   public static final class Intake {
