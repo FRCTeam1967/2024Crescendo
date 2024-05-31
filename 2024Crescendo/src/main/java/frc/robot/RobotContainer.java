@@ -54,7 +54,7 @@ public class RobotContainer {
   private final Intake intake = new Intake();  
   private final Shooter shooter = new Shooter();
   private final Feeder feeder = new Feeder();
-  private Vision vision = new Vision();
+  private final Vision vision = new Vision();
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
   private final CommandXboxController operatorController = new CommandXboxController(Xbox.OPERATOR_CONTROLLER_PORT);
@@ -159,6 +159,10 @@ public class RobotContainer {
     //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
     driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
     
+    driverController.b().onTrue(new VisionAlign(swerve, vision));
+
+    driverController.y().onTrue(new VisionAlignZ(swerve, vision));
+
     driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
     //adjust for blue alliance
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));

@@ -4,10 +4,12 @@ import frc.robot.Constants;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.util.Optional;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -16,6 +18,9 @@ public class Vision extends SubsystemBase {
   private NetworkTable limelightTable;
   private double xOffset = -100000;
   private boolean isInRange = false;
+  private boolean isRedAlliance;
+  public double verticalOffset, angleToGoalDegrees, angleToGoalRadians;
+  public double limelightToGoalInches = 0.0;
 
   /** Creates new Vision */
   public Vision() {
@@ -26,8 +31,11 @@ public class Vision extends SubsystemBase {
   /** Update x offset value */
   public void updateValues() {
     NetworkTableEntry tx = limelightTable.getEntry("tx");
+    NetworkTableEntry ty = limelightTable.getEntry("ty");
     xOffset = tx.getDouble(0.0);
+    verticalOffset = ty.getDouble(0.0);
     SmartDashboard.putNumber("X Offset", xOffset);
+    SmartDashboard.putNumber("Y Offset", verticalOffset);
   }
 
   /**
@@ -37,7 +45,9 @@ public class Vision extends SubsystemBase {
   public void configDashboard(ShuffleboardTab tab){
     tab.addCamera("Limelight Camera", "m_limelight", "http://10.19.67.11:5800/");
     tab.addDouble("Limelight xOffset", () -> limelightTable.getEntry("tx").getDouble(0.0));
+    tab.addDouble("Limelight yOffset", () -> limelightTable.getEntry("ty").getDouble(0.0));
     tab.addBoolean("In Range", ()->isInRange);
+    tab.addDouble("Distance to Target", () -> limelightToGoalInches);
   }
 
   /**
@@ -50,7 +60,7 @@ public class Vision extends SubsystemBase {
   }
 
   /** updates value of isInRange */
-  public void alignAngle(){
+  public void alignAngleX(){
     updateValues();
     if (xOffset > -Constants.Vision.DEGREE_ERROR && xOffset < Constants.Vision.DEGREE_ERROR){
       isInRange = true;
@@ -60,6 +70,15 @@ public class Vision extends SubsystemBase {
       SmartDashboard.putString("Range", "yes");
     }
   }
+public void alignAngleZ(){
+    updateValues();
+    angleToGoalDegrees = Constants.Vision.LIMELIGHT_ANGLE_DEGREES + verticalOffset;
+    angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180);
+    limelightToGoalInches = (Constants.Vision.TARGET_HEIGHT_INCHES - Constants.Vision.LIMELIGHT_HEIGHT_INCHES) / Math.tan(angleToGoalRadians);
+    
+  }
+
+
 
   /** @return whether limelight is in range */
   public boolean getIsInRange(){
@@ -71,8 +90,17 @@ public class Vision extends SubsystemBase {
     return xOffset;
   }
 
+  public void onEnable(Optional<Alliance> alliance){
+    if (alliance.get() == Alliance.Red) isRedAlliance = true;
+    else isRedAlliance = false;
+  }
+   public boolean getAlliance(){
+     return isRedAlliance;
+   }
+
   @Override
   public void periodic() {
-    alignAngle();
+    alignAngleX();
+    alignAngleZ();
   }
 }

@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -11,11 +13,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
 
-public class VisionAlign extends Command {
+
+public class VisionAlignZ extends Command {
   private final Swerve swerve;
   private final Vision vision;
-  private SlewRateLimiter xLimiter, yLimiter;
-  public VisionAlign(Swerve swerve, Vision vision) {
+  private SlewRateLimiter yLimiter;
+  public VisionAlignZ(Swerve swerve, Vision vision) {
     this.swerve = swerve;
     this.vision = vision;
     addRequirements(swerve, vision);
@@ -36,14 +39,14 @@ public class VisionAlign extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (vision. getOffset() > 0){
-      double xSpeed = cleanAndScaleInput(0, 0.35, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, 0.0, 0.0, swerve.getRotation2d());
+    if (vision.getAlliance()){
+      double ySpeed = cleanAndScaleInput(0, -0.35, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0.0, swerve.getRotation2d());
       SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
       swerve.setModuleStates(moduleState);
     }else{
-      double xSpeed = cleanAndScaleInput(0, -0.35, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, 0.0, 0.0, swerve.getRotation2d());
+      double ySpeed = cleanAndScaleInput(0, 0.35, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0.0, ySpeed, 0.0, swerve.getRotation2d());
       SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
       swerve.setModuleStates(moduleState);
     }
@@ -58,6 +61,7 @@ public class VisionAlign extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return vision.getIsInRange();
+    return vision.limelightToGoalInches < 19 //stops detecting the limelight around 18 inches
+    ;
   }
 }
