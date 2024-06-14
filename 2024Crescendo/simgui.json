@@ -1,0 +1,14 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Match/Auto Path Chooser 2": "String Chooser",
+      "/SmartDashboard/AutoPath": "Command",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/SwerveTune": "Command"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

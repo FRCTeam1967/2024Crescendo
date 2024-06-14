@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.wpilibj2.command.*;
@@ -45,6 +46,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.DriveUI;
 
 public class RobotContainer {
   private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
@@ -56,7 +58,9 @@ public class RobotContainer {
   private final Feeder feeder = new Feeder();
   private final Vision vision = new Vision();
 
-  private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
+  private final DriveUI driveUI = new DriveUI("DriveUI", 0);
+
+  // private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
   private final CommandXboxController operatorController = new CommandXboxController(Xbox.OPERATOR_CONTROLLER_PORT);
 
   public ShuffleboardTab matchTab = Shuffleboard.getTab("Match");
@@ -77,12 +81,6 @@ public class RobotContainer {
   public static final String leftSideLeave = "LeftSideLeave";
   public static final String rightSideLeave = "RightSideLeave";
 
-
-
-
-
-
-  
   public static boolean redAlliance;
   String autoPath;
 
@@ -144,8 +142,8 @@ public class RobotContainer {
   
   private void configureBindings() {
     //DEFAULT COMMANDS
-    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
-      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
+    // swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
+    //   () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
     
     leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), leftClimb));
     rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));
@@ -155,24 +153,27 @@ public class RobotContainer {
     //shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
     //CHASSIS
-    driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
-    //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
-    driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
+    SmartDashboard.putData("SwerveTune", new SwerveTune(swerve));
+    SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));
+    driveUI.setDefaultCommand(new AutoSnapDrive(swerve, driveUI, 5.5));
+    // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
+    // //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
+    // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
     
-    driverController.b().onTrue(new VisionAlign(swerve, vision));
+    // driverController.b().onTrue(new VisionAlign(swerve, vision));
 
-    driverController.y().onTrue(new VisionAlignZ(swerve, vision));
+    // driverController.y().onTrue(new VisionAlignZ(swerve, vision));
 
-    driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
-    //adjust for blue alliance
-    driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
+    // driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
+    // //adjust for blue alliance
+    // driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
     
     //INTAKE + PIVOT + FEEDER
-    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(
-      new RunPivotIntakeBeam(pivot, intake, feeder),
-      new ReverseBeamFeeder(feeder),
-      new RumbleController(driverController, operatorController).withTimeout(2)
-    ));
+    // operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(
+    //   new RunPivotIntakeBeam(pivot, intake, feeder),
+    //   new ReverseBeamFeeder(feeder),
+    //   new RumbleController(driverController, operatorController).withTimeout(2)
+    // ));
     
     operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
     operatorController.rightBumper().whileTrue(new ParallelCommandGroup(new RunIntake(intake, -Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -Constants.Feeder.FEED_SPEED)));

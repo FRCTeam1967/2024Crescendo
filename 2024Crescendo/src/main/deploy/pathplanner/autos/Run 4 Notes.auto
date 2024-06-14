@@ -1,0 +1,85 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.35,
+      "y": 6.28
+    },
+    "rotation": -155.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Note1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Note2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Note3"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Note4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Note4"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

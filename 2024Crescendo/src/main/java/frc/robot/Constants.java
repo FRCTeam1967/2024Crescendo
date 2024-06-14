@@ -60,16 +60,16 @@ public final class Constants {
 
     //pid values
     public static final double POWER_kS = 0.14;//0.14; 
-    public static final double POWER_kV = 1.25;//1.25; 
+    public static final double POWER_kV = 12/(100/8.14);//1.25; 
     public static final double POWER_kA = 0; 
-    public static final double POWER_kP = 0.25;//0.25;
+    public static final double POWER_kP = POWER_kV * 0.8;//0.25;
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
     public static final double STEER_kS = 0; //0.1
     public static final double STEER_kV = 0; //30
     public static final double STEER_kA = 0; // 15
-    public static final double STEER_kP = 100; //75
+    public static final double STEER_kP = 12; //75
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0.5;
 
@@ -129,7 +129,7 @@ public final class Constants {
     public static final double LIMELIGHT_ANGLE_DEGREES = 45.0; //need to measure
     public static final double LIMELIGHT_LENS_HEIGHT_INCHES = 37.0; //need to measure
 
-    public static final double kPXController = 25, kPYController = 30, kPThetaController = 7.5;
+    public static final double kPXController = 25, kPYController = 30, kPThetaController = 6.5;
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
