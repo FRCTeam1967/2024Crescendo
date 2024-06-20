@@ -19,6 +19,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
 
 public class DriveUI extends SubsystemBase {
@@ -89,6 +90,10 @@ public class DriveUI extends SubsystemBase {
     double r = driverController.getRawAxis(driveR);
     r = cleanScaleInput(r, maxRotation, maxRotation);
     return r;
+  }
+
+  public Trigger getDriveSnapIndex(){
+    return driverController.button(driveSnapIndex);
   }
 
   public boolean resumeDriveAuto(){

@@ -8,6 +8,13 @@
       "/SmartDashboard/SwerveTune": "Command"
     }
   },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  },
   "NetworkTables Info": {
     "visible": true
   }
