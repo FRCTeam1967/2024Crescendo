@@ -155,8 +155,10 @@ public class RobotContainer {
     //CHASSIS
     SmartDashboard.putData("SwerveTune", new SwerveTune(swerve));
     SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));
-    driveUI.setDefaultCommand(new AutoSnapDrive(swerve, driveUI, 5.5));
+    swerve.setDefaultCommand(new AutoSnapDrive(swerve, driveUI, 5.5));
     driveUI.getDriveSnapIndex().onTrue(new SnapToShoot(swerve, driveUI, 3.5));
+    SmartDashboard.putData("AutoT", new PathPlannerAuto("Triangle Auto"));
+
     // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     // //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
     // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3,
-      "y": 5.55
+      "x": 2.0,
+      "y": 5.0
     },
     "rotation": 0
   },
@@ -12,21 +12,27 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shootSpeaker"
+            "pathName": "Straight Path 1"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "pivotDown"
+            "waitTime": 2.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "LeaveZone"
+            "pathName": "Straight Path 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Straight Path 3"
           }
         }
       ]

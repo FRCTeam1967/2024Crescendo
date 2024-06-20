@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Swerve;
@@ -30,11 +31,14 @@ public class SnapToShoot extends Command {
 
   private boolean isRedAlliance; // Red - true, Blue - false (based off driver UI)
   private boolean done;
+
+  private Timer timer;
   /** Creates a new SnapToShoot. */
   public SnapToShoot(Swerve swerve,DriveUI driveUI, double snapThreshold){
     this.swerve = swerve;
     this.driveUI = driveUI;
     this.snapThreshold = snapThreshold;
+    timer = new Timer();
     rotationLimit = 4 * Math.PI;
     addRequirements(swerve);
     addRequirements(driveUI);
@@ -70,6 +74,7 @@ public class SnapToShoot extends Command {
     Pose2d robotPose = swerve.getPose();
     targetPose = robotPose.nearest(shootingPoses);
     done = false;
+    timer.restart();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -107,6 +112,6 @@ public class SnapToShoot extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return done;
+    return (done | timer.get() > 7.0 | !driveUI.uninterruptDrive());
   }
 }

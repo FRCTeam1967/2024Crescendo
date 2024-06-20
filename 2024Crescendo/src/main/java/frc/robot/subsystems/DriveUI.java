@@ -100,6 +100,10 @@ public class DriveUI extends SubsystemBase {
     boolean resumeAuto = driverController.button(driveAutoResumeIndex).getAsBoolean();
     return resumeAuto;
   }
+
+  public boolean uninterruptDrive(){
+    return(getX() == 0 && getY() == 0 && getR() == 0);
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
