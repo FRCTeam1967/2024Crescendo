@@ -157,8 +157,18 @@ public class RobotContainer {
     SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));
     swerve.setDefaultCommand(new AutoSnapDrive(swerve, driveUI, 5.5));
     driveUI.getDriveSnapIndex().onTrue(new SnapToShoot(swerve, driveUI, 3.5));
-    SmartDashboard.putData("AutoT", new PathPlannerAuto("Triangle Auto"));
-    SmartDashboard.putData("AutoTest", new PathPlannerAuto("Go out"));
+    //SmartDashboard.putData("AutoT", new PathPlannerAuto("Triangle Auto"));
+    //SmartDashboard.putData("AutoTest", new PathPlannerAuto("Go out"));
+    
+    // private final SendableChooser<String> autoChoices = new SendableChooser<>();
+    // autoChoices.setDefaultOption("Go Out", new PathPlannerAuto("Go out"));
+    // autoChoices.addOption("Triangle Auto", new PathPlannerAuto("Triangle Auto"));
+
+    SendableChooser<Command> autoChooser = new SendableChooser<>();
+    autoChooser.addOption("Triangle", new PathPlannerAuto("Triangle Auto"));
+    autoChooser.addOption("Straight Line", new PathPlannerAuto("Go out"));
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    
     // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     // //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
     // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
@@ -281,7 +291,7 @@ public class RobotContainer {
 
 
   public Command Leave(){
-    return new SwerveDrive(swerve, ()->0.5, ()->0, ()->0).withTimeout(1.5);
+    return new SwerveDrive(swerve, ()->0.3, ()->0, ()->0).withTimeout(1.5);
   }
 
   public Command DoNothing(){

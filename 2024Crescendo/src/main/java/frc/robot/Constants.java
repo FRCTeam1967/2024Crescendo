@@ -40,10 +40,10 @@ public final class Constants {
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
     //compbot offsets
-    public static final double FL_OFFSET = -133.2421/360;
-    public static final double FR_OFFSET = 59.7656/360;
-    public static final double BL_OFFSET = 115.6640/360;
-    public static final double BR_OFFSET = -19.0722/360;
+    public static final double FL_OFFSET = 224.033203125/360;
+    public static final double FR_OFFSET = 113.115234375/360;
+    public static final double BL_OFFSET = 118.91601562499999/360;
+    public static final double BR_OFFSET = -16.435546875/360;
 
     //janky offsets
     // public static final double FL_OFFSET = 171.507813/360;
