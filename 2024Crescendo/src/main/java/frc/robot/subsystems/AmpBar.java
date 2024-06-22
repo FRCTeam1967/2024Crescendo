@@ -13,18 +13,21 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+
 import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 
 import frc.robot.Constants;
 
-public class Pivot extends SubsystemBase {
+public class AmpBar extends SubsystemBase {
   private CANSparkMax pivotMotor;
-  private Canandcoder absEncoder;
   private SparkPIDController pidController;
   private RelativeEncoder relativeEncoder;
+  private Timer timer;
   
-  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(120,150                                  );
+  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(165,180);
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
   public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
   public TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -32,29 +35,19 @@ public class Pivot extends SubsystemBase {
   public double revsToMove;
 
   /** Creates a new Pivot. */
-  public Pivot() {
-    pivotMotor = new CANSparkMax(Constants.Pivot.PIVOT_ID, MotorType.kBrushless);
+  public AmpBar() {
+    pivotMotor = new CANSparkMax(Constants.AmpBar.AMP_BAR_ID, MotorType.kBrushless);
     pivotMotor.setInverted(true);    
     pidController = pivotMotor.getPIDController();
-    pidController.setP(Constants.Pivot.kP);
-    pidController.setI(Constants.Pivot.kI);
-    pidController.setD(Constants.Pivot.kD);
+    pidController.setP(Constants.AmpBar.kP);
+    pidController.setI(Constants.AmpBar.kI);
+    pidController.setD(Constants.AmpBar.kD);
     pidController.setOutputRange(-0.2, 0.2);
 
     relativeEncoder = pivotMotor.getEncoder();
     
-    absEncoder = new Canandcoder(Constants.Pivot.ENCODER_ID);
     pidController.setFeedbackDevice(relativeEncoder);
-
-    Canandcoder.Settings settings = new Canandcoder.Settings();
-    settings.setInvertDirection(true);
-    absEncoder.setSettings(settings, 0.050);
-  }
-
-  /** Sets relative encoder value to absolute encoder value */
-  public void setRelToAbs(){
-    REVLibError success = relativeEncoder.setPosition(absEncoder.getAbsPosition()*Constants.Pivot.GEAR_RATIO);
-    System.out.println("REV error" + success); 
+    timer = new Timer();
   }
 
   /** Stops pivot motor */
@@ -62,11 +55,25 @@ public class Pivot extends SubsystemBase {
     pivotMotor.stopMotor();
   }
 
-  /**
-   * @return position from absolute encoder
-   */
-  public double getAbsPos() {
-    return absEncoder.getAbsPosition();
+  public double getPosition(){
+    return relativeEncoder.getPosition();
+  }
+
+  public void runSecond(){
+    timer.start();
+    while (timer.get() <= 2){
+      pivotMotor.set(-0.2);
+    }
+    pivotMotor.set(0);
+    timer.stop();
+    timer.reset();
+  }
+
+  /** Set encoder position to desired revolutions
+  * @param rev
+  */
+  public void setPosition(double rev){
+    relativeEncoder.setPosition(rev);
   }
 
   /**
@@ -92,14 +99,12 @@ public class Pivot extends SubsystemBase {
   @Override
   public void periodic() {
     setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
-    double revs = (setpoint.position) * Constants.Pivot.GEAR_RATIO;
+    double revs = (setpoint.position) * Constants.AmpBar.GEAR_RATIO;
     pidController.setReference(revs, CANSparkBase.ControlType.kPosition);
 
-    SmartDashboard.putNumber("Rel Pos", relativeEncoder.getPosition());
-    SmartDashboard.putNumber("Abs Encoder", absEncoder.getAbsPosition());
-    SmartDashboard.putNumber("Set Point", setpoint.position); 
-    SmartDashboard.putNumber("revs", revs); 
-    SmartDashboard.putNumber("Rel Pos Degrees", (relativeEncoder.getPosition()*360)/50);
-    SmartDashboard.putNumber("Abs Encoder Degrees", absEncoder.getAbsPosition()*360);
+    SmartDashboard.putNumber("Amp Rel Pos", relativeEncoder.getPosition());
+    SmartDashboard.putNumber("Amp Set Point", setpoint.position); 
+    SmartDashboard.putNumber("Amp revs", revs); 
+    SmartDashboard.putNumber("Amp Rel Pos Degrees", (relativeEncoder.getPosition()*360)/100);
   }
 }

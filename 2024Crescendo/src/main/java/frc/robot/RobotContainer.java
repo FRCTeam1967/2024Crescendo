@@ -38,6 +38,7 @@ import com.reduxrobotics.canand.CanandEventLoop;
 
 import frc.robot.commands.*;
 import frc.robot.Constants.*;
+import frc.robot.subsystems.AmpBar;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Swerve;
@@ -47,6 +48,7 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
+  private final AmpBar ampBar = new AmpBar();
   private final Climb leftClimb = new Climb(Constants.Climb.LEFT_MOTOR_ID);
   private final Climb rightClimb = new Climb(Constants.Climb.RIGHT_MOTOR_ID);
   private final Pivot pivot = new Pivot();
@@ -95,6 +97,7 @@ public class RobotContainer {
 
     CanandEventLoop.getInstance();
     maintainPivotPosition();
+    maintainAmpBarPosition();
     pivot.setBrakeMode();
 
     configureBindings();
@@ -105,6 +108,7 @@ public class RobotContainer {
     swerve.configDashboard(matchTab);
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
+    //ampBar.configDashboard(matchTab);
 
     autoPathChooser2.setDefaultOption(redFourNote, redFourNote);
     autoPathChooser2.addOption(BlueCenterDisrupt, BlueCenterDisrupt);
@@ -140,6 +144,16 @@ public class RobotContainer {
     pivot.setpoint.position = pivot.getAbsPos();
     pivot.goal.velocity = 0;
     pivot.goal.position = pivot.getAbsPos();
+  }
+
+  public void maintainAmpBarPosition(){
+
+    ampBar.setPosition(0);
+
+    ampBar.setpoint.velocity = 0;
+    ampBar.setpoint.position = 0;
+    ampBar.goal.velocity = 0;
+    ampBar.goal.position = 0;
   }
   
   private void configureBindings() {
@@ -180,16 +194,19 @@ public class RobotContainer {
     //SHOOTER + FEEDER
     operatorController.y().whileTrue(new ShootSpeaker(shooter, feeder));
     operatorController.b().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1.5));
-    operatorController.a().onTrue(new SequentialCommandGroup(
-      new AmpReverse(swerve,redAlliance),
-      new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1)
-    ));
+    // operatorController.a().onTrue(new SequentialCommandGroup(
+    //   new AmpReverse(swerve,redAlliance),
+    //   new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1)
+    // ));
     operatorController.start().whileTrue(new RunShooter(shooter, false));
     //CLIMB
     operatorController.x().whileTrue(new ParallelCommandGroup(new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)));
     operatorController.leftBumper().onTrue(new ParallelCommandGroup(
       new InstantCommand(() -> leftClimb.changeStatus(), leftClimb), new InstantCommand(() -> rightClimb.changeStatus(), rightClimb)
     ));
+
+    operatorController.a().whileTrue(new SequentialCommandGroup(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP), new WaitCommand(0.5), new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1.5)));
+    operatorController.a().whileFalse(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
     // leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), leftClimb));
     // rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));
   }
