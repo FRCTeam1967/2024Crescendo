@@ -158,7 +158,7 @@ public class RobotContainer {
     swerve.setDefaultCommand(new AutoSnapDrive(swerve, driveUI, 5.5));
     driveUI.getDriveSnapIndex().onTrue(new SnapToShoot(swerve, driveUI, 3.5));
     SmartDashboard.putData("AutoT", new PathPlannerAuto("Triangle Auto"));
-
+    SmartDashboard.putData("AutoTest", new PathPlannerAuto("Go out"));
     // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     // //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
     // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
