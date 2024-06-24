@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    m_robotContainer.swerve.setNeutralMode(true);
+    //m_robotContainer.swerve.setNeutralMode(true); //DONT USE THIS, IT SLOWS DOWN AUTO SUPER BADLY!!!
   }
 
   @Override

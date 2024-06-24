@@ -1,24 +1,37 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "window": {
+        "visible": false
+      }
+    },
+    "Timing": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Match/Auto Path Chooser 2": "String Chooser",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
       "/SmartDashboard/AutoPath": "Command",
       "/SmartDashboard/AutoT": "Command",
+      "/SmartDashboard/AutoTest": "Command",
+      "/SmartDashboard/CompIntakeSequence": "Command",
+      "/SmartDashboard/ControllerEndIntaking": "Command",
+      "/SmartDashboard/ControllerIntakingWithRumble": "Command",
+      "/SmartDashboard/EndIntakeSequence": "Command",
+      "/SmartDashboard/Feeder": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/SwerveTune": "Command"
-    },
-    "windows": {
-      "/SmartDashboard/AutoPath": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/AutoT": {
-        "window": {
-          "visible": true
-        }
-      }
+      "/SmartDashboard/Intake": "Subsystem",
+      "/SmartDashboard/Pivot": "Subsystem",
+      "/SmartDashboard/Shooter": "Subsystem",
+      "/SmartDashboard/SnapToShoot": "Command",
+      "/SmartDashboard/SwerveTune": "Command",
+      "/SmartDashboard/cmd/swerveDefaultCommand": "Command",
+      "/SmartDashboard/ppShootSpeaker": "Command"
     }
   },
   "NetworkTables": {

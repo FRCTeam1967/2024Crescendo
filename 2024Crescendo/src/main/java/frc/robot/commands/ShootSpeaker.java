@@ -33,7 +33,10 @@ public class ShootSpeaker extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+// TODO: prove bug on robot + initialize reachedShooterSpeed to false here
+// NOTE: when calling commands, you are reusing the same object which is why after the first shoot everything else sucks!! - aka note hits shooter prematurely since boolean is true
+  }
 
   @Override
   public void execute() {

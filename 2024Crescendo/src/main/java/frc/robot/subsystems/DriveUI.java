@@ -17,6 +17,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,12 +32,15 @@ public class DriveUI extends SubsystemBase {
 
   private int driveAutoResumeIndex = 6; // R Bumper
   private int driveSnapIndex = 4; // Y Button
+  private int switchAimIndex = 1;// B Button
 
   private int runIntakeIndex = 5; // L Bumper
   private int interruptIntakeIndex = 7; // Back 
 
   private double maxSpeed = 3.9; //meters per sec
   private double maxRotation = Math.PI; //raidans per sec
+  
+  public Integer switchAim = 0; // 0 = speaker, 1 = amp
   /** Creates a new DriveUI. */
   public DriveUI(String name, int port) {
     setName(name);
@@ -51,10 +55,22 @@ public class DriveUI extends SubsystemBase {
         driveSnapIndex = 5;
         runIntakeIndex = 7;
         interruptIntakeIndex = 11;
+        switchAimIndex = 2;
       }
     }
+
+    configureBindings();
   }
 
+  public void configureBindings(){
+    driverController.button(switchAimIndex).debounce(0.2)
+    .onTrue(new InstantCommand(() -> {
+      switchAim++;
+      if(switchAim > 1){
+        switchAim = 0;
+      }
+    }));
+  }
   public double cleanScaleInput(double input, double scale, double deadband, double max){
     double scaleX = input * Math.abs(input) * scale;
     return MathUtil.applyDeadband(scaleX, deadband, max);

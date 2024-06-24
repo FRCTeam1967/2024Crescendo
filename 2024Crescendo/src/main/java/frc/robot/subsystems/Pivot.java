@@ -13,6 +13,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 
@@ -30,7 +31,7 @@ public class Pivot extends SubsystemBase {
   public TrapezoidProfile.State goal = new TrapezoidProfile.State();
   
   public double revsToMove;
-
+ 
   /** Creates a new Pivot. */
   public Pivot() {
     pivotMotor = new CANSparkMax(Constants.Pivot.PIVOT_ID, MotorType.kBrushless);
@@ -50,6 +51,13 @@ public class Pivot extends SubsystemBase {
     settings.setInvertDirection(true);
     absEncoder.setSettings(settings, 0.050);
   }
+
+  public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        String name = getName();
+        builder.addDoubleProperty("pivotPos",()->(setpoint.position) * Constants.Pivot.GEAR_RATIO,null);
+    }
+
 
   /** Sets relative encoder value to absolute encoder value */
   public void setRelToAbs(){

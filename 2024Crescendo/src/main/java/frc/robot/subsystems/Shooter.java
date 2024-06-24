@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -41,6 +42,15 @@ public class Shooter extends SubsystemBase {
     bottomLeftMotor.getConfigurator().apply(config);
     bottomRightMotor.getConfigurator().apply(config);
   }
+
+   public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        String name = getName();
+        builder.addDoubleProperty("topLeftMotorVelocity",()->getMotorVelocity(topLeftMotor),null);
+        builder.addDoubleProperty("bottomLeftMotorVelocity",()->getMotorVelocity(bottomLeftMotor),null);
+        builder.addDoubleProperty("topRightMotorVelocity",()->getMotorVelocity(topRightMotor),null);
+        builder.addDoubleProperty("bottomRightMotorVelocity",()->getMotorVelocity(bottomRightMotor),null);
+    }
 
   /**
    * Run all shooter motors at inputted velocities/accelerations
@@ -79,11 +89,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public void configDashboard(ShuffleboardTab tab) {
-    tab.addDouble("Average Velocity", ()->getAverageVelocity());
-    tab.addDouble("Top Left", ()->getMotorVelocity(topLeftMotor));
-    tab.addDouble("Top Right", ()->getMotorVelocity(topRightMotor));
-    tab.addDouble("Bottom Left", ()->getMotorVelocity(bottomLeftMotor));
-    tab.addDouble("Bottom Right", ()->getMotorVelocity(bottomRightMotor));
+    // tab.addDouble("Average Velocity", ()->getAverageVelocity());
+    // tab.addDouble("Top Left", ()->getMotorVelocity(topLeftMotor));
+    // tab.addDouble("Top Right", ()->getMotorVelocity(topRightMotor));
+    // tab.addDouble("Bottom Left", ()->getMotorVelocity(bottomLeftMotor));
+    // tab.addDouble("Bottom Right", ()->getMotorVelocity(bottomRightMotor));
   }
 
   public double getAverageVelocity(){

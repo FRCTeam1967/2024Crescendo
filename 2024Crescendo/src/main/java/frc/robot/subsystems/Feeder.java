@@ -6,7 +6,9 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,6 +17,7 @@ import frc.robot.Constants;
 
 public class Feeder extends SubsystemBase {
   private CANSparkMax leftMotor, rightMotor;
+  private RelativeEncoder leftEncoder, rightEncoder;
   private DigitalInput sensor;
 
   /** Create new Feeder */
@@ -22,8 +25,21 @@ public class Feeder extends SubsystemBase {
     leftMotor = new CANSparkMax (Constants.Feeder.LEFT_ID, MotorType.kBrushless); 
     rightMotor = new CANSparkMax(Constants.Feeder.RIGHT_ID, MotorType.kBrushless);
     sensor = new DigitalInput(Constants.Feeder.BEAM_ID);
+
+    leftEncoder = leftMotor.getEncoder();
+    rightEncoder = rightMotor.getEncoder();
   }
   
+   public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        String name = getName();
+        builder.addDoubleProperty("leftMotorSpeed",()->leftMotor.get(),null);
+        builder.addDoubleProperty("rightMotorSpeed",()->rightMotor.get(),null);
+
+        builder.addDoubleProperty("Left Motor Velocity", ()->leftEncoder.getVelocity(),null);
+        builder.addDoubleProperty("Right Motor Velocity", ()->rightEncoder.getVelocity(), null);
+    }
+
   /**
    * Runs feeder motors
    * @param leftSpeed

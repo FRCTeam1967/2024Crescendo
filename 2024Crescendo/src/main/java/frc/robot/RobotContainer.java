@@ -65,7 +65,7 @@ public class RobotContainer {
 
   public ShuffleboardTab matchTab = Shuffleboard.getTab("Match");
 
-  SendableChooser<String> autoPathChooser2 = new SendableChooser<String>(); 
+  //SendableChooser<String> autoPathChooser2 = new SendableChooser<String>(); 
   public static final String redThreeNote = "RedThreeNote";
   public static final String BlueCenterDisrupt = "BlueCenterDisrupt";
   public static final String RedCenterDisrupt = "RedCenterDisrupt";
@@ -80,7 +80,7 @@ public class RobotContainer {
   public static final String rightSideSit = "RightSideSit";
   public static final String leftSideLeave = "LeftSideLeave";
   public static final String rightSideLeave = "RightSideLeave";
-
+  SendableChooser<Command> autoChooser;
   public static boolean redAlliance;
   String autoPath;
 
@@ -104,22 +104,22 @@ public class RobotContainer {
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
 
-    autoPathChooser2.setDefaultOption(redFourNote, redFourNote);
-    autoPathChooser2.addOption(BlueCenterDisrupt, BlueCenterDisrupt);
-    autoPathChooser2.addOption(RedCenterDisrupt, RedCenterDisrupt);
-    autoPathChooser2.addOption(redThreeNote, redThreeNote);
-    autoPathChooser2.addOption(blueThreeNote, blueThreeNote);
-    autoPathChooser2.addOption(blueFourNote, blueFourNote);
-    autoPathChooser2.addOption(twoNote, twoNote);
-    autoPathChooser2.addOption(leave, leave);
-    autoPathChooser2.addOption(frontShootSit, frontShootSit);
-    autoPathChooser2.addOption(leftSideSit, leftSideSit);
-    autoPathChooser2.addOption(rightSideSit, rightSideSit);
-    autoPathChooser2.addOption(leftSideLeave, leftSideSit);
-    autoPathChooser2.addOption(rightSideLeave, rightSideSit);
-    autoPathChooser2.addOption(doNothing, doNothing);
-    matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
-  }
+  //   autoPathChooser2.setDefaultOption(redFourNote, redFourNote);
+  //   autoPathChooser2.addOption(BlueCenterDisrupt, BlueCenterDisrupt);
+  //   autoPathChooser2.addOption(RedCenterDisrupt, RedCenterDisrupt);
+  //   autoPathChooser2.addOption(redThreeNote, redThreeNote);
+  //   autoPathChooser2.addOption(blueThreeNote, blueThreeNote);
+  //   autoPathChooser2.addOption(blueFourNote, blueFourNote);
+  //   autoPathChooser2.addOption(twoNote, twoNote);
+  //   autoPathChooser2.addOption(leave, leave);
+  //   autoPathChooser2.addOption(frontShootSit, frontShootSit);
+  //   autoPathChooser2.addOption(leftSideSit, leftSideSit);
+  //   autoPathChooser2.addOption(rightSideSit, rightSideSit);
+  //   autoPathChooser2.addOption(leftSideLeave, leftSideSit);
+  //   autoPathChooser2.addOption(rightSideLeave, rightSideSit);
+  //   autoPathChooser2.addOption(doNothing, doNothing);
+  //   matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
+   }
 
   public void onEnable(Optional<Alliance> alliance){
     if (alliance.get() == Alliance.Red) redAlliance = true;
@@ -141,6 +141,24 @@ public class RobotContainer {
   }
   
   private void configureBindings() {
+
+    Command pathPlannerShootSpeaker = (new ShootSpeaker(shooter, feeder)).withTimeout(2.0);
+    pathPlannerShootSpeaker.setName("ppShootSpeaker");
+    SmartDashboard.putData(pathPlannerShootSpeaker);
+    NamedCommands.registerCommand("CompIntakeSequence", CompNoteIntakeSequence.start("CompIntakeSequence", pivot, intake, feeder));
+    NamedCommands.registerCommand("EndIntakeSequence", CompNoteIntakeSequence.end("EndIntakeSequence", pivot));
+    NamedCommands.registerCommand("ShootSpeaker", pathPlannerShootSpeaker);
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+       SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));
+       SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 1 Note"));
+
+    SmartDashboard.putData(pivot);
+    SmartDashboard.putData(intake);
+    SmartDashboard.putData(feeder);
+    SmartDashboard.putData(shooter);
+
+  
     //DEFAULT COMMANDS
     // swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
     //   () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
@@ -154,19 +172,24 @@ public class RobotContainer {
     
     //CHASSIS
     SmartDashboard.putData("SwerveTune", new SwerveTune(swerve));
-    SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));
-    swerve.setDefaultCommand(new AutoSnapDrive(swerve, driveUI, 5.5));
-    driveUI.getDriveSnapIndex().onTrue(new SnapToShoot(swerve, driveUI, 3.5));
-    //SmartDashboard.putData("AutoT", new PathPlannerAuto("Triangle Auto"));
-    //SmartDashboard.putData("AutoTest", new PathPlannerAuto("Go out"));
+   // SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));
+    Command swerveDefaultCommand = new AutoSnapDrive(swerve, driveUI, 5.5);
+    swerveDefaultCommand.setName("cmd/swerveDefaultCommand");
+    swerve.setDefaultCommand(swerveDefaultCommand);
+    SmartDashboard.putData(swerveDefaultCommand);
     
+    driveUI.getDriveSnapIndex().onTrue(new SnapToShoot(swerve, driveUI, 3.5));
+
+    SmartDashboard.putData("AutoT", new PathPlannerAuto("Triangle Auto"));
+    SmartDashboard.putData("AutoTest", new PathPlannerAuto("Go out"));
+    SmartDashboard.putData("SnapToShoot", new SnapToShoot(swerve, driveUI, 4));
+
     // private final SendableChooser<String> autoChoices = new SendableChooser<>();
     // autoChoices.setDefaultOption("Go Out", new PathPlannerAuto("Go out"));
     // autoChoices.addOption("Triangle Auto", new PathPlannerAuto("Triangle Auto"));
 
-    SendableChooser<Command> autoChooser = new SendableChooser<>();
-    autoChooser.addOption("Triangle", new PathPlannerAuto("Triangle Auto"));
-    autoChooser.addOption("Straight Line", new PathPlannerAuto("Go out"));
+    // autoChooser.addOption("Triangle", new PathPlannerAuto("Triangle Auto"));
+    // autoChooser.addOption("Straight Line", new PathPlannerAuto("Go out"));
     SmartDashboard.putData("Auto Chooser", autoChooser);
     
     // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
@@ -182,13 +205,10 @@ public class RobotContainer {
     // driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
     
     //INTAKE + PIVOT + FEEDER
-    // operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(
-    //   new RunPivotIntakeBeam(pivot, intake, feeder),
-    //   new ReverseBeamFeeder(feeder),
-    //   new RumbleController(driverController, operatorController).withTimeout(2)
-    // ));
+    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(CompNoteIntakeSequence.startWithRumble("ControllerIntakingWithRumble", pivot, intake, feeder, operatorController, operatorController)
+    );
     
-    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
+    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileFalse(CompNoteIntakeSequence.end("ControllerEndIntaking", pivot));
     operatorController.rightBumper().whileTrue(new ParallelCommandGroup(new RunIntake(intake, -Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -Constants.Feeder.FEED_SPEED)));
     
     //SHOOTER + FEEDER
@@ -209,40 +229,41 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    autoPath = autoPathChooser2.getSelected();
+    return autoChooser.getSelected();
+    // autoPath = autoPathChooser2.getSelected();
     
-    switch (autoPath) {
-      case BlueCenterDisrupt:
-        return BlueCenterDisrupt();
-      case RedCenterDisrupt:
-        return RedCenterDisrupt();
-      case redFourNote:
-        return RedFourNote();
-      case redThreeNote:
-        return RedThreeNote();
-      case blueThreeNote:
-        return BlueThreeNote();
-      case blueFourNote:
-        return BlueFourNote();
-      case twoNote:
-        return TwoNote();
-      case leave:
-        return Leave();
-      case frontShootSit:
-        return FrontShootSit();
-      case leftSideSit:
-        return LeftSideSit();
-      case rightSideSit:
-        return RightSideSit();
-      case leftSideLeave:
-        return LeftSideLeave();
-      case rightSideLeave:
-        return RightSideLeave();
-      case doNothing:
-        return DoNothing();
-      default:
-        return FrontShootSit();
-    }
+    // switch (autoPath) {
+    //   case BlueCenterDisrupt:
+    //     return BlueCenterDisrupt();
+    //   case RedCenterDisrupt:
+    //     return RedCenterDisrupt();
+    //   case redFourNote:
+    //     return RedFourNote();
+    //   case redThreeNote:
+    //     return RedThreeNote();
+    //   case blueThreeNote:
+    //     return BlueThreeNote();
+    //   case blueFourNote:
+    //     return BlueFourNote();
+    //   case twoNote:
+    //     return TwoNote();
+    //   case leave:
+    //     return Leave();
+    //   case frontShootSit:
+    //     return FrontShootSit();
+    //   case leftSideSit:
+    //     return LeftSideSit();
+    //   case rightSideSit:
+    //     return RightSideSit();
+    //   case leftSideLeave:
+    //     return LeftSideLeave();
+    //   case rightSideLeave:
+    //     return RightSideLeave();
+    //   case doNothing:
+    //     return DoNothing();
+    //   default:
+    //     return FrontShootSit();
+    // }
     //return BlueFourNote();
   }
 

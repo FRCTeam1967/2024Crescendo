@@ -25,6 +25,7 @@ public class SnapToShoot extends Command {
   private final DriveUI driveUI;
 
   private List<Pose2d> shootingPoses;
+  private Pose2d ampPos;
   private double snapThreshold;
   private Pose2d targetPose;
   private double rotationLimit;
@@ -41,7 +42,6 @@ public class SnapToShoot extends Command {
     timer = new Timer();
     rotationLimit = 4 * Math.PI;
     addRequirements(swerve);
-    addRequirements(driveUI);
     updateAlliance();
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -50,15 +50,17 @@ public class SnapToShoot extends Command {
     isRedAlliance = driveUI.getAlliance();
     if (isRedAlliance) { // Red Allianc
       shootingPoses = new ArrayList<Pose2d>();
-      shootingPoses.add(new Pose2d(15.8,6.83,Rotation2d.fromDegrees(-55)));
-      shootingPoses.add(new Pose2d(15.1,5.5,Rotation2d.fromDegrees(0)));
-      shootingPoses.add(new Pose2d(15.75,4.4,Rotation2d.fromDegrees(61.5)));
+      shootingPoses.add(new Pose2d(15.8,6.83,Rotation2d.fromDegrees(-55+180)));
+      shootingPoses.add(new Pose2d(15.1,5.5,Rotation2d.fromDegrees(0+180)));
+      shootingPoses.add(new Pose2d(15.75,4.4,Rotation2d.fromDegrees(61.5+180)));
+      ampPos = new Pose2d(14.8,7.6,Rotation2d.fromDegrees(90+180));
       System.out.print("Red");
     } else {
       shootingPoses = new ArrayList<Pose2d>();
-      shootingPoses.add(new Pose2d(1.2, 6.3, Rotation2d.fromDegrees(-135)));
-      shootingPoses.add(new Pose2d(1.3, 5.55, Rotation2d.fromDegrees(180)));
-      shootingPoses.add(new Pose2d(1.2, 4.75, Rotation2d.fromDegrees(135)));
+      shootingPoses.add(new Pose2d(1.2, 6.3, Rotation2d.fromDegrees(-135+180)));
+      shootingPoses.add(new Pose2d(1.3, 5.55, Rotation2d.fromDegrees(180+180)));
+      shootingPoses.add(new Pose2d(1.2, 4.75, Rotation2d.fromDegrees(135+180)));
+      ampPos = new Pose2d(1.8,7.6,Rotation2d.fromDegrees(90+180));
       System.out.print("Blue");
     }
   }
@@ -72,7 +74,8 @@ public class SnapToShoot extends Command {
   public void initialize() {
     updateAlliance();
     Pose2d robotPose = swerve.getPose();
-    targetPose = robotPose.nearest(shootingPoses);
+    if(driveUI.switchAim == 1) targetPose = ampPos;
+    else targetPose = robotPose.nearest(shootingPoses);
     done = false;
     timer.restart();
   }

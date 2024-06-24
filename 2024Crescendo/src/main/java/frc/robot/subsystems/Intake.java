@@ -7,8 +7,10 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Intake extends SubsystemBase {
   private CANSparkMax motor;
@@ -19,6 +21,12 @@ public class Intake extends SubsystemBase {
     motor.restoreFactoryDefaults();
   }
 
+   public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        String name = getName();
+        builder.addDoubleProperty("intakeSpeed",()->motor.get(),null);
+    }
+
   /**
    * Sets speed of motor to speed of input
    * @param speed - motor speed
@@ -26,12 +34,12 @@ public class Intake extends SubsystemBase {
   public void runMotors(double speed){
     motor.set(speed);
   }
-  
+
   /** Stops intake motor */
   public void stopMotors(){
     motor.stopMotor();
   }
-  
+
   @Override
   public void periodic() {}
 }

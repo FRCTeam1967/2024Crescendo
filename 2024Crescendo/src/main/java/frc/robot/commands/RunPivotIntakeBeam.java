@@ -27,11 +27,13 @@ public class RunPivotIntakeBeam extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    pivot.moveTo(Constants.Pivot.INTAKE_DOWN);
+
+  }
 
   @Override
   public void execute() {
-    pivot.moveTo(Constants.Pivot.INTAKE_DOWN);
     intake.runMotors(Constants.Intake.INTAKE_ROLLER_SPEED);
     feeder.feedFeeder(Constants.Feeder.FEED_SPEED);
   }

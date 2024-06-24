@@ -33,7 +33,7 @@ public final class Constants {
   }
 
   public static class Swerve {
-    //motor/encoder ids
+    //motor/encoder ids //TODO: why are encoder ids overlapping w/ motor ids? 
     public static final int FL_POWER = 7, FL_STEER = 8, FL_ENCODER = 4;
     public static final int FR_POWER = 1, FR_STEER = 2, FR_ENCODER = 1;
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;

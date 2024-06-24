@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -23,8 +24,11 @@ public class AutoSnapDrive extends Command {
   private final Swerve swerve;
   private final DriveUI driveUI;
 
+  private boolean enableSnap;
   private boolean aim;
   private Translation2d speakerPos;
+  private Translation2d ampPos;
+  private Translation2d targetPos;
   private double rotationThreshold;
   private double rotationLimit;
 
@@ -32,6 +36,7 @@ public class AutoSnapDrive extends Command {
   private FieldObject2d aimPos;
 
   private boolean alliance; // Red - true, Blue - false (based off driver UI)
+  private boolean inverseDriveAxis = false;
 
   /** Creates a new AutoSnapDrive. */
   public AutoSnapDrive(Swerve swerve, DriveUI driveUI, double rotationThreshold) {
@@ -43,7 +48,6 @@ public class AutoSnapDrive extends Command {
     rLimiter = new SlewRateLimiter(rotationLimit);
     updateAlliance();
     addRequirements(swerve);
-    addRequirements(driveUI);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -51,9 +55,11 @@ public class AutoSnapDrive extends Command {
     alliance = driveUI.getAlliance();
     if (alliance) {
       speakerPos = new Translation2d(16.3, 5.45); // Red alliance center of speaker
+      ampPos = new Translation2d(14.8, 8.2);
       System.out.print("Red");
     } else {
       speakerPos = new Translation2d(0.25, 5.5); // Blue alliance center of speaker
+      ampPos = new Translation2d(1.8, 8.2);
       System.out.print("Blue");
     }
   }
@@ -65,7 +71,7 @@ public class AutoSnapDrive extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(aimPos == null){
+    if (aimPos == null) {
       aimPos = swerve.getField().getObject("aimPos");
     }
     updateAlliance();
@@ -77,7 +83,7 @@ public class AutoSnapDrive extends Command {
     double xSpeed;
     double ySpeed;
     double rSpeed;
-    if (driveUI.isRed) {
+    if (driveUI.isRed ^ inverseDriveAxis) {
       xSpeed = driveUI.getY();
       ySpeed = driveUI.getX();
       rSpeed = -driveUI.getR();
@@ -87,25 +93,31 @@ public class AutoSnapDrive extends Command {
       rSpeed = -driveUI.getR();
     }
 
+    if (driveUI.switchAim == 1)
+      targetPos = ampPos;
+    else
+      targetPos = speakerPos;
     if (driveUI.resumeDriveAuto()) {
       aim = true;
     }
     Pose2d currPose = swerve.getPose();
     Translation2d robotTranslate = currPose.getTranslation();
 
-    if (robotTranslate.getDistance(speakerPos) < rotationThreshold){
+    if (robotTranslate.getDistance(targetPos) < rotationThreshold) {
       if (Math.abs(rSpeed) > 0.2) {
         aim = false;
         rLimiter.reset(rSpeed);
-      } else if (aim) {
+        aimPos.setPoses();
+
+      } else if (aim && enableSnap) {
         double desiredRotSpeed;
-        Translation2d relativePos = speakerPos.minus(robotTranslate);
+        Translation2d relativePos = targetPos.minus(robotTranslate);
         Rotation2d speakerDirection = relativePos.getAngle();
-        Rotation2d rotateTo = speakerDirection.minus(currPose.getRotation());
+        Rotation2d rotateTo = speakerDirection.minus(currPose.getRotation()).plus(Rotation2d.fromDegrees(180));
         double rotationDegree = rotateTo.getDegrees();
         desiredRotSpeed = simpleProportionalController(rotationDegree, 1.0 / 20.0, 2, Math.PI);
         rSpeed = rLimiter.calculate(desiredRotSpeed);
-        Transform2d aimPosTransform2d = new Transform2d(relativePos.getNorm(), 0, Rotation2d.fromDegrees(0));
+        Transform2d aimPosTransform2d = new Transform2d(-relativePos.getNorm(), 0, Rotation2d.fromDegrees(0));
         aimPos.setPose(currPose.plus(aimPosTransform2d));
       } else {
         aimPos.setPoses();
@@ -113,6 +125,8 @@ public class AutoSnapDrive extends Command {
       }
     } else {
       aim = true;
+      aimPos.setPoses();
+
     }
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rSpeed);
     swerve.driveFieldRelative(chassisSpeeds);
@@ -127,5 +141,18 @@ public class AutoSnapDrive extends Command {
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    String name = getName();
+    builder.addBooleanProperty("Enable Auto Snap", () -> enableSnap, (var) -> {
+      enableSnap = var;
+    });
+
+    builder.addBooleanProperty("InverseDriveAxis", () -> inverseDriveAxis, (var) -> {
+      inverseDriveAxis = var;
+    });
   }
 }
