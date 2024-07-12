@@ -29,9 +29,17 @@
       "/SmartDashboard/Pivot": "Subsystem",
       "/SmartDashboard/Shooter": "Subsystem",
       "/SmartDashboard/SnapToShoot": "Command",
+      "/SmartDashboard/StartIntakeSequence": "Command",
       "/SmartDashboard/SwerveTune": "Command",
       "/SmartDashboard/cmd/swerveDefaultCommand": "Command",
       "/SmartDashboard/ppShootSpeaker": "Command"
+    },
+    "windows": {
+      "/SmartDashboard/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
