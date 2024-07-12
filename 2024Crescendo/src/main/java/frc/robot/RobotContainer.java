@@ -165,13 +165,16 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    Command pathPlannerShootSpeaker = (new ShootSpeaker(shooter, feeder)).withTimeout(2.0);
-    pathPlannerShootSpeaker.setName("ppShootSpeaker");
-    SmartDashboard.putData(pathPlannerShootSpeaker);
-    NamedCommands.registerCommand("CompIntakeSequence",
-        CompNoteIntakeSequence.start("CompIntakeSequence", pivot, intake, feeder));
+    Command autoShootSpeaker = (new ShootSpeaker(shooter, feeder)).withTimeout(1.5);
+    autoShootSpeaker.setName("autoShootSpeaker");
+    NamedCommands.registerCommand("ShootSpeaker", autoShootSpeaker);
+
+    NamedCommands.registerCommand("StartIntakeSequence",
+        CompNoteIntakeSequence.start("StartIntakeSequence", pivot, intake, feeder));
     NamedCommands.registerCommand("EndIntakeSequence", CompNoteIntakeSequence.end("EndIntakeSequence", pivot));
-    NamedCommands.registerCommand("ShootSpeaker", pathPlannerShootSpeaker);
+    Command shootPreload = new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN),
+        new ShootSpeaker(shooter, feeder)).withTimeout(1.5);
+    NamedCommands.registerCommand("ShootPreload", shootPreload);
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));

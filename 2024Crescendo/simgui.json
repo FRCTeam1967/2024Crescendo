@@ -38,6 +38,7 @@
       "/SmartDashboard/Reset Amp Encoder": "Command",
       "/SmartDashboard/Shooter": "Subsystem",
       "/SmartDashboard/SnapToShoot": "Command",
+      "/SmartDashboard/StartIntakeSequence": "Command",
       "/SmartDashboard/SwerveTune": "Command",
       "/SmartDashboard/cmd/swerveDefaultCommand": "Command",
       "/SmartDashboard/ppShootSpeaker": "Command"
