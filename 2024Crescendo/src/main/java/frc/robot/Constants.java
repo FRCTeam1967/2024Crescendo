@@ -16,7 +16,7 @@ public final class Constants {
   public static class AmpBar { //TODO: change values!
     public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;
     public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02; 
-    public static final double GEAR_RATIO = 100.0/1.0;
+    public static final double GEAR_RATIO = 10.0/1.0;
 
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
     public static final double AMP_SAFE = 4 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
@@ -50,10 +50,23 @@ public final class Constants {
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
     //compbot offsets
+ 
     public static final double FL_OFFSET = 224.033203125/360;
-    public static final double FR_OFFSET = 113.115234375/360;
+    public static final double FR_OFFSET = (113.115234375-47.109375)/360;
     public static final double BL_OFFSET = 118.91601562499999/360;
     public static final double BR_OFFSET = -16.435546875/360;
+
+    // public static final double FL_OFFSET = roundDeg(227.021);
+    // public static final double FR_OFFSET = roundDeg(66.533);
+    // public static final double BL_OFFSET = roundDeg(116.455);
+    // public static final double BR_OFFSET = roundDeg(-17.490);
+
+
+    // // PAST OFFSET
+    // public static final double FL_OFFSET = 136.142578125/360;
+    // public static final double FR_OFFSET = 113.02734375/360;
+    // public static final double BL_OFFSET = 118.740234375/360;
+    // public static final double BR_OFFSET = -16.611328125/360;
 
     //janky offsets
     // public static final double FL_OFFSET = 171.507813/360;
@@ -69,6 +82,11 @@ public final class Constants {
 
 
     //pid values
+
+    public static double roundDeg(double x){
+      double div = (double) Math.round((x/360.0)*2048.0)/2048.0;
+      return div/360.0;
+    }
     public static final double POWER_kS = 0.14;//0.14; 
     public static final double POWER_kV = 12/(100/8.14);//1.25; 
     public static final double POWER_kA = 0; 

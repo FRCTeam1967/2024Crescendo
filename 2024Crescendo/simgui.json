@@ -1,8 +1,10 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "window": {
-        "visible": false
+      "SPARK MAX [24]": {
+        "header": {
+          "open": true
+        }
       }
     },
     "Timing": {
@@ -15,6 +17,10 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Match/Auto Path Chooser 2": "String Chooser",
+      "/SmartDashboard/AMP_SAFE": "Command",
+      "/SmartDashboard/AMP_UP": "Command",
+      "/SmartDashboard/AmpBar": "Subsystem",
+      "/SmartDashboard/AmpBar/PID": "PIDController",
       "/SmartDashboard/Auto Chooser": "String Chooser",
       "/SmartDashboard/AutoPath": "Command",
       "/SmartDashboard/AutoT": "Command",
@@ -32,6 +38,18 @@
       "/SmartDashboard/SwerveTune": "Command",
       "/SmartDashboard/cmd/swerveDefaultCommand": "Command",
       "/SmartDashboard/ppShootSpeaker": "Command"
+    },
+    "windows": {
+      "/SmartDashboard/AMP_SAFE": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/AMP_UP": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {

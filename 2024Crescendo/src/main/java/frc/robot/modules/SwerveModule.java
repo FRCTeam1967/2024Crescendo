@@ -108,10 +108,10 @@ public class SwerveModule {
 
         // powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         // powerConfig.CurrentLimits.StatorCurrentLimit = 40;
-
-        // powerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        // powerConfig.CurrentLimits.SupplyCurrentLimit = 40;
-
+        if (Robot.isReal()) {
+            powerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+            powerConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        }
         powerControllerConfig.apply(powerConfig);
 
         // configure steer
@@ -131,8 +131,10 @@ public class SwerveModule {
         // steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         // steerConfig.CurrentLimits.StatorCurrentLimit = 40;
 
-        // steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        // steerConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        if (Robot.isReal()) {
+            steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+            steerConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        }
 
         steerConfig.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID();
         steerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
@@ -148,7 +150,7 @@ public class SwerveModule {
 
         Rotation2d initialStartingAngle = new Rotation2d(0);
         initialState = new SwerveModuleState(0, initialStartingAngle);
-        this.setState(initialState,true);
+        this.setState(initialState, true);
 
         powerController.stopMotor();
         steerController.stopMotor();
@@ -158,7 +160,7 @@ public class SwerveModule {
         publisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct)
                 .publish();
 
-        if(Robot.isSimulation()){
+        if (Robot.isSimulation()) {
             simulationInit();
         }
     }
@@ -219,7 +221,7 @@ public class SwerveModule {
 
     public void setState(SwerveModuleState state, boolean opt) {
         SwerveModuleState optimized;
-        if(opt) {
+        if (opt) {
             optimized = optimize(state, (this.getState().angle));
         } else {
             optimized = state;
@@ -305,7 +307,6 @@ public class SwerveModule {
 
         simEncoder.setRawPosition(-steerPosition / Constants.Swerve.STEER_GEAR_RATIO);
         simEncoder.setVelocity(-steerVelocity / Constants.Swerve.STEER_GEAR_RATIO);
-
 
     }
 }
