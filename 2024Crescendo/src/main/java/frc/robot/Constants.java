@@ -15,12 +15,14 @@ public final class Constants {
   }
   public static class AmpBar { //TODO: change values!
     public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;
-    public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02; 
+    public static final double kP = 0.12, kI = 0, kD = 0, kD_TIME = 0.02; 
     public static final double GEAR_RATIO = 10.0/1.0;
 
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
-    public static final double AMP_SAFE = 4 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
-    public static final double AMP_UP = 94 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; //-250
+    public static final double AMP_SAFE = 18 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
+    //public static final double AMP_UP = 94 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; //-250
+    public static final double AMP_UP = 82.8 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; //-250
+
   }
 
   

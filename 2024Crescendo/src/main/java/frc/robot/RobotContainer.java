@@ -189,14 +189,19 @@ public class RobotContainer {
     // () -> -driverController.getRawAxis(0), () ->
     // -driverController.getRawAxis(4)));
 
+    Command ShooterAmpUp = new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP);
+    SmartDashboard.putData("AMP_SHOOTER_UP",ShooterAmpUp);  
+    
+
     operatorController.a()
-        .whileTrue(new SequentialCommandGroup(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP), new WaitCommand(0.5),
+        .whileTrue(new SequentialCommandGroup(ShooterAmpUp, new WaitCommand(0.5),
             new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false))
                 .withTimeout(1.5)));
     operatorController.a().whileFalse(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
 
-    SmartDashboard.putData("AMP_UP", new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP).withTimeout(0.5));
+    SmartDashboard.putData("AMP_UP", new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP));
     SmartDashboard.putData("AMP_SAFE", new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
+    SmartDashboard.putData("Reset Amp Encoder", new InstantCommand(()->ampBar.setPosition(0)));
 
     leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), leftClimb));
     rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));

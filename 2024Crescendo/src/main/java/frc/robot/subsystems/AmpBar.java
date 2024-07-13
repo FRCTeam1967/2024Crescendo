@@ -39,10 +39,10 @@ public class AmpBar extends SubsystemBase {
   // private TrapezoidProfile.Constraints motionProfile = new
   // TrapezoidProfile.Constraints(0.2 * neoRPS, 0.8 * neoRPS);
 
-  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(165, 180);
+  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(16.5, 18);
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
-  public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-  public TrapezoidProfile.State goal = new TrapezoidProfile.State();
+  public TrapezoidProfile.State setpoint = new TrapezoidProfile.State(Constants.AmpBar.AMP_SAFE,0);
+  public TrapezoidProfile.State goal = new TrapezoidProfile.State(Constants.AmpBar.AMP_SAFE,0);
 
   public double revsToMove;
 
@@ -55,6 +55,8 @@ public class AmpBar extends SubsystemBase {
   private double simMotorVoltage;
   private PIDController simPID;
   private boolean simStop = false;
+  private double targetRevs=0;
+  private double stopMargin = 0.2;
 
   /** Creates a new Pivot. */
   public AmpBar() {
@@ -71,19 +73,30 @@ public class AmpBar extends SubsystemBase {
     pidController.setFeedbackDevice(relativeEncoder);
     timer = new Timer();
 
+
+    // TODO: MAKE SURE MOTOR IS AT BARELY STARTING STAGE NOT FULLY BACK
+    setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
+
+
     if (Robot.isSimulation())
       simulationInit();
 
   }
 
+  // public void resetEncoder({
+  //   relativeEncoder.reset
+  // })
+
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     String name = getName();
-    builder.addDoubleProperty("ampBarDesireRotation", () -> (setpoint.position) / Constants.AmpBar.GEAR_RATIO, null);
+    builder.addDoubleProperty("ampBarDesireRotation", () -> (goal.position), null);
     builder.addDoubleProperty("motorDesireVelocity", () -> pivotMotor.getAppliedOutput(), null);
     builder.addDoubleProperty("motorCurrent", () -> pivotMotor.getOutputCurrent(), null);
     builder.addDoubleProperty("motorVelocity", () -> relativeEncoder.getVelocity(), null);
     builder.addDoubleProperty("motorPosition", () -> relativeEncoder.getPosition(), null);
+    builder.addBooleanProperty("isFinished", this::isReached, null);
+    builder.addDoubleProperty("stopMargin", ()->{return stopMargin;}, (var)->{stopMargin = var;});
 
     if (Robot.isSimulation()) {
       SmartDashboard.putData(name + "/PID", simPID);
@@ -138,7 +151,15 @@ public class AmpBar extends SubsystemBase {
    * @return whether profile has been finished
    */
   public boolean isReached() {
-    return (profile.isFinished(profile.timeLeftUntil(goal.position)));
+    // return (profile.isFinished(profile.timeLeftUntil(goal.position)));
+    var pos = getPosition();
+    var target = goal.position*Constants.AmpBar.GEAR_RATIO;
+
+    if(target > 1.5)
+      return pos > (target-stopMargin);
+    else
+      return pos < (target+stopMargin);
+    // return ((target+0.2 >= pos)&&(target-0.2<= pos));
   }
 
   /** Sets pivot motor to brake mode */
@@ -148,13 +169,15 @@ public class AmpBar extends SubsystemBase {
 
   @Override
   public void periodic() {
-    setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
-    double revs = (setpoint.position) * Constants.AmpBar.GEAR_RATIO;
-    pidController.setReference(revs, CANSparkBase.ControlType.kPosition);
+    // setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
+    // double revs = (setpoint.position) * Constants.AmpBar.GEAR_RATIO;
+    targetRevs = goal.position*Constants.AmpBar.GEAR_RATIO;
+
+    pidController.setReference(targetRevs, CANSparkBase.ControlType.kPosition);
 
     SmartDashboard.putNumber("Amp Rel Pos", relativeEncoder.getPosition());
     SmartDashboard.putNumber("Amp Set Point", setpoint.position);
-    SmartDashboard.putNumber("Amp revs", revs);
+    SmartDashboard.putNumber("Amp revs", targetRevs);
     SmartDashboard.putNumber("Amp Rel Pos Degrees",
         (relativeEncoder.getPosition() * 360) / Constants.AmpBar.GEAR_RATIO);
   }
@@ -180,7 +203,7 @@ public class AmpBar extends SubsystemBase {
     if (simStop)
       simMotorVoltage = 0;
     else
-      simMotorVoltage = MathUtil.clamp(simPID.calculate(simAmpBar.getAngularPositionRotations(), setpoint.position*Constants.AmpBar.GEAR_RATIO),
+      simMotorVoltage = MathUtil.clamp(simPID.calculate(simAmpBar.getAngularPositionRotations(),targetRevs ),
           pidController.getOutputMin(), pidController.getOutputMax()) * RobotController.getBatteryVoltage();
 
     simAmpBar.setInputVoltage(simMotorVoltage);
