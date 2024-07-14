@@ -146,7 +146,7 @@ public class RobotContainer {
 
   public void maintainAmpBarPosition() {
 
-    ampBar.setPosition(0);
+    ampBar.setPosition(0.0);
 
     ampBar.setpoint.velocity = 0;
     ampBar.setpoint.position = 0;
