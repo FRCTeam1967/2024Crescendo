@@ -15,7 +15,10 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -24,6 +27,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.ejml.simple.SimpleMatrix;
 
 import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 
@@ -43,6 +48,8 @@ public class AmpBar extends SubsystemBase {
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
   public TrapezoidProfile.State setpoint = new TrapezoidProfile.State(Constants.AmpBar.AMP_SAFE, 0);
   public TrapezoidProfile.State goal = new TrapezoidProfile.State(Constants.AmpBar.AMP_SAFE, 0);
+
+  private int controlMode = 0; // 0 = pid control mode, 1 = direct control
 
   public double revsToMove;
 
@@ -76,6 +83,8 @@ public class AmpBar extends SubsystemBase {
     // TODO: MAKE SURE MOTOR IS AT BARELY STARTING STAGE NOT FULLY BACK
     setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
 
+    setBrakeMode();
+
     if (Robot.isSimulation())
       simulationInit();
 
@@ -95,15 +104,15 @@ public class AmpBar extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
-  public void runSecond() {
-    timer.start();
-    while (timer.get() <= 2) {
-      pivotMotor.set(-0.2);
-    }
-    pivotMotor.set(0);
-    timer.stop();
-    timer.reset();
-  }
+  // public void runSecond() {
+  // timer.start();
+  // while (timer.get() <= 2) {
+  // pivotMotor.set(-0.2);
+  // }
+  // pivotMotor.set(0);
+  // timer.stop();
+  // timer.reset();
+  // }
 
   /**
    * Set encoder position to desired revolutions
@@ -114,6 +123,14 @@ public class AmpBar extends SubsystemBase {
     relativeEncoder.setPosition(rev);
   }
 
+  public void setArmPosition(double rev) {
+    setPosition(rev * Constants.AmpBar.GEAR_RATIO);
+  }
+
+  public double getArmPosition() {
+    return getPosition() / Constants.AmpBar.GEAR_RATIO;
+  }
+
   /**
    * Sets motion profiling goal to desired revolutions
    * 
@@ -122,7 +139,13 @@ public class AmpBar extends SubsystemBase {
   public void moveTo(double revolutions) {
     goal = new TrapezoidProfile.State(revolutions, 0);
     simStop = false;
+    controlMode = 0;
+  }
 
+  public void setDutyCycle(double dutyCycle) {
+    pivotMotor.set(dutyCycle);
+    simStop = false;
+    controlMode = 1;
   }
 
   /**
@@ -149,10 +172,10 @@ public class AmpBar extends SubsystemBase {
   public void periodic() {
     // setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
     // double revs = (setpoint.position) * Constants.AmpBar.GEAR_RATIO;
-    targetRevs = goal.position * Constants.AmpBar.GEAR_RATIO;
-
-    pidController.setReference(targetRevs, CANSparkBase.ControlType.kPosition);
-
+    if (controlMode == 0) {
+      targetRevs = goal.position * Constants.AmpBar.GEAR_RATIO;
+      pidController.setReference(targetRevs, CANSparkBase.ControlType.kPosition);
+    }
     SmartDashboard.putNumber("Amp Rel Pos", relativeEncoder.getPosition());
     SmartDashboard.putNumber("Amp Set Point", setpoint.position);
     SmartDashboard.putNumber("Amp revs", targetRevs);
@@ -171,11 +194,17 @@ public class AmpBar extends SubsystemBase {
   double simArmPosAbsMax = 2.6;
 
   public void simulationInit() {
+
+    // 3/8 inch AL rod 50cm ~ 100g .. Other mechanism equiivalent to 50 gram at max
+    // radius.
+    // arm length 50cm.
+    // Inertia = 0.15 x 0.5^2 kg/m^2
+    // with 10x gear -- 0.0365 /10 = 0.00375
     simMotor = new SimDeviceSim("SPARK MAX [24]");
     simMotorVelocity = simMotor.getDouble("Velocity");
     simMotorPosition = simMotor.getDouble("Position");
     simGearBox = DCMotor.getNeo550(1);
-    simAmpBar = new DCMotorSim(simGearBox, 1, 0.0001);
+    simAmpBar = new DCMotorSim(simGearBox, 1, 0.00375);
     physicsSim = REVPhysicsSim.getInstance();
     physicsSim.addSparkMax(pivotMotor, simGearBox);
 
@@ -187,19 +216,21 @@ public class AmpBar extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    if (simStop)
-      simMotorVoltage = 0;
-    else
-      simMotorVoltage = MathUtil.clamp(simPID.calculate(simMotorPos, targetRevs),
-          pidController.getOutputMin(), pidController.getOutputMax()) * RobotController.getBatteryVoltage();
+    if (controlMode == 1) {
+      simMotorVoltage = pivotMotor.get() * RobotController.getBatteryVoltage();
+    } else {
+      if (simStop)
+        simMotorVoltage = 0;
+      else
+        simMotorVoltage = MathUtil.clamp(simPID.calculate(simMotorPos, targetRevs),
+            pidController.getOutputMin(), pidController.getOutputMax()) * RobotController.getBatteryVoltage();
+    }
 
     simAmpBar.setInputVoltage(simMotorVoltage);
     simAmpBar.update(0.02);
 
     double deltaPos = simAmpBar.getAngularPositionRotations() - simPreviousMotorModelPos;
     double simMotorOutDelta = 0;
-
-    simPreviousMotorModelPos = simAmpBar.getAngularPositionRotations();
 
     // Modeling gearbox backlash.
     // Backlash is modele as part of motor.
@@ -235,16 +266,35 @@ public class AmpBar extends SubsystemBase {
       excessMotorPos = 0;
     }
 
+    // If there is excessMotorPos, it means that arm hit crash stop.. Here we will
+    // model the gearbox motor shaft collar slip and "hack motor model to stop"
+    if (excessMotorPos != 0) {
+      double currentAngle = simAmpBar.getAngularPositionRad();
+      double currentVelocity = simAmpBar.getAngularVelocityRadPerSec();
+      double newAngle = currentAngle - (excessMotorPos * 2 * Math.PI) + currentVelocity * 0.1; // Note 0.1 is just a
+                                                                                               // make up scale factor
+                                                                                               // number
+
+      simAmpBar.setState(newAngle, 0);
+      simAmpBar.update(0);
+
+    }
+
+    simPreviousMotorModelPos = simAmpBar.getAngularPositionRotations();
+
     // Motor phase delta is basically arm phase delta + motor shaft to drive gearbox
     // slip .
     // The slip is guestimate to be 0.1 of excessMotorPos
-    motorPosDelta = motorPosDelta + (simArmPos - prevSimArmPos) + excessMotorPos * 0.1;
-    simMotorPos = simMotorPos + motorPosDelta;
+    // motorPosDelta = motorPosDelta + (simArmPos - prevSimArmPos) + excessMotorPos
+    // * 0.1;
 
-    simMotorVelocity.set(((simMotorPos - prevSimMotorPos) / 0.002) * 60);
+    // simMotorPos = simMotorPos + motorPosDelta;
+    simMotorPos = simAmpBar.getAngularPositionRotations();
+
+    simMotorVelocity.set(simAmpBar.getAngularVelocityRPM());
     simMotorPosition.set(simMotorPos);
 
-    //physicsSim.run();
+    // physicsSim.run();
   }
 
   public void initSendable(SendableBuilder builder) {
@@ -279,7 +329,7 @@ public class AmpBar extends SubsystemBase {
         return simMotorPos;
       }, null);
 
-            builder.addDoubleProperty("simBackLash", () -> {
+      builder.addDoubleProperty("simBackLash", () -> {
         return simBackLash;
       }, null);
 

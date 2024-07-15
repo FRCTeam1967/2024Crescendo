@@ -177,6 +177,8 @@ public class RobotContainer {
     SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));
     SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 1 Note"));
 
+    SmartDashboard.putData("AmpBarBang", new AmpBarBang(ampBar, 0.25, 0.47, 0.9, 0.002, 0.5));
+
     SmartDashboard.putData(pivot);
     SmartDashboard.putData(intake);
     SmartDashboard.putData(feeder);
