@@ -128,6 +128,12 @@ public class Swerve extends SubsystemBase {
   //   //TODO add gyro sim
   // }
 
+  public void zeroizeSteer() {
+      frontLeft.zeroSteer();
+      frontRight.zeroSteer();
+      backLeft.zeroSteer();
+      backRight.zeroSteer();
+  }
   public SwerveModuleState[] getModuleStates() {
     return new SwerveModuleState[] {
         frontLeft.getState(),

@@ -36,6 +36,7 @@ public class DriveUI extends SubsystemBase {
 
   private int runIntakeIndex = 5; // L Bumper
   private int interruptIntakeIndex = 7; // Back 
+  private int gyroReset = 7; // Start
 
   private double maxSpeed = 3.9; //meters per sec
   private double maxRotation = Math.PI; //raidans per sec
@@ -108,6 +109,9 @@ public class DriveUI extends SubsystemBase {
     return r;
   }
 
+  public Trigger getStart(){
+    return driverController.button(gyroReset);
+  }
   public Trigger getDriveSnapIndex(){
     return driverController.button(driveSnapIndex);
   }
@@ -120,6 +124,7 @@ public class DriveUI extends SubsystemBase {
   public boolean uninterruptDrive(){
     return(getX() == 0 && getY() == 0 && getR() == 0);
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

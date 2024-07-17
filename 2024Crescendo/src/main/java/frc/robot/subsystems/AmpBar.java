@@ -36,7 +36,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class AmpBar extends SubsystemBase {
-  private CANSparkMax pivotMotor;
+  private CANSparkMax ampBarMotor;
   private SparkPIDController pidController;
   private RelativeEncoder relativeEncoder;
   private Timer timer;
@@ -57,7 +57,6 @@ public class AmpBar extends SubsystemBase {
   private SimDeviceSim simMotor;
   private SimDouble simMotorVelocity;
   private DCMotorSim simAmpBar;
-  private double simMotorRPS;
   private DCMotor simGearBox;
   private double simMotorVoltage;
   private PIDController simPID;
@@ -65,23 +64,23 @@ public class AmpBar extends SubsystemBase {
   private double targetRevs = 0;
   private double stopMargin = 0.2;
 
-  /** Creates a new Pivot. */
+  /** Creates a new AmpBar. */
   public AmpBar() {
-    pivotMotor = new CANSparkMax(Constants.AmpBar.AMP_BAR_ID, MotorType.kBrushless);
-    pivotMotor.setInverted(true);
-    pidController = pivotMotor.getPIDController();
+    ampBarMotor = new CANSparkMax(Constants.AmpBar.AMP_BAR_ID, MotorType.kBrushless);
+    ampBarMotor.setInverted(true);
+    pidController = ampBarMotor.getPIDController();
     pidController.setP(Constants.AmpBar.kP);
     pidController.setI(Constants.AmpBar.kI);
     pidController.setD(Constants.AmpBar.kD);
     pidController.setOutputRange(-0.2, 0.2);
 
-    relativeEncoder = pivotMotor.getEncoder();
+    relativeEncoder = ampBarMotor.getEncoder();
 
     pidController.setFeedbackDevice(relativeEncoder);
     timer = new Timer();
 
     // TODO: MAKE SURE MOTOR IS AT BARELY STARTING STAGE NOT FULLY BACK
-    setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
+    setpoint = profile.calculate(Constants.AmpBar.kD_TIME, setpoint, goal);
 
     setBrakeMode();
 
@@ -94,14 +93,18 @@ public class AmpBar extends SubsystemBase {
   // relativeEncoder.reset
   // })
 
-  /** Stops pivot motor */
+  /** Stops amp bar motor */
   public void stop() {
-    pivotMotor.stopMotor();
+    ampBarMotor.stopMotor();
     simStop = true;
   }
 
   public double getPosition() {
     return relativeEncoder.getPosition();
+  }
+
+  public double getVelocity(){
+    return relativeEncoder.getVelocity();
   }
 
   // public void runSecond() {
@@ -143,7 +146,7 @@ public class AmpBar extends SubsystemBase {
   }
 
   public void setDutyCycle(double dutyCycle) {
-    pivotMotor.set(dutyCycle);
+    ampBarMotor.set(dutyCycle);
     simStop = false;
     controlMode = 1;
   }
@@ -165,7 +168,7 @@ public class AmpBar extends SubsystemBase {
 
   /** Sets pivot motor to brake mode */
   public void setBrakeMode() {
-    pivotMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    ampBarMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
   }
 
   @Override
@@ -206,7 +209,7 @@ public class AmpBar extends SubsystemBase {
     simGearBox = DCMotor.getNeo550(1);
     simAmpBar = new DCMotorSim(simGearBox, 1, 0.00375);
     physicsSim = REVPhysicsSim.getInstance();
-    physicsSim.addSparkMax(pivotMotor, simGearBox);
+    physicsSim.addSparkMax(ampBarMotor, simGearBox);
 
     simPID = new PIDController(1, 0, 0);
     simPID.setP(pidController.getP());
@@ -217,7 +220,7 @@ public class AmpBar extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     if (controlMode == 1) {
-      simMotorVoltage = pivotMotor.get() * RobotController.getBatteryVoltage();
+      simMotorVoltage = ampBarMotor.get() * RobotController.getBatteryVoltage();
     } else {
       if (simStop)
         simMotorVoltage = 0;
@@ -301,8 +304,8 @@ public class AmpBar extends SubsystemBase {
     super.initSendable(builder);
     String name = getName();
     builder.addDoubleProperty("ampBarDesireRotation", () -> (goal.position), null);
-    builder.addDoubleProperty("motorDesireVelocity", () -> pivotMotor.getAppliedOutput(), null);
-    builder.addDoubleProperty("motorCurrent", () -> pivotMotor.getOutputCurrent(), null);
+    builder.addDoubleProperty("motorDesireVelocity", () -> ampBarMotor.getAppliedOutput(), null);
+    builder.addDoubleProperty("motorCurrent", () -> ampBarMotor.getOutputCurrent(), null);
     builder.addDoubleProperty("motorVelocity", () -> relativeEncoder.getVelocity(), null);
     builder.addDoubleProperty("motorPosition", () -> relativeEncoder.getPosition(), null);
     builder.addBooleanProperty("isFinished", this::isReached, null);

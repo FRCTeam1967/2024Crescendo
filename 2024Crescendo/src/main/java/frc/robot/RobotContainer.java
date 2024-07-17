@@ -180,13 +180,15 @@ public class RobotContainer {
     SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 4 Notes"));
     SmartDashboard.putData("AutoPath", new PathPlannerAuto("Run 1 Note"));
 
-    SmartDashboard.putData("AmpBarBang", new AmpBarBang(ampBar, 0.25, 0.47, 0.9, 0.002, 0.5));
 
     SmartDashboard.putData(pivot);
     SmartDashboard.putData(intake);
     SmartDashboard.putData(feeder);
     SmartDashboard.putData(shooter);
     SmartDashboard.putData(ampBar);
+
+
+    SmartDashboard.putData("Zero Swerve Steer", PitCommands.zeroSwerve(swerve).ignoringDisable(true));
 
     // DEFAULT COMMANDS
     // swerve.setDefaultCommand(new SwerveDrive(swerve, () ->
@@ -207,6 +209,8 @@ public class RobotContainer {
     SmartDashboard.putData("AMP_UP", new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP));
     SmartDashboard.putData("AMP_SAFE", new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
     SmartDashboard.putData("Reset Amp Encoder", new InstantCommand(()->ampBar.setPosition(0)));
+    SmartDashboard.putData("AmpBarBang", new AmpBarBang(ampBar, 0.23, 0.47, 0.9, 0.002, 0.5,0.01,50.0));
+
 
     leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), leftClimb));
     rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));
@@ -224,7 +228,7 @@ public class RobotContainer {
     SmartDashboard.putData(swerveDefaultCommand);
 
     driveUI.getDriveSnapIndex().onTrue(new SnapToShoot(swerve, driveUI, 3.5));
-
+    driveUI.getStart().onTrue(new InstantCommand(() -> swerve.resetGyro(),swerve));
     SmartDashboard.putData("AutoT", new PathPlannerAuto("Triangle Auto"));
     SmartDashboard.putData("AutoTest", new PathPlannerAuto("Go out"));
     SmartDashboard.putData("SnapToShoot", new SnapToShoot(swerve, driveUI, 4));
@@ -238,7 +242,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(),
-    // swerve));
+    //  swerve));
     // //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(),
     // swerve));
     // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));

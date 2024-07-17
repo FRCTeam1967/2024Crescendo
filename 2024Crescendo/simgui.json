@@ -40,6 +40,7 @@
       "/SmartDashboard/SnapToShoot": "Command",
       "/SmartDashboard/StartIntakeSequence": "Command",
       "/SmartDashboard/SwerveTune": "Command",
+      "/SmartDashboard/Zero Swerve Steer": "Command",
       "/SmartDashboard/cmd/swerveDefaultCommand": "Command",
       "/SmartDashboard/ppShootSpeaker": "Command"
     },
@@ -50,6 +51,11 @@
         }
       },
       "/SmartDashboard/AMP_UP": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Zero Swerve Steer": {
         "window": {
           "visible": true
         }

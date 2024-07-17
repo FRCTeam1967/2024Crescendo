@@ -53,10 +53,25 @@ public final class Constants {
 
     //compbot offsets
  
-    public static final double FL_OFFSET = 224.033203125/360;
-    public static final double FR_OFFSET = (113.115234375-47.109375)/360;
-    public static final double BL_OFFSET = 118.91601562499999/360;
-    public static final double BR_OFFSET = -16.435546875/360;
+    // public static final double FL_OFFSET = 224.033203125/360;
+    // public static final double FR_OFFSET = (113.115234375-47.109375)/360;
+    // public static final double BL_OFFSET = 118.91601562499999/360;
+    // public static final double BR_OFFSET = -16.435546875/360;
+
+    public static final double FL_OFFSET = -134.560546875/360;
+    public static final double FR_OFFSET = 107.40234375/360;
+    public static final double BL_OFFSET = 116.630859375/360;
+    public static final double BR_OFFSET = -17.40234375/360;
+
+    // public static final double FL_OFFSET = 0/360;
+    // public static final double FR_OFFSET = 0/360;
+    // public static final double BL_OFFSET = 0/360;
+    // public static final double BR_OFFSET = 0/360;
+
+    // public static final double FL_OFFSET = 224.033203125/360;
+    // public static final double FR_OFFSET = (113.115234375-47.109375)/360;
+    // public static final double BL_OFFSET = 118.91601562499999/360;
+    // public static final double BR_OFFSET = -16.435546875/360;
 
     // public static final double FL_OFFSET = roundDeg(227.021);
     // public static final double FR_OFFSET = roundDeg(66.533);

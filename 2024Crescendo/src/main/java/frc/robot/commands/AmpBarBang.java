@@ -19,19 +19,21 @@ public class AmpBarBang extends Command {
   private double speed;
   private double dirCoeff;
   private double tolerance;
+  private double cruiseSpeed;
+  private double minRPM;
 
   /**
    * Creates a new AmpBarBang.
-   * 
    * @param ampBar       - AmpBar object
    * @param targetPos    - revolutions for desired position of AmpBar
-   * @param startReverse - fraction of distance from starting point to reverse
-   *                     point
+   * @param startReverse - fraction of distance from starting point to the pos where you want to reverse motor power
    * @param stop         - fraction of distance to stop motor
    * @param tolerance    - stop condition error tolerance (in pos)
    * @param speed        - motor duty cycle to run (must always be positive)
+   * @param cruiseSpeed - speed for cruise at
+   * @param minRPM - motor minimum RPM during deceleration phase
    */
-  public AmpBarBang(AmpBar ampBar, double targetPos, double startReverse, double stop, double tolerance, double speed) {
+  public AmpBarBang(AmpBar ampBar, double targetPos, double startReverse, double stop, double tolerance, double speed, double cruiseSpeed,double minRPM) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.ampBar = ampBar;
     this.targetPos = targetPos;
@@ -39,6 +41,8 @@ public class AmpBarBang extends Command {
     this.stop = stop;
     this.tolerance = tolerance;
     this.speed = speed;
+    this.cruiseSpeed = cruiseSpeed;
+    this.minRPM = minRPM;
     addRequirements(this.ampBar);
   }
 
@@ -58,17 +62,17 @@ public class AmpBarBang extends Command {
     if (dirCoeff > 0) { // Move in positive direction
       if (ampBar.getArmPosition() < startReversePos)
         ampBar.setDutyCycle(speed);
-      else if ((ampBar.getArmPosition() >= startReversePos) && (ampBar.getArmPosition() < stopPos))
+      else if ((ampBar.getArmPosition() >= startReversePos) && (ampBar.getArmPosition() < stopPos) && ampBar.getVelocity() >= minRPM)
         ampBar.setDutyCycle(-speed);
       else
-        ampBar.setDutyCycle(0.001); // Small number so motor don't break.
+        ampBar.setDutyCycle(cruiseSpeed); // Small number so motor don't break.
     } else { // Move in negative direction
       if (ampBar.getArmPosition() > startReversePos)
         ampBar.setDutyCycle(-speed);
-      else if ((ampBar.getArmPosition() <= startReversePos) && (ampBar.getArmPosition() > stopPos))
+      else if ((ampBar.getArmPosition() <= startReversePos) && (ampBar.getArmPosition() > stopPos) && ampBar.getVelocity() <= -minRPM)
         ampBar.setDutyCycle(speed);
       else
-        ampBar.setDutyCycle(-0.001); // Small number so motor don't break.
+        ampBar.setDutyCycle(-cruiseSpeed); // Small number so motor don't break.
     }
   }
 
@@ -82,9 +86,9 @@ public class AmpBarBang extends Command {
   @Override
   public boolean isFinished() {
     if (dirCoeff > 0)
-      return ampBar.getArmPosition() > (targetPos - tolerance);
+      return (ampBar.getArmPosition() > (targetPos - tolerance)) || ((ampBar.getVelocity() < 10.0)&&(ampBar.getArmPosition()>startReversePos));
     else
-      return ampBar.getArmPosition() < (targetPos + tolerance);
+      return ampBar.getArmPosition() < (targetPos + tolerance) || ((ampBar.getVelocity() > -10.0)&&(ampBar.getArmPosition()<startReversePos));
   }
 
   @Override
@@ -97,6 +101,6 @@ public class AmpBarBang extends Command {
     builder.addDoubleProperty("stop", () -> {return stop;}, (var) -> {stop = var;});
     builder.addDoubleProperty("tolerance", () -> {return tolerance;}, (var) -> {tolerance = var;});
     builder.addDoubleProperty("speed", () -> {return speed;}, (var) -> {speed = var;});
-
+    builder.addDoubleProperty("cruiseSpeed", () ->{return cruiseSpeed;},(var)->{cruiseSpeed=var;});
   }
 }

@@ -233,6 +233,13 @@ public class SwerveModule {
                 0.0, 0, false, false, false));
     }
 
+    // Reset angle of swerve module to 0
+    public void zeroSteer() {
+        //steerController.setPosition(0);
+        analogEncoder.setPosition(0);
+
+    }
+
     public void stop() {
         powerController.stopMotor();
         steerController.stopMotor();
