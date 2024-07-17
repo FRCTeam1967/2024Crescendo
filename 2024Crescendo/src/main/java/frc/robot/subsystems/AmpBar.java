@@ -22,7 +22,7 @@ import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 import frc.robot.Constants;
 
 public class AmpBar extends SubsystemBase {
-  private CANSparkMax pivotMotor;
+  private CANSparkMax ampBarMotor;
   private SparkPIDController pidController;
   private RelativeEncoder relativeEncoder;
   private Timer timer;
@@ -36,23 +36,23 @@ public class AmpBar extends SubsystemBase {
 
   /** Creates a new Pivot. */
   public AmpBar() {
-    pivotMotor = new CANSparkMax(Constants.AmpBar.AMP_BAR_ID, MotorType.kBrushless);
-    pivotMotor.setInverted(true);    
-    pidController = pivotMotor.getPIDController();
+    ampBarMotor = new CANSparkMax(Constants.AmpBar.AMP_BAR_ID, MotorType.kBrushless);
+    ampBarMotor.setInverted(true);    
+    pidController = ampBarMotor.getPIDController();
     pidController.setP(Constants.AmpBar.kP);
     pidController.setI(Constants.AmpBar.kI);
     pidController.setD(Constants.AmpBar.kD);
     pidController.setOutputRange(-0.2, 0.2);
 
-    relativeEncoder = pivotMotor.getEncoder();
+    relativeEncoder = ampBarMotor.getEncoder();
     
     pidController.setFeedbackDevice(relativeEncoder);
     timer = new Timer();
   }
 
-  /** Stops pivot motor */
+  /** Stops amp bar motor */
   public void stop() {
-    pivotMotor.stopMotor();
+    ampBarMotor.stopMotor();
   }
 
   public double getPosition(){
@@ -62,9 +62,9 @@ public class AmpBar extends SubsystemBase {
   public void runSecond(){
     timer.start();
     while (timer.get() <= 2){
-      pivotMotor.set(-0.2);
+      ampBarMotor.set(-0.2);
     }
-    pivotMotor.set(0);
+    ampBarMotor.set(0);
     timer.stop();
     timer.reset();
   }
@@ -91,9 +91,9 @@ public class AmpBar extends SubsystemBase {
     return(profile.isFinished(profile.timeLeftUntil(goal.position)));
   }
 
-  /** Sets pivot motor to brake mode */
+  /** Sets amp bar motor to brake mode */
   public void setBrakeMode(){
-    pivotMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
+    ampBarMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
   }
 
   @Override

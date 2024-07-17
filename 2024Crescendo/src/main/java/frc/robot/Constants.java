@@ -18,7 +18,7 @@ public final class Constants {
   public static class AmpBar { //TODO: change values!
     public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;
     public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02; 
-    public static final double GEAR_RATIO = 100.0/1.0;
+    public static final double GEAR_RATIO = 10/1.0;
 
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
     public static final double AMP_SAFE = 4 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
@@ -50,11 +50,11 @@ public final class Constants {
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
-    //compbot offsets
-    public static final double FL_OFFSET = -133.2421/360;
-    public static final double FR_OFFSET = 109.3359375/360;
-    public static final double BL_OFFSET = 115.6640/360;
-    public static final double BR_OFFSET = -19.0722/360;
+    //TODO: change
+    public static final double FL_OFFSET = -132.01171875/360; //-134.560546875/360;
+    public static final double FR_OFFSET = 4.39453125/360;//107.40234375/360;
+    public static final double BL_OFFSET = 117.421875/360; //116.630859375/360;
+    public static final double BR_OFFSET = -17.2265625/360; //-17.40234375/360;
 
     //janky offsets
     // public static final double FL_OFFSET = 171.507813/360;

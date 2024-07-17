@@ -32,7 +32,6 @@ import frc.robot.Constants;
 
 
 public class SwerveModule {
-    
     private TalonFX powerController;
     private TalonFX steerController;
     public CANcoder analogEncoder;
@@ -43,8 +42,6 @@ public class SwerveModule {
     private final StructArrayPublisher<SwerveModuleState> publisher;
 
     ShuffleboardTab tuningTab = Shuffleboard.getTab("Tuning");
-   
-    
     String name;
 
     public SwerveModule(String name, int powerIdx, int steerIdx, int encoderIdx, ShuffleboardLayout container) {
@@ -64,7 +61,7 @@ public class SwerveModule {
 
         if (name == "FrontLeft") {
             ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.FL_OFFSET;
-        }
+        } 
 
         if (name == "FrontRight") {
             ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.FR_OFFSET;
@@ -80,6 +77,7 @@ public class SwerveModule {
 
         cancoderConfig.apply(ccdConfigs);
 
+
         //configure power
         TalonFXConfiguration powerConfig = new TalonFXConfiguration();
         var powerControllerConfig = powerController.getConfigurator();
@@ -92,7 +90,9 @@ public class SwerveModule {
         powerConfig.Slot0.kD = Constants.Swerve.POWER_kD; 
 
         powerConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.DRIVE_GEAR_RATIO ; 
+        powerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
+        //TODO: do we need current limits?
         powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         powerConfig.CurrentLimits.StatorCurrentLimit = 40;
 
@@ -100,6 +100,7 @@ public class SwerveModule {
         powerConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
         powerControllerConfig.apply(powerConfig);
+
 
         //configure steer
         TalonFXConfiguration steerConfig = new TalonFXConfiguration();
@@ -137,51 +138,39 @@ public class SwerveModule {
         initialState = new SwerveModuleState(0, initialStartingAngle);
         this.setState(initialState);
 
+        //TODO: why?
         powerController.stopMotor();
         steerController.stopMotor();
 
-        addDashboardEntries(container);
-
+        configDashboard(container);
         publisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
     }
-   
-    public void resetEncoder() {
-        powerController.setPosition(0);
-    }
-    
-    //check to make sure steerController.getPosition will give us the angle?
-    public SwerveModuleState getState() {
-        return new SwerveModuleState(powerController.getVelocity().getValueAsDouble()*Constants.Swerve.WHEEL_CIRCUMFERENCE,
-        Rotation2d.fromRotations(steerController.getPosition().getValue()));
-    }
-    //public double getSteerPosition(){
-       //return steerController.getPosition().getValue();
-    //}
 
+    /** @return the position of the module (regarding the angle and distance traveled) */
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
             (powerController.getRotorPosition().getValueAsDouble()/Constants.Swerve.DRIVE_GEAR_RATIO)*Constants.Swerve.WHEEL_CIRCUMFERENCE, getState().angle);
     }
 
-    // public SwerveModulePosition getSteerRotation() {
-    //     return new SwerveModulePosition(
-    //         (steerController.getRotorPosition().getValueAsDouble()/Constants.Swerve.DRIVE_GEAR_RATIO)*Constants.Swerve.WHEEL_CIRCUMFERENCE, getState().angle);
-    // }
-
+    /** @return position of the motor rotor in rotations */
     public double getEncoderPosition() {
         return powerController.getRotorPosition().getValueAsDouble();
     }
-
-    private void addDashboardEntries(ShuffleboardContainer container) {
-        container.addNumber("CCD Position in Degrees", () -> analogEncoder.getAbsolutePosition().getValueAsDouble() * 360);
-        container.addNumber("Pwr Encoder Count", () -> getEncoderPosition());
-        container.addNumber("Str Position in Rotations", () -> steerController.getPosition().getValueAsDouble() * 360 % 360);
-        container.addNumber("Current Velocity", () -> this.getState().speedMetersPerSecond);
-        container.addNumber("Current Angle in Deg", () -> this.getState().angle.getDegrees());
-        //container.addDouble("Get Position", () -> backlegetPosition().getValueAsDouble());
+    
+    /** @return the state of the module (regarding the velocity and angle) */
+    public SwerveModuleState getState() {
+        return new SwerveModuleState(powerController.getVelocity().getValueAsDouble()*Constants.Swerve.WHEEL_CIRCUMFERENCE,
+        Rotation2d.fromRotations(steerController.getPosition().getValue()));
     }
 
-    public SwerveModuleState optimize (SwerveModuleState desiredState, Rotation2d currentAngle) {
+    /**
+     * Finds the shortest path to get from the current angle to the target angle
+     * <p> Switches direction if difference between target angle and current angle > 180
+     * @param desiredState - module state we want to reach (angle, velocity, & direction)
+     * @param currentAngle - current angle of wheel
+     * @return desired state of the module, optimized if necessary
+     */
+    public SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
       var delta = desiredState.angle.minus(currentAngle);
       if (Math.abs(delta.getDegrees()) > 90.0) {
         return new SwerveModuleState(
@@ -192,30 +181,35 @@ public class SwerveModule {
       }
     }
 
+    /** Sets modules to optimized state */
     public void setState(SwerveModuleState state) {
         var optimized = optimize(state, (this.getState().angle));
         double velocityToSet = optimized.speedMetersPerSecond;
         steerController.setControl(new PositionVoltage(optimized.angle.getRotations(), 0.0, false, 0.0, 0, false, false, false));
-        powerController.setControl(new VelocityVoltage(-velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE, 0.0, false, 0.0, 0, false, false, false));
+        powerController.setControl(new VelocityVoltage(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE, 0.0, false, 0.0, 0, false, false, false));
     }
 
-    public void stop() {
-        powerController.stopMotor();
-        steerController.stopMotor();
+    /** Resets power encoder to zero rotations */
+    public void resetEncoder() {
+        powerController.setPosition(0);
     }
-
+    
+    /** Sets motors to brake mode */
     public void brakeMode() {
         powerController.setNeutralMode(NeutralModeValue.Brake);
         steerController.setNeutralMode(NeutralModeValue.Brake);
     }
 
+    /** Sets motors to coast mode */
     public void coastMode() {
         powerController.setNeutralMode(NeutralModeValue.Coast);
         steerController.setNeutralMode(NeutralModeValue.Coast);
     }
 
-    public StatusSignal<Double> getSteerReference() {
-        return steerController.getClosedLoopReference();
+    /** Stops motors */
+    public void stop() {
+        powerController.stopMotor();
+        steerController.stopMotor();
     }
 
     public SwerveModuleState[] getStates() {
@@ -234,6 +228,19 @@ public class SwerveModule {
         }
         return arr;
     }
+
+    public StatusSignal<Double> getSteerReference() {
+        return steerController.getClosedLoopReference();
+    }
+
+    private void configDashboard(ShuffleboardContainer container) {
+        container.addNumber("CCD Position in Degrees", () -> analogEncoder.getAbsolutePosition().getValueAsDouble() * 360);
+        container.addNumber("Pwr Encoder Count", () -> getEncoderPosition());
+        container.addNumber("Str Position in Rotations", () -> steerController.getPosition().getValueAsDouble() * 360 % 360);
+        container.addNumber("Current Velocity", () -> this.getState().speedMetersPerSecond);
+        container.addNumber("Current Angle in Deg", () -> this.getState().angle.getDegrees());
+        //container.addDouble("Get Position", () -> backlegetPosition().getValueAsDouble());
+    }
    
     public void periodic() {
         publisher.set(getStates());
@@ -242,5 +249,12 @@ public class SwerveModule {
     
 }
 
+// public SwerveModulePosition getSteerRotation() {
+//     return new SwerveModulePosition(
+//         (steerController.getRotorPosition().getValueAsDouble()/Constants.Swerve.DRIVE_GEAR_RATIO)*Constants.Swerve.WHEEL_CIRCUMFERENCE, getState().angle);
+// }
 
+//public double getSteerPosition(){
+//return steerController.getPosition().getValue();
+//}
 
