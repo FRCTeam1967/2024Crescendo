@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.*;
 
@@ -38,5 +40,11 @@ public class MoveAmpBar extends Command {
   @Override
   public boolean isFinished() {
     return ampBar.isReached();
+  }
+
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    // String name = getName();
+    builder.addDoubleProperty("target pos", () -> {return desiredRev;}, (var) -> {desiredRev = var;});
   }
 }

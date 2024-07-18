@@ -24,7 +24,7 @@ public class Pivot extends SubsystemBase {
   private SparkPIDController pidController;
   private RelativeEncoder relativeEncoder;
   
-  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(120,150                                  );
+  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(Constants.Pivot.MAX_VELOCITY, Constants.Pivot.MAX_ACCELERATION);
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
   public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
   public TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -39,7 +39,7 @@ public class Pivot extends SubsystemBase {
     pidController.setP(Constants.Pivot.kP);
     pidController.setI(Constants.Pivot.kI);
     pidController.setD(Constants.Pivot.kD);
-    pidController.setOutputRange(-0.2, 0.2);
+    pidController.setOutputRange(-0.3, 0.3); //0.2
 
     relativeEncoder = pivotMotor.getEncoder();
     

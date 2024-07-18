@@ -27,7 +27,7 @@ public class AmpBar extends SubsystemBase {
   private RelativeEncoder relativeEncoder;
   private Timer timer;
   
-  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(165,180);
+  private TrapezoidProfile.Constraints motionProfile = new TrapezoidProfile.Constraints(Constants.AmpBar.MAX_VELOCITY, Constants.AmpBar.MAX_ACCELERATION);
   private TrapezoidProfile profile = new TrapezoidProfile(motionProfile);
   public TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
   public TrapezoidProfile.State goal = new TrapezoidProfile.State();

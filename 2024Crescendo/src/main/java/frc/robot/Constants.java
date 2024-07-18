@@ -20,6 +20,9 @@ public final class Constants {
     public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02; 
     public static final double GEAR_RATIO = 10/1.0;
 
+    public static final double MAX_VELOCITY = 165;
+    public static final double MAX_ACCELERATION = 180;
+
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
     public static final double AMP_SAFE = 4 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
     public static final double AMP_UP = 94 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; //-250
@@ -50,7 +53,6 @@ public final class Constants {
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
-    //TODO: change
     public static final double FL_OFFSET = -132.01171875/360; //-134.560546875/360;
     public static final double FR_OFFSET = 4.39453125/360;//107.40234375/360;
     public static final double BL_OFFSET = 117.421875/360; //116.630859375/360;
@@ -178,6 +180,9 @@ public final class Constants {
     public static final double GEAR_RATIO = 50.0/1.0;
 
     public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02;
+
+    public static final double MAX_VELOCITY = 120;
+    public static final double MAX_ACCELERATION = 150;
     
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
     public static final double INTAKE_SAFE = 110 * Constants.Pivot.DEGREES_TO_REVOLUTIONS;

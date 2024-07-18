@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,6 +47,9 @@ public class Robot extends TimedRobot {
               () -> m_robotContainer.swerve.setNeutralMode(false), // Enable coast mode in drive train
               m_robotContainer.swerve) // command requires subsystem
               .ignoringDisable(true)); // This command can run when the robot is disabled
+
+    DataLogManager.start();
+    DriverStation.startDataLog(DataLogManager.getLog());
   }
 
   /**
@@ -94,6 +98,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    //TODO: apparently slows autos down excessively, have to test
     m_robotContainer.swerve.setNeutralMode(true);
   }
 
