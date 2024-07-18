@@ -83,9 +83,9 @@ public class SwerveModule {
         var powerControllerConfig = powerController.getConfigurator();
         
         powerConfig.Slot0.kS = Constants.Swerve.POWER_kS; 
-        powerConfig.Slot0.kV = Constants.Swerve.POWER_kV; 
+        powerConfig.Slot0.kV = Constants.Swerve.POWER_kV;
         powerConfig.Slot0.kA = Constants.Swerve.POWER_kA; 
-        powerConfig.Slot0.kP = Constants.Swerve.POWER_kP; 
+        powerConfig.Slot0.kP = Constants.Swerve.POWER_kP;
         powerConfig.Slot0.kI = Constants.Swerve.POWER_kI; 
         powerConfig.Slot0.kD = Constants.Swerve.POWER_kD; 
 
@@ -93,8 +93,8 @@ public class SwerveModule {
         powerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         //TODO: do we need current limits?
-        powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        powerConfig.CurrentLimits.StatorCurrentLimit = 40;
+        // powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        // powerConfig.CurrentLimits.StatorCurrentLimit = 40;
 
         powerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         powerConfig.CurrentLimits.SupplyCurrentLimit = 40;
@@ -109,15 +109,15 @@ public class SwerveModule {
         steerConfig.Slot0.kS = Constants.Swerve.STEER_kS;
         steerConfig.Slot0.kV = Constants.Swerve.STEER_kV;
         steerConfig.Slot0.kA = Constants.Swerve.STEER_kA;
-        steerConfig.Slot0.kP = Constants.Swerve.STEER_kP; 
+        steerConfig.Slot0.kP = Constants.Swerve.STEER_kP;
         steerConfig.Slot0.kI = Constants.Swerve.STEER_kI; 
         steerConfig.Slot0.kD = Constants.Swerve.STEER_kD; 
 
         steerConfig.Feedback.SensorToMechanismRatio = 1;
         steerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        steerConfig.CurrentLimits.StatorCurrentLimit = 40;
+        // steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        // steerConfig.CurrentLimits.StatorCurrentLimit = 40;
 
         steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         steerConfig.CurrentLimits.SupplyCurrentLimit = 40;

@@ -25,7 +25,7 @@ public final class Constants {
 
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
     public static final double AMP_SAFE = 4 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
-    public static final double AMP_UP = 94 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; //-250
+    public static final double AMP_UP = 98 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; // 94
   }
   
   public static class Climb {
@@ -73,16 +73,16 @@ public final class Constants {
 
     //pid values
     public static final double POWER_kS = 0.14;//0.14; 
-    public static final double POWER_kV = 1.25;//1.25; 
+    public static final double POWER_kV = 12/(100/8.14); //1.25; 
     public static final double POWER_kA = 0; 
-    public static final double POWER_kP = 0.25;//0.25;
+    public static final double POWER_kP = POWER_kV * 0.8; //0.25;
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
     public static final double STEER_kS = 0; //0.1
     public static final double STEER_kV = 0; //30
     public static final double STEER_kA = 0; // 15
-    public static final double STEER_kP = 100; //75
+    public static final double STEER_kP = 12; //100
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0.5;
 
@@ -132,7 +132,7 @@ public final class Constants {
   }
 
   public static class Auto {
-    public static final double PIVOT_INTAKE_TIMEOUT = 2.0, PIVOT_UP_TIMEOUT = 2.0, SHOOT_SPEAKER_TIMEOUT = 3.0;
+    public static final double PIVOT_INTAKE_TIMEOUT = 1.0, PIVOT_UP_TIMEOUT = 2.0, SHOOT_SPEAKER_TIMEOUT = 3.0; //pivot timeout: 2
     public static final double kMaxSpeedMetersPerSecond = 0.5;
     public static final double kMaxAccelerationMetersPerSecondSquared = 0.25;
     public static final double kMaxAngularSpeedDegreesPerSecond = 180;
@@ -142,7 +142,7 @@ public final class Constants {
     public static final double LIMELIGHT_ANGLE_DEGREES = 45.0; //need to measure
     public static final double LIMELIGHT_LENS_HEIGHT_INCHES = 37.0; //need to measure
 
-    public static final double kPXController = 25, kPYController = 30, kPThetaController = 7.5;
+    public static final double kPXController = 25, kPYController = 30, kPThetaController = 6.5; //7.5
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
       new TrapezoidProfile.Constraints(kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);

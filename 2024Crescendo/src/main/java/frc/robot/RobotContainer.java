@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.wpilibj2.command.*;
@@ -57,6 +58,7 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Feeder feeder = new Feeder();
   private final Vision vision = new Vision();
+  private SendableChooser<Command> autoChooserLOL;
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
   private final CommandXboxController operatorController = new CommandXboxController(Xbox.OPERATOR_CONTROLLER_PORT);
@@ -80,19 +82,14 @@ public class RobotContainer {
   public static final String rightSideLeave = "RightSideLeave";
 
 
-
-
-
-
-  
   public static boolean redAlliance;
   String autoPath;
 
   public RobotContainer() {
-    // NamedCommands.registerCommand("pivotDown", new RunPivotIntakeBeam(pivot, intake, feeder, 0, 0).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
-    // NamedCommands.registerCommand("pivotUp", new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE).withTimeout(Constants.Auto.PIVOT_UP_TIMEOUT));
-    // NamedCommands.registerCommand("shootSpeaker", new RunFeederShooter(shooter, feeder, Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION, Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION).withTimeout(Constants.Auto.SHOOT_SPEAKER_TIMEOUT));
-
+    NamedCommands.registerCommand("pivotDown", new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
+    NamedCommands.registerCommand("pivotUp", new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE).withTimeout(Constants.Auto.PIVOT_UP_TIMEOUT));
+    NamedCommands.registerCommand("shootSpeaker", new ShootSpeaker(shooter, feeder).withTimeout(2.0));
+    
     resetSensors();
 
     CanandEventLoop.getInstance();
@@ -110,21 +107,24 @@ public class RobotContainer {
     rightClimb.configDashboard(matchTab);
     //ampBar.configDashboard(matchTab);
 
-    autoPathChooser2.setDefaultOption(redFourNote, redFourNote);
-    autoPathChooser2.addOption(BlueCenterDisrupt, BlueCenterDisrupt);
-    autoPathChooser2.addOption(RedCenterDisrupt, RedCenterDisrupt);
-    autoPathChooser2.addOption(redThreeNote, redThreeNote);
-    autoPathChooser2.addOption(blueThreeNote, blueThreeNote);
-    autoPathChooser2.addOption(blueFourNote, blueFourNote);
-    autoPathChooser2.addOption(twoNote, twoNote);
-    autoPathChooser2.addOption(leave, leave);
-    autoPathChooser2.addOption(frontShootSit, frontShootSit);
-    autoPathChooser2.addOption(leftSideSit, leftSideSit);
-    autoPathChooser2.addOption(rightSideSit, rightSideSit);
-    autoPathChooser2.addOption(leftSideLeave, leftSideSit);
-    autoPathChooser2.addOption(rightSideLeave, rightSideSit);
-    autoPathChooser2.addOption(doNothing, doNothing);
-    matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
+    autoChooserLOL = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser lol", autoChooserLOL);
+    
+    // autoPathChooser2.setDefaultOption(redFourNote, redFourNote);
+    // autoPathChooser2.addOption(BlueCenterDisrupt, BlueCenterDisrupt);
+    // autoPathChooser2.addOption(RedCenterDisrupt, RedCenterDisrupt);
+    // autoPathChooser2.addOption(redThreeNote, redThreeNote);
+    // autoPathChooser2.addOption(blueThreeNote, blueThreeNote);
+    // autoPathChooser2.addOption(blueFourNote, blueFourNote);
+    // autoPathChooser2.addOption(twoNote, twoNote);
+    // autoPathChooser2.addOption(leave, leave);
+    // autoPathChooser2.addOption(frontShootSit, frontShootSit);
+    // autoPathChooser2.addOption(leftSideSit, leftSideSit);
+    // autoPathChooser2.addOption(rightSideSit, rightSideSit);
+    // autoPathChooser2.addOption(leftSideLeave, leftSideSit);
+    // autoPathChooser2.addOption(rightSideLeave, rightSideSit);
+    // autoPathChooser2.addOption(doNothing, doNothing);
+    // matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
   }
 
   public void onEnable(Optional<Alliance> alliance){
@@ -211,41 +211,57 @@ public class RobotContainer {
     // rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));
   }
 
+  public void resetSensors() {
+    swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
+
+    swerve.frontLeft.resetEncoder();
+    swerve.frontRight.resetEncoder();
+    swerve.backLeft.resetEncoder();
+    swerve.backRight.resetEncoder();
+    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
+      swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
+    });;
+  }
+
+  public void resetSwerveGyro(){
+    swerve.resetGyro();
+  }
+
   public Command getAutonomousCommand() {
-    autoPath = autoPathChooser2.getSelected();
+    return autoChooserLOL.getSelected();
     
-    switch (autoPath) {
-      case BlueCenterDisrupt:
-        return BlueCenterDisrupt();
-      case RedCenterDisrupt:
-        return RedCenterDisrupt();
-      case redFourNote:
-        return RedFourNote();
-      case redThreeNote:
-        return RedThreeNote();
-      case blueThreeNote:
-        return BlueThreeNote();
-      case blueFourNote:
-        return BlueFourNote();
-      case twoNote:
-        return TwoNote();
-      case leave:
-        return Leave();
-      case frontShootSit:
-        return FrontShootSit();
-      case leftSideSit:
-        return LeftSideSit();
-      case rightSideSit:
-        return RightSideSit();
-      case leftSideLeave:
-        return LeftSideLeave();
-      case rightSideLeave:
-        return RightSideLeave();
-      case doNothing:
-        return DoNothing();
-      default:
-        return FrontShootSit();
-    }
+    // switch (autoPath) {
+    //   case BlueCenterDisrupt:
+    //     return BlueCenterDisrupt();
+    //   case RedCenterDisrupt:
+    //     return RedCenterDisrupt();
+    //   case redFourNote:
+    //     return RedFourNote();
+    //   case redThreeNote:
+    //     return RedThreeNote();
+    //   case blueThreeNote:
+    //     return BlueThreeNote();
+    //   case blueFourNote:
+    //     return BlueFourNote();
+    //   case twoNote:
+    //     return TwoNote();
+    //   case leave:
+    //     return Leave();
+    //   case frontShootSit:
+    //     return FrontShootSit();
+    //   case leftSideSit:
+    //     return LeftSideSit();
+    //   case rightSideSit:
+    //     return RightSideSit();
+    //   case leftSideLeave:
+    //     return LeftSideLeave();
+    //   case rightSideLeave:
+    //     return RightSideLeave();
+    //   case doNothing:
+    //     return DoNothing();
+    //   default:
+    //     return FrontShootSit();
+    // }
     //return BlueFourNote();
   }
 
@@ -266,129 +282,113 @@ public class RobotContainer {
     ).withTimeout(5);
  }*/
 
-  public Command FrontShootSit(){
-    return new ShootSpeaker(shooter, feeder).withTimeout(3);
-  }
+//   public Command FrontShootSit(){
+//     return new ShootSpeaker(shooter, feeder).withTimeout(3);
+//   }
 
-  public Command LeftSideSit(){
-    swerve.setGyroAngle(60); //idk the number yet
-    return new ShootSpeaker(shooter, feeder).withTimeout(3);
-  }
+//   public Command LeftSideSit(){
+//     swerve.setGyroAngle(60); //idk the number yet
+//     return new ShootSpeaker(shooter, feeder).withTimeout(3);
+//   }
 
-  public Command RightSideSit(){
-    swerve.setGyroAngle(-60); //idk the number yet
-    return new ShootSpeaker(shooter, feeder).withTimeout(3);
-  }
+//   public Command RightSideSit(){
+//     swerve.setGyroAngle(-60); //idk the number yet
+//     return new ShootSpeaker(shooter, feeder).withTimeout(3);
+//   }
 
-  //not leaving, doesn't work
-  public Command RightSideLeave(){
-    swerve.setGyroAngle(-60); //idk the number yet
-    return new SequentialCommandGroup(new ShootSpeaker(shooter, feeder).withTimeout(3), new SwerveDrive(swerve, ()->0.5, ()->0, ()->0).withTimeout(1.5));
-  }
+//   //not leaving, doesn't work
+//   public Command RightSideLeave(){
+//     swerve.setGyroAngle(-60); //idk the number yet
+//     return new SequentialCommandGroup(new ShootSpeaker(shooter, feeder).withTimeout(3), new SwerveDrive(swerve, ()->0.5, ()->0, ()->0).withTimeout(1.5));
+//   }
 
-  //not leaving, doesn't work
-  public Command LeftSideLeave(){
-    swerve.setGyroAngle(60); //idk the number yet
-    return new SequentialCommandGroup(new ShootSpeaker(shooter, feeder).withTimeout(3), new SwerveDrive(swerve, ()->0.5, ()->0, ()->0).withTimeout(1.5));
-  }
+//   //not leaving, doesn't work
+//   public Command LeftSideLeave(){
+//     swerve.setGyroAngle(60); //idk the number yet
+//     return new SequentialCommandGroup(new ShootSpeaker(shooter, feeder).withTimeout(3), new SwerveDrive(swerve, ()->0.5, ()->0, ()->0).withTimeout(1.5));
+//   }
 
 
-  public Command Leave(){
-    return new SwerveDrive(swerve, ()->0.5, ()->0, ()->0).withTimeout(1.5);
-  }
+//   public Command Leave(){
+//     return new SwerveDrive(swerve, ()->0.5, ()->0, ()->0).withTimeout(1.5);
+//   }
 
-  public Command DoNothing(){
-    return null;
-  }
+//   public Command DoNothing(){
+//     return null;
+//   }
 
-  public Command TwoNote(){
-    return new SequentialCommandGroup(
-      new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
-      new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
-      new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
-      new ShootSpeaker(shooter, feeder).withTimeout(1.5));
-  }
+//   public Command TwoNote(){
+//     return new SequentialCommandGroup(
+//       new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
+//       new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
+//       new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
+//       new ShootSpeaker(shooter, feeder).withTimeout(1.5));
+//   }
 
-  public Command BlueFourNote(){
-    return new SequentialCommandGroup(
-    new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
-    new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.59, ()->0.715, ()->0)).withTimeout(1.3),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.59, ()->-0.715, ()->0)).withTimeout(1.34),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.569, ()->-0.656, ()->0)).withTimeout(1.32),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.569, ()->0.656, ()->0)).withTimeout(1.43),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5));
-}
-public Command RedFourNote(){
-  return new SequentialCommandGroup(
-    new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
-    new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.59, ()->-0.715, ()->0)).withTimeout(1.3),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.59, ()->0.715, ()->0)).withTimeout(1.34),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.569, ()->0.656, ()->0)).withTimeout(1.32),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.569, ()->-0.656, ()->0)).withTimeout(1.43),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5));
-}
+//   public Command BlueFourNote(){
+//     return new SequentialCommandGroup(
+//     new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
+//     new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.59, ()->0.715, ()->0)).withTimeout(1.3),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.59, ()->-0.715, ()->0)).withTimeout(1.34),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.569, ()->-0.656, ()->0)).withTimeout(1.32),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.569, ()->0.656, ()->0)).withTimeout(1.43),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5));
+// }
+// public Command RedFourNote(){
+//   return new SequentialCommandGroup(
+//     new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
+//     new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.59, ()->-0.715, ()->0)).withTimeout(1.3),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.59, ()->0.715, ()->0)).withTimeout(1.34),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.569, ()->0.656, ()->0)).withTimeout(1.32),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.569, ()->-0.656, ()->0)).withTimeout(1.43),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5));
+// }
 
-public Command BlueCenterDisrupt(){
-  return new SequentialCommandGroup(
-    new SwerveDrive(swerve, ()->0.8, ()->0, ()->0).withTimeout(2), 
-    new SwerveDrive(swerve, ()->0.0, ()->0.8, ()->0).withTimeout(0.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(2.2)
-  );
-}
+// public Command BlueCenterDisrupt(){
+//   return new SequentialCommandGroup(
+//     new SwerveDrive(swerve, ()->0.8, ()->0, ()->0).withTimeout(2), 
+//     new SwerveDrive(swerve, ()->0.0, ()->0.8, ()->0).withTimeout(0.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(2.2)
+//   );
+// }
 
-public Command RedCenterDisrupt(){
-  return new SequentialCommandGroup(
-    new SwerveDrive(swerve, ()->0.8, ()->0, ()->0).withTimeout(2), 
-    new SwerveDrive(swerve, ()->0.0, ()->-0.8, ()->0).withTimeout(0.75),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(1.6)
-  );
-}
+// public Command RedCenterDisrupt(){
+//   return new SequentialCommandGroup(
+//     new SwerveDrive(swerve, ()->0.8, ()->0, ()->0).withTimeout(2), 
+//     new SwerveDrive(swerve, ()->0.0, ()->-0.8, ()->0).withTimeout(0.75),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(1.6)
+//   );
+// }
 
-public Command RedThreeNote(){
-  return new SequentialCommandGroup(
-    new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
-    new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.615, ()->-0.7, ()->0)).withTimeout(1.3),
-    new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(0.2),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.615, ()->0.7, ()->0)).withTimeout(1.34),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5));
-}
+// public Command RedThreeNote(){
+//   return new SequentialCommandGroup(
+//     new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
+//     new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.615, ()->-0.7, ()->0)).withTimeout(1.3),
+//     new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(0.2),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.615, ()->0.7, ()->0)).withTimeout(1.34),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5));
+// }
 
-public Command BlueThreeNote(){
-  return new SequentialCommandGroup(
-    new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
-    new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.615, ()->0.7, ()->0)).withTimeout(1.3),
-    new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(0.2),
-    new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.615, ()->-0.7, ()->0)).withTimeout(1.34),
-    new ShootSpeaker(shooter, feeder).withTimeout(1.5));
-}
-
-  public void resetSensors() {
-    swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
-
-    swerve.frontLeft.resetEncoder();
-    swerve.frontRight.resetEncoder();
-    swerve.backLeft.resetEncoder();
-    swerve.backRight.resetEncoder();
-    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
-      swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
-    });;
-  }
-
-  public void resetSwerveGyro(){
-    swerve.resetGyro();
-  }
+// public Command BlueThreeNote(){
+//   return new SequentialCommandGroup(
+//     new ParallelCommandGroup(new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN), new ShootSpeaker(shooter, feeder)).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.8, ()->0, ()->0)).withTimeout(0.65),
+//     new ParallelCommandGroup(new SwerveDrive(swerve, ()->-0.8, ()->0, ()->0)).withTimeout(0.65),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->0.615, ()->0.7, ()->0)).withTimeout(1.3),
+//     new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(0.2),
+//     new ParallelCommandGroup(new RunPivotIntakeBeam(pivot, intake, feeder), new SwerveDrive(swerve, ()->-0.615, ()->-0.7, ()->0)).withTimeout(1.34),
+//     new ShootSpeaker(shooter, feeder).withTimeout(1.5));
+// }
 }

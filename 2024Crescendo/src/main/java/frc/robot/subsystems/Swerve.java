@@ -67,9 +67,9 @@ public class Swerve extends SubsystemBase{
       this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       this::driveRobotRelative , // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-          new PIDConstants(0.00001, 0.0, 0.0), // Translation PID constants
-          new PIDConstants(Constants.Auto.kPThetaController, 0.0, 0.0), // Rotation PID constants
-          0.3, // Max module speed, in m/s
+          new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+          new PIDConstants(Constants.Auto.kPThetaController, 0.0, 0.0), // Rotation PID constants, TODO: check kpTheta
+          0.3, // Max module speed, in m/s, TODO: check
           0.41309, // Drive base radius in meters. Distance from robot center to furthest module. 
           new ReplanningConfig() // Default path replanning config. See the API for the options here
     ), () -> {
