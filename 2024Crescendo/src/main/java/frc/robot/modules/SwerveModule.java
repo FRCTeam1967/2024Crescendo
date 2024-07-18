@@ -106,9 +106,10 @@ public class SwerveModule {
 
         powerConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.DRIVE_GEAR_RATIO;
 
-        // powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        // powerConfig.CurrentLimits.StatorCurrentLimit = 40;
+
         if (Robot.isReal()) {
+            // powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        // powerConfig.CurrentLimits.StatorCurrentLimit = 40;
             powerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
             powerConfig.CurrentLimits.SupplyCurrentLimit = 40;
         }
@@ -132,6 +133,8 @@ public class SwerveModule {
         // steerConfig.CurrentLimits.StatorCurrentLimit = 40;
 
         if (Robot.isReal()) {
+            // steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+            // steerConfig.CurrentLimits.StatorCurrentLimit = 40;
             steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
             steerConfig.CurrentLimits.SupplyCurrentLimit = 40;
         }

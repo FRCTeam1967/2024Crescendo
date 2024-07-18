@@ -109,8 +109,8 @@ public class DriveUI extends SubsystemBase {
     return r;
   }
 
-  public Trigger getStart(){
-    return driverController.button(gyroReset);
+  public Trigger resetGyro(){
+    return driverController.start();
   }
   public Trigger getDriveSnapIndex(){
     return driverController.button(driveSnapIndex);

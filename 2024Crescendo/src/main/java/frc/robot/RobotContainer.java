@@ -227,8 +227,9 @@ public class RobotContainer {
     swerve.setDefaultCommand(swerveDefaultCommand);
     SmartDashboard.putData(swerveDefaultCommand);
 
+    driveUI.resetGyro().onTrue(new InstantCommand(()-> swerve.resetGyro(),swerve));
     driveUI.getDriveSnapIndex().onTrue(new SnapToShoot(swerve, driveUI, 3.5));
-    driveUI.getStart().onTrue(new InstantCommand(() -> swerve.resetGyro(),swerve));
+    //driveUI.getStart().onTrue(new InstantCommand(() -> swerve.resetGyro(),swerve));
     SmartDashboard.putData("AutoT", new PathPlannerAuto("Triangle Auto"));
     SmartDashboard.putData("AutoTest", new PathPlannerAuto("Go out"));
     SmartDashboard.putData("SnapToShoot", new SnapToShoot(swerve, driveUI, 4));
