@@ -58,10 +58,15 @@ public final class Constants {
     // public static final double BL_OFFSET = 118.91601562499999/360;
     // public static final double BR_OFFSET = -16.435546875/360;
 
-    public static final double FL_OFFSET = -134.560546875/360;
-    public static final double FR_OFFSET = 107.40234375/360;
-    public static final double BL_OFFSET = 116.630859375/360;
-    public static final double BR_OFFSET = -17.40234375/360;
+    public static final double FL_OFFSET = -132.01171875/360; //-134.560546875/360;
+    public static final double FR_OFFSET = 4.39453125/360;//107.40234375/360;
+    public static final double BL_OFFSET = 117.421875/360; //116.630859375/360;
+    public static final double BR_OFFSET = -17.2265625/360; //-17.40234375/360;
+
+    // public static final double FL_OFFSET = -134.560546875/360;
+    // public static final double FR_OFFSET = 107.40234375/360;
+    // public static final double BL_OFFSET = 116.630859375/360;
+    // public static final double BR_OFFSET = -17.40234375/360;
 
     // public static final double FL_OFFSET = 0/360;
     // public static final double FR_OFFSET = 0/360;
