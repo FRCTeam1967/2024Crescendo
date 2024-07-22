@@ -180,6 +180,14 @@ public class RobotContainer {
     driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
     //adjust for blue alliance
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
+
+    driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
+
+    driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
+
+    driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
+
+    driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
     
     //INTAKE + PIVOT + FEEDER
     operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(
@@ -205,7 +213,7 @@ public class RobotContainer {
       new InstantCommand(() -> leftClimb.changeStatus(), leftClimb), new InstantCommand(() -> rightClimb.changeStatus(), rightClimb)
     )));
 
-    operatorController.a().whileTrue(new SequentialCommandGroup(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP), new WaitCommand(0.5), new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1.5)));
+    operatorController.a().whileTrue(new SequentialCommandGroup(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP), new WaitCommand(0.7), new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1.5)));
     operatorController.a().whileFalse(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
     // leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), leftClimb));
     // rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));

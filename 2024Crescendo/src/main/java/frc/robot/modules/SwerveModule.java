@@ -93,11 +93,11 @@ public class SwerveModule {
         powerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         //TODO: do we need current limits?
-        // powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        // powerConfig.CurrentLimits.StatorCurrentLimit = 40;
+        powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        powerConfig.CurrentLimits.StatorCurrentLimit = 60; //40
 
         powerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        powerConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        powerConfig.CurrentLimits.SupplyCurrentLimit = 60;
 
         powerControllerConfig.apply(powerConfig);
 
@@ -116,11 +116,11 @@ public class SwerveModule {
         steerConfig.Feedback.SensorToMechanismRatio = 1;
         steerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        // steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        // steerConfig.CurrentLimits.StatorCurrentLimit = 40;
+        steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        steerConfig.CurrentLimits.StatorCurrentLimit = 60; //40
 
         steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        steerConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        steerConfig.CurrentLimits.SupplyCurrentLimit = 60;
 
         steerConfig.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID(); 
         steerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;

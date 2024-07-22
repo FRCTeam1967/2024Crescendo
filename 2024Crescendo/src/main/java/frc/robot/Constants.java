@@ -53,10 +53,15 @@ public final class Constants {
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
-    public static final double FL_OFFSET = -132.01171875/360; //-134.560546875/360;
-    public static final double FR_OFFSET = 4.39453125/360;//107.40234375/360;
-    public static final double BL_OFFSET = 117.421875/360; //116.630859375/360;
-    public static final double BR_OFFSET = -17.2265625/360; //-17.40234375/360;
+    public static final double FL_OFFSET = -132.275390625/360; //-134.560546875/360;
+    public static final double FR_OFFSET = 2.197265625/360;//107.40234375/360;
+    public static final double BL_OFFSET = 116.630859375/360; //116.630859375/360;
+    public static final double BR_OFFSET = -18.544921875/360; //-17.40234375/360;
+
+    // public static final double FL_OFFSET = -132.01171875/360; //-134.560546875/360;
+    // public static final double FR_OFFSET = 4.39453125/360;//107.40234375/360;
+    // public static final double BL_OFFSET = 117.421875/360; //116.630859375/360;
+    // public static final double BR_OFFSET = -17.2265625/360; //-17.40234375/360;
 
     //janky offsets
     // public static final double FL_OFFSET = 171.507813/360;
@@ -169,7 +174,7 @@ public final class Constants {
     public static final double S_TOP_SPEED = 1;
     public static final double S_BOTTOM_SPEED = 1;
     
-    public static final double SPEAKER_TOP_VELOCITY = 80, SPEAKER_TOP_ACCELERATION = 70;
+    public static final double SPEAKER_TOP_VELOCITY = 90, SPEAKER_TOP_ACCELERATION = 80; // 80, 70
     public static final double SPEAKER_BOTTOM_VELOCITY = 60, SPEAKER_BOTTOM_ACCELERATION = 50;
     
     public static final double THRESHOLD_SPEED = 80;

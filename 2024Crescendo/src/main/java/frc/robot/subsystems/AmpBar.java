@@ -42,7 +42,7 @@ public class AmpBar extends SubsystemBase {
     pidController.setP(Constants.AmpBar.kP);
     pidController.setI(Constants.AmpBar.kI);
     pidController.setD(Constants.AmpBar.kD);
-    pidController.setOutputRange(-0.2, 0.2);
+    pidController.setOutputRange(-0.25, 0.25);
 
     relativeEncoder = ampBarMotor.getEncoder();
     

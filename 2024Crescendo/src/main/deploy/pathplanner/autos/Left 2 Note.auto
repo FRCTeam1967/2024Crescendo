@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.15,
-      "y": 5.5
+      "x": 0.6,
+      "y": 6.7
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -18,13 +18,19 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
                   "name": "pivotDown"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Leave"
                 }
               }
             ]
@@ -37,47 +43,16 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center Speaker to Note 2"
+                  "pathName": "Left Return"
                 }
               },
-              {
-                "type": "named",
-                "data": {
-                  "name": "pivotDown"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pivotDown"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
               {
                 "type": "named",
                 "data": {
                   "name": "pivotUp"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "From Note 2 to Center Speaker"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
           }
         }
       ]

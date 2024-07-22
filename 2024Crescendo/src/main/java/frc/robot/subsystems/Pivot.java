@@ -34,7 +34,9 @@ public class Pivot extends SubsystemBase {
   /** Creates a new Pivot. */
   public Pivot() {
     pivotMotor = new CANSparkMax(Constants.Pivot.PIVOT_ID, MotorType.kBrushless);
-    pivotMotor.setInverted(true);    
+    pivotMotor.setInverted(true); 
+    pivotMotor.setSmartCurrentLimit(50);
+    
     pidController = pivotMotor.getPIDController();
     pidController.setP(Constants.Pivot.kP);
     pidController.setI(Constants.Pivot.kI);
