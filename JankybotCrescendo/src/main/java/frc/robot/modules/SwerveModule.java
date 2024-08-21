@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.subsystems.Swerve;
 
 
 
@@ -35,7 +36,6 @@ public class SwerveModule {
     private TalonFX powerController;
     private TalonFX steerController;
     public CANcoder analogEncoder;
-
 
     private SwerveModuleState initialState;
 
@@ -187,6 +187,8 @@ public class SwerveModule {
         double velocityToSet = optimized.speedMetersPerSecond;
         steerController.setControl(new PositionVoltage(optimized.angle.getRotations(), 0.0, false, 0.0, 0, false, false, false));
         powerController.setControl(new VelocityVoltage(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE, 0.0, false, 0.0, 0, false, false, false));
+        if (getState() == optimized) Swerve.setReached(true);
+        else Swerve.setReached(false);
     }
 
     /** Resets power encoder to zero rotations */

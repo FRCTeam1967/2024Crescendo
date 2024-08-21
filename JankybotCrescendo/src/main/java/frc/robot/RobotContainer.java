@@ -79,7 +79,8 @@ public class RobotContainer {
       () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
 
     //CHASSIS
-    driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
+    // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
+    driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
     //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
     // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
     
@@ -101,19 +102,21 @@ public class RobotContainer {
   }
 
   public void resetSensors() {
-    swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
+    // swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
+    swerve.resetpOdometry(new Pose2d(0.0, 0.0, swerve.pGetRotation2d()));
+
 
     swerve.frontLeft.resetEncoder();
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();
     swerve.backRight.resetEncoder();
-    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
+    // swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
+    //   swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
+    // });;
+
+    swerve.pOdometry.update(swerve.pGetRotation2d(), new SwerveModulePosition[] {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;
-  }
-
-  public void resetSwerveGyro(){
-    swerve.resetGyro();
   }
 
   public Command getAutonomousCommand() {

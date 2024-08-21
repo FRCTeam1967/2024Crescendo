@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -27,13 +28,15 @@ import frc.robot.modules.SwerveModule;
 public class Swerve extends SubsystemBase{
   public final SwerveModule frontLeft, frontRight, backLeft, backRight;
   private final ADIS16470_IMU gyro;
+  private final Pigeon2 pGyro;
 
   private Pose2d pose;
   public final SwerveDriveOdometry odometry;
+  public final SwerveDriveOdometry pOdometry;
   private Field2d field = new Field2d();
 
   private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
-  private boolean isInRange = false;
+  public static boolean reachedState = false;
 
   public Swerve() {
     ShuffleboardTab driveTrainTab = Shuffleboard.getTab("Drivetrain");
@@ -50,9 +53,10 @@ public class Swerve extends SubsystemBase{
     backRight = new SwerveModule("BackRight", Constants.Swerve.BR_POWER, Constants.Swerve.BR_STEER, Constants.Swerve.BR_ENCODER, driveTrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
       .withSize(2, 4)
       .withPosition(6, 0));
+    
     gyro = new ADIS16470_IMU();
-
-    driveTrainTab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());        
+    pGyro = new Pigeon2(Constants.Swerve.PIGEON_GYRO, "Canivore");
+    
     //driveTrainTab.add("field", field).withSize(8, 5).withPosition(1, 1);
 
     odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
@@ -60,10 +64,16 @@ public class Swerve extends SubsystemBase{
         frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
     });
 
+    pOdometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, pGetRotation2d(), 
+    new SwerveModulePosition[] {
+        frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
+    });
+
     //took autobuilder from pathplanner - might need to be used in the auto file (driveRobotRelative not coded yet)
     AutoBuilder.configureHolonomic(
       this::getPose, // Robot pose supplier
-      this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+      // this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+      this::resetpOdometry,
       this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       this::driveRobotRelative , // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
@@ -81,21 +91,29 @@ public class Swerve extends SubsystemBase{
       else return false;
     }, this);
   }
+
+  /** Changes status of motors reaching the desired state */
+  public static void setReached(boolean reached) {
+    reachedState = reached;
+  }
   
-  public void stopModules() {
-    frontLeft.stop();
-    frontRight.stop();
-    backLeft.stop();
-    backRight.stop();
+  public double getEncoderPosition(){
+    return frontRight.getEncoderPosition();
   }
 
+  /** @return Pose of robot */
+  public Pose2d getPose() {
+    return pose;
+  }
+  
   /** @return Rotation2d object with desired angle based on degrees from gyro */
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(gyro.getAngle(gyro.getYawAxis()));
   }
 
-  public double getYaw() {
-    return gyro.getAngle(gyro.getYawAxis());
+  /** @return The degrees of pigeon gyro (heading of the robot) as a Rotation2d */
+  public Rotation2d pGetRotation2d() {
+    return pGyro.getRotation2d();
   }
   
   public SwerveModuleState[] getModuleStates() {
@@ -123,22 +141,6 @@ public class Swerve extends SubsystemBase{
     backRight.getState());
   }
 
-  //TODO: finish
-  public void driveRobotRelative(ChassisSpeeds speeds) {
-    SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
-    this.setModuleStates(moduleState);
-  }
-
-  public static double signedSquare(double a) {
-    if (a < 0) return -(a * a);
-    else return a * a;
-  }
-
-
-  public double getEncoderPosition(){
-    return frontRight.getEncoderPosition();
-  }
-
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     frontLeft.setState(desiredStates[0]);
     frontRight.setState(desiredStates[1]);
@@ -146,22 +148,33 @@ public class Swerve extends SubsystemBase{
     backRight.setState(desiredStates[3]);
   }
 
-  public Pose2d getPose() {
-    return pose;
+  //TODO: finish
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
+    this.setModuleStates(moduleState);
   }
 
+  /** Resets robot position on the field */
   public void resetOdometry (Pose2d pose) {
     odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
   }
 
+  /** Resets robot position on the field (with pigeon gyro) */
+  public void resetpOdometry (Pose2d pose) {
+    pOdometry.resetPosition(pGetRotation2d(), getModulePositions(), pose);
+  }
+
+  /** Sets gyro angle to 0 */
   public void resetGyro () {
     gyro.setGyroAngle(gyro.getYawAxis(), 0);
   }
-
-  public double getGyro () {
-    return gyro.getAngle(gyro.getYawAxis());
+  
+  /** Resets pigeon gyro to 0 */
+  public void resetpGyro () {
+    pGyro.reset();
   }
 
+  /** Turns wheels inwards and sets to brake mode for defense */
   public void defenseMode(){
     SwerveModuleState fLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(45));
     SwerveModuleState fRDefenseState = new SwerveModuleState(0, Rotation2d.fromDegrees(135));
@@ -180,6 +193,9 @@ public class Swerve extends SubsystemBase{
     backRight.brakeMode();
   }
 
+  /** Sets neutral mode of wheels
+   * @param brake mode true/false value
+   */
   public void setNeutralMode(boolean brake) {
     if (brake){
       frontLeft.brakeMode();
@@ -194,16 +210,22 @@ public class Swerve extends SubsystemBase{
     }
   }
 
-  public void setGyroAngle(double degrees){
-    gyro.setGyroAngleZ(degrees);
+  /** Stops all modules */
+  public void stopModules() {
+    frontLeft.stop();
+    frontRight.stop();
+    backLeft.stop();
+    backRight.stop();
   }
 
   public void configDashboard(ShuffleboardTab tab){
     tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
-    tab.addDouble("pose position x", () -> getPose().getX());
-    tab.addDouble("pose position y", () -> getPose().getY());
-    tab.addDouble("Gyro Yaw Axis", () -> getGyro());
-    tab.addBoolean("isReached?", () -> isInRange);
+    tab.addDouble("Pose position x", () -> getPose().getX());
+    tab.addDouble("Pose position y", () -> getPose().getY());
+    tab.addDouble("Gyro Yaw Axis", () -> gyro.getAngle(gyro.getYawAxis()));
+    tab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());
+    tab.addDouble("Pigeon Gyro Angle", () -> pGyro.getAngle());   
+    tab.addBoolean("isReached?", () -> reachedState);
 
     tab.addDouble("Encoder Meters Moved", ()->getEncoderPosition() * Constants.Swerve.METERS_TO_ENC_COUNT);
     tab.addDouble("FR Distance Meters", ()-> frontRight.getPosition().distanceMeters);
@@ -229,14 +251,17 @@ public class Swerve extends SubsystemBase{
     backLeft.periodic();
     backRight.periodic();
 
-    var gyroAngle = getRotation2d(); //TODO: is this used anywhere?
+    // pose = odometry.update(getRotation2d(), new SwerveModulePosition[] {
+    //   frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
+    // });
 
-    pose = odometry.update(gyroAngle, new SwerveModulePosition[] {
+    pose = pOdometry.update(pGetRotation2d(), new SwerveModulePosition[] {
       frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
     });
 
     //System.out.println(pose);
     SmartDashboard.putData("Field", field);
-    field.setRobotPose(odometry.getPoseMeters());
+    // field.setRobotPose(odometry.getPoseMeters());
+    field.setRobotPose(pOdometry.getPoseMeters());
   }
 }
