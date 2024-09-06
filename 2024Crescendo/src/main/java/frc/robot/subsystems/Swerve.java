@@ -5,15 +5,22 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -24,16 +31,34 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.modules.SwerveModule;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
+
 public class Swerve extends SubsystemBase{
   public final SwerveModule frontLeft, frontRight, backLeft, backRight;
   private final ADIS16470_IMU gyro;
 
   private Pose2d pose;
   public final SwerveDriveOdometry odometry;
+  
+  private final DifferentialDrivePoseEstimator m_poseEstimator;
+
+  private Pose3d m_objectInField;
+  private Transform3d m_cameraToObject;
+  private Transform3d m_robotToCamera;
+
+  private Pose3d visionMeasurement;
+
+  private Math geometry;
   private Field2d field = new Field2d();
 
   private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
   private boolean isInRange = false;
+
+  public double leftEncoder;
+  public double rightEncoder;
 
   public Swerve() {
     ShuffleboardTab driveTrainTab = Shuffleboard.getTab("Drivetrain");
@@ -55,11 +80,62 @@ public class Swerve extends SubsystemBase{
     driveTrainTab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());        
     //driveTrainTab.add("field", field).withSize(8, 5).withPosition(1, 1);
 
-    odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
-    new SwerveModulePosition[] {
-        frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
-    });
+    //odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
+    
+    new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
 
+
+
+
+
+
+
+    //TODO: finish vision simulation
+
+    leftEncoder = frontLeft.getPosition().distanceMeters;
+    rightEncoder = frontRight.getPosition().distanceMeters;
+
+    //creating pose estimator
+    m_poseEstimator = new DifferentialDrivePoseEstimator(
+      Constants.Swerve.SWERVE_DRIVE_KINEMATICS,
+      getRotation2d(), 
+      leftEncoder, 
+      rightEncoder, 
+      new Pose2d(), 
+      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), 
+      VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
+    //updating the pose estimator
+    m_poseEstimator.update(
+      getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
+
+    m_robotToCamera = geometry.Transform3d(geometry.Translation3d(-3, -2, -1), geometry.Rotation3d(0, 0, 0));
+
+    m_objectInField = Pose3d(Units.inchesToMeters(5.0), 0.0, 0.0, Rotation3d.kZero);
+    m_cameraToObject = Transform3d(Units.inchesToMeters(7.0), 0.0, 0.0, Rotation3d.kZero);
+
+    // Compute the robot's field-relative position exclusively from vision measurements.
+    visionMeasurement = objectToRobotPose(m_objectInField, m_robotToCamera, m_cameraToObject);
+
+    // Convert robot pose from Pose3d to Pose2d needed to apply vision measurements.
+    Pose2d visionMeasurement2d = visionMeasurement.toPose2d();
+
+    // Apply vision measurements
+    m_poseEstimator.addVisionMeasurement(visionMeasurement2d, Timer.getFPGATimestamp());
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     //took autobuilder from pathplanner - might need to be used in the auto file (driveRobotRelative not coded yet)
     AutoBuilder.configureHolonomic(
       this::getPose, // Robot pose supplier
@@ -116,6 +192,7 @@ public class Swerve extends SubsystemBase{
     };
   }
 
+  //TODO: change from swerve to diff drive
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toChassisSpeeds(frontLeft.getState(),
     frontRight.getState(),
@@ -123,7 +200,7 @@ public class Swerve extends SubsystemBase{
     backRight.getState());
   }
 
-  //TODO: finish
+  //TODO: change from swerve to diff drive
   public void driveRobotRelative(ChassisSpeeds speeds) {
     SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
     this.setModuleStates(moduleState);
