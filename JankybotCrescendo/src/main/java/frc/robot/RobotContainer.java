@@ -41,6 +41,7 @@ import com.reduxrobotics.canand.CanandEventLoop;
 import frc.robot.commands.*;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
   public final Swerve swerve = new Swerve();
@@ -99,6 +100,15 @@ public class RobotContainer {
     driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
 
     driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
+  // //SHOOTER
+  // operatorController.y().whileTrue(new ShootSpeaker(shooter, feeder));
+  // operatorController.b().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1.5));
+  // operatorController.a().onTrue(new SequentialCommandGroup(
+  //   new AmpReverse(swerve,redAlliance),
+  //   new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1)
+  // ));
+  // operatorController.start().whileTrue(new RunShooter(shooter, false));
+  
   }
 
   public void resetSensors() {

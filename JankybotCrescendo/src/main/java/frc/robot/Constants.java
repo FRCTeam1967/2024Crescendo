@@ -105,4 +105,34 @@ public final class Constants {
       new TrapezoidProfile.Constraints(kMaxAngularSpeedDegreesPerSecond, kMaxAngularSpeedDegreesPerSecondSquared);
     public static final double RADIANS_TO_DEGREES = 180.0/Math.PI;
   } 
+  public static class Shooter {
+    public static final int TOP_LEFT_MOTOR_ID = 20, TOP_RIGHT_MOTOR_ID = 21;
+    public static final int BOTTOM_LEFT_MOTOR_ID = 19, BOTTOM_RIGHT_MOTOR_ID = 22;
+
+    public static final double kP = 0.32, kI = 0, kD = 0, kV = 0.07, kA = 0.06;
+    
+    public static final double A_TOP_SPEED = 0.162;
+    public static final double A_BOTTOM_SPEED = 0.162;
+    
+    public static final double AMP_TOP_VELOCITY = 12, AMP_TOP_ACCELERATION = 14;
+    public static final double AMP_BOTTOM_VELOCITY = 12, AMP_BOTTOM_ACCELERATION = 14;
+    
+    public static final double S_TOP_SPEED = 1;
+    public static final double S_BOTTOM_SPEED = 1;
+    
+    public static final double SPEAKER_TOP_VELOCITY = 80, SPEAKER_TOP_ACCELERATION = 70;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 60, SPEAKER_BOTTOM_ACCELERATION = 50;
+    
+    public static final double THRESHOLD_SPEED = 80;
+  }
+  public static class AmpBar { //TODO: change values!
+    public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;
+    public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02;
+    public static final double GEAR_RATIO = 10/1.0;
+    public static final double MAX_VELOCITY = 165;
+    public static final double MAX_ACCELERATION = 180;
+    public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
+    public static final double AMP_SAFE = 4 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
+    public static final double AMP_UP = 98 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; // 94
+  }
 }
