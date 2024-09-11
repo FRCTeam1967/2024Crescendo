@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -119,8 +118,7 @@ public final class Constants {
     public static Translation2d m_backLeftLocation = new Translation2d(-LENGTH / 2, WIDTH / 2);
     public static Translation2d m_backRightLocation = new Translation2d(-LENGTH / 2, -WIDTH / 2);
 
-    //TODO: change this from swerve drive to diff drive
-    public static final DifferentialDriveKinematics SWERVE_DRIVE_KINEMATICS = new DifferentialDriveKinematics(
+    public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = new SwerveDriveKinematics(
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
     

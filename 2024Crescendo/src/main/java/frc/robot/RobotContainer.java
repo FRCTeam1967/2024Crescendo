@@ -226,7 +226,7 @@ public class RobotContainer {
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();
     swerve.backRight.resetEncoder();
-    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
+    swerve.m_poseEstimator.update(swerve.getRotation2d(), new SwerveModulePosition[] {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;
   }

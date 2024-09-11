@@ -75,10 +75,7 @@ public void alignAngleZ(){
     angleToGoalDegrees = Constants.Vision.LIMELIGHT_ANGLE_DEGREES + verticalOffset;
     angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180);
     limelightToGoalInches = (Constants.Vision.TARGET_HEIGHT_INCHES - Constants.Vision.LIMELIGHT_HEIGHT_INCHES) / Math.tan(angleToGoalRadians);
-    
   }
-
-
 
   /** @return whether limelight is in range */
   public boolean getIsInRange(){
