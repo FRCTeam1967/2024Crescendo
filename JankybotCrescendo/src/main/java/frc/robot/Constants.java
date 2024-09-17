@@ -135,4 +135,15 @@ public final class Constants {
     public static final double AMP_SAFE = 4 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
     public static final double AMP_UP = 98 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; // 94
   }
+  public static class Climb {
+    public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31;
+    public static final int LEFT_DIGITAL_INPUT_ID = 9, RIGHT_DIGITAL_INPUT_ID = 0;
+    public static final double UNWIND_FACTOR = 1.0, WIND_FACTOR = 0.5, DEADBAND = 0.05;
+
+    public static final double LOWER_SPEED = 0.65, TOP_ROTATIONS = -110.0;
+    public static final double CURRENT_LIMIT = 40;
+    
+    public static final double kP = 1.0, kI = 0, kD = 0, kS = 0.00, kD_TIME = 0.02;
+    public static final double CRUISE_VELOCITY = 100.0, ACCELERATION = 40.0;
+  }
 }
