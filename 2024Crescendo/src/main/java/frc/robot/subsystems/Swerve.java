@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -75,12 +76,21 @@ public class Swerve extends SubsystemBase{
     //driveTrainTab.add("field", field).withSize(8, 5).withPosition(1, 1);
     //odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
 
+    SmartDashboard.putData("Field", field);
+
 
 
     //TODO: finish vision simulation
 
     //creating pose estimator
     m_poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, gyroAngle, modulePositions, initialPoseMeters);
+
+//     StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+//     .getStructTopic("MyPose", Pose2d.struct).publish();
+// StructArrayPublisher<Pose2d> arrayPublisher = NetworkTableInstance.getDefault()
+//     .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
+
+
 
     //took autobuilder from pathplanner - might need to be used in the auto file (driveRobotRelative not coded yet)
     AutoBuilder.configureHolonomic(
@@ -224,6 +234,7 @@ public class Swerve extends SubsystemBase{
     tab.addDouble("pose position y", () -> getPose().getY());
     tab.addDouble("Gyro Yaw Axis", () -> getGyro());
     tab.addBoolean("isReached?", () -> isInRange);
+    //tab.addCamera("pose2d", "pose 2d", pose);
 
     tab.addDouble("Encoder Meters Moved", ()->getEncoderPosition() * Constants.Swerve.METERS_TO_ENC_COUNT);
     tab.addDouble("FR Distance Meters", ()-> frontRight.getPosition().distanceMeters);
