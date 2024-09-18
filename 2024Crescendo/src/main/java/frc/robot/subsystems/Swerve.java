@@ -18,7 +18,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -49,6 +52,11 @@ public class Swerve extends SubsystemBase{
   private Rotation2d gyroAngle;
   private SwerveModulePosition[] modulePositions;
   private Pose2d initialPoseMeters;
+
+  //publishing to network table
+  private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  private final NetworkTable table = inst.getTable("Pose");
+  private final DoubleArrayPublisher publishField = table.getDoubleArrayTopic("robotPose").publish();
 
   //extra
   //private Math geometry;
@@ -84,12 +92,8 @@ public class Swerve extends SubsystemBase{
 
     //creating pose estimator
     m_poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, gyroAngle, modulePositions, initialPoseMeters);
-
-//     StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
-//     .getStructTopic("MyPose", Pose2d.struct).publish();
-// StructArrayPublisher<Pose2d> arrayPublisher = NetworkTableInstance.getDefault()
-//     .getStructArrayTopic("MyPoseArray", Pose2d.struct).publish();
-
+    
+    
 
 
     //took autobuilder from pathplanner - might need to be used in the auto file (driveRobotRelative not coded yet)
