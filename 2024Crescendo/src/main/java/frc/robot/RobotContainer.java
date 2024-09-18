@@ -65,25 +65,7 @@ public class RobotContainer {
 
   public ShuffleboardTab matchTab = Shuffleboard.getTab("Match");
 
-  SendableChooser<String> autoPathChooser2 = new SendableChooser<String>(); 
-  public static final String redThreeNote = "RedThreeNote";
-  public static final String BlueCenterDisrupt = "BlueCenterDisrupt";
-  public static final String RedCenterDisrupt = "RedCenterDisrupt";
-  public static final String blueThreeNote = "BlueThreeNote";
-  public static final String redFourNote = "RedFourNote";
-  public static final String doNothing = "DoNothing";
-  public static final String blueFourNote = "BlueFourNote";
-  public static final String twoNote = "TwoNote";
-  public static final String leave = "Leave";
-  public static final String frontShootSit = "FrontShootSit";
-  public static final String leftSideSit = "LeftSideSit";
-  public static final String rightSideSit = "RightSideSit";
-  public static final String leftSideLeave = "LeftSideLeave";
-  public static final String rightSideLeave = "RightSideLeave";
-
-
   public static boolean redAlliance;
-  String autoPath;
 
   public RobotContainer() {
     NamedCommands.registerCommand("pivotDown", new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
@@ -93,9 +75,6 @@ public class RobotContainer {
     resetSensors();
 
     CanandEventLoop.getInstance();
-    maintainPivotPosition();
-    maintainAmpBarPosition();
-    pivot.setBrakeMode();
 
     configureBindings();
 
@@ -105,26 +84,10 @@ public class RobotContainer {
     swerve.configDashboard(matchTab);
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
-    //ampBar.configDashboard(matchTab);
+    // ampBar.configDashboard(matchTab);
 
     autoChooserLOL = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser lol", autoChooserLOL);
-    
-    // autoPathChooser2.setDefaultOption(redFourNote, redFourNote);
-    // autoPathChooser2.addOption(BlueCenterDisrupt, BlueCenterDisrupt);
-    // autoPathChooser2.addOption(RedCenterDisrupt, RedCenterDisrupt);
-    // autoPathChooser2.addOption(redThreeNote, redThreeNote);
-    // autoPathChooser2.addOption(blueThreeNote, blueThreeNote);
-    // autoPathChooser2.addOption(blueFourNote, blueFourNote);
-    // autoPathChooser2.addOption(twoNote, twoNote);
-    // autoPathChooser2.addOption(leave, leave);
-    // autoPathChooser2.addOption(frontShootSit, frontShootSit);
-    // autoPathChooser2.addOption(leftSideSit, leftSideSit);
-    // autoPathChooser2.addOption(rightSideSit, rightSideSit);
-    // autoPathChooser2.addOption(leftSideLeave, leftSideSit);
-    // autoPathChooser2.addOption(rightSideLeave, rightSideSit);
-    // autoPathChooser2.addOption(doNothing, doNothing);
-    // matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
   }
 
   public void onEnable(Optional<Alliance> alliance){
@@ -147,7 +110,6 @@ public class RobotContainer {
   }
 
   public void maintainAmpBarPosition(){
-
     ampBar.setPosition(0);
 
     ampBar.setpoint.velocity = 0;
@@ -169,7 +131,7 @@ public class RobotContainer {
     //shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
     //CHASSIS
-    driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
+    driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
     //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
     driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
     
@@ -181,13 +143,13 @@ public class RobotContainer {
     //adjust for blue alliance
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
 
-    driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
+    // driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
 
-    driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
+    // driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
 
-    driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
+    // driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
 
-    driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
+    // driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
     
     //INTAKE + PIVOT + FEEDER
     operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new SequentialCommandGroup(
@@ -220,19 +182,19 @@ public class RobotContainer {
   }
 
   public void resetSensors() {
-    swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
+    // swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
+    swerve.resetpOdometry(new Pose2d(0.0, 0.0, swerve.pGetRotation2d()));
 
     swerve.frontLeft.resetEncoder();
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();
     swerve.backRight.resetEncoder();
-    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
+    swerve.pOdometry.update(swerve.pGetRotation2d(), new SwerveModulePosition[] {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;
-  }
-
-  public void resetSwerveGyro(){
-    swerve.resetGyro();
+    // swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
+    //   swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
+    // });;
   }
 
   public Command getAutonomousCommand() {

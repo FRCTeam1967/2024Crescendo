@@ -1,7 +1,5 @@
 package frc.robot.modules;
-
 import java.util.Map;
-
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -14,7 +12,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 // import statements
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -28,24 +25,24 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-
-
-
+import frc.robot.subsystems.Swerve;
 public class SwerveModule {
     private TalonFX powerController;
     private TalonFX steerController;
-    public CANcoder analogEncoder;
 
+    public CANcoder analogEncoder;
 
     private SwerveModuleState initialState;
 
     private final StructArrayPublisher<SwerveModuleState> publisher;
 
     ShuffleboardTab tuningTab = Shuffleboard.getTab("Tuning");
+
     String name;
 
     public SwerveModule(String name, int powerIdx, int steerIdx, int encoderIdx, ShuffleboardLayout container) {
         this.name = name;
+
         // instantiate
         powerController = new TalonFX(powerIdx, "Canivore");
         steerController = new TalonFX(steerIdx, "Canivore");
@@ -53,54 +50,48 @@ public class SwerveModule {
 
         //configure cancoder
         CANcoderConfiguration ccdConfigs = new CANcoderConfiguration();
+
         var cancoderConfig = analogEncoder.getConfigurator();
 
         ccdConfigs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
         ccdConfigs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
-
         if (name == "FrontLeft") {
             ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.FL_OFFSET;
-        } 
-
+        }
         if (name == "FrontRight") {
             ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.FR_OFFSET;
         }
-
         if (name == "BackLeft") {
-            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.BL_OFFSET; 
+            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.BL_OFFSET;
         }
-
         if (name == "BackRight") {
-            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.BR_OFFSET; 
+            ccdConfigs.MagnetSensor.MagnetOffset = Constants.Swerve.BR_OFFSET;
         }
 
         cancoderConfig.apply(ccdConfigs);
 
-
         //configure power
         TalonFXConfiguration powerConfig = new TalonFXConfiguration();
         var powerControllerConfig = powerController.getConfigurator();
-        
-        powerConfig.Slot0.kS = Constants.Swerve.POWER_kS; 
-        powerConfig.Slot0.kV = Constants.Swerve.POWER_kV;
-        powerConfig.Slot0.kA = Constants.Swerve.POWER_kA; 
-        powerConfig.Slot0.kP = Constants.Swerve.POWER_kP;
-        powerConfig.Slot0.kI = Constants.Swerve.POWER_kI; 
-        powerConfig.Slot0.kD = Constants.Swerve.POWER_kD; 
 
-        powerConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.DRIVE_GEAR_RATIO ; 
+        powerConfig.Slot0.kS = Constants.Swerve.POWER_kS;
+        powerConfig.Slot0.kV = Constants.Swerve.POWER_kV;
+        powerConfig.Slot0.kA = Constants.Swerve.POWER_kA;
+        powerConfig.Slot0.kP = Constants.Swerve.POWER_kP;
+        powerConfig.Slot0.kI = Constants.Swerve.POWER_kI;
+        powerConfig.Slot0.kD = Constants.Swerve.POWER_kD;
+
+        powerConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.DRIVE_GEAR_RATIO ;
+
         powerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        //TODO: do we need current limits?
         powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         powerConfig.CurrentLimits.StatorCurrentLimit = 60; //40
-
         powerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         powerConfig.CurrentLimits.SupplyCurrentLimit = 60;
 
         powerControllerConfig.apply(powerConfig);
-
 
         //configure steer
         TalonFXConfiguration steerConfig = new TalonFXConfiguration();
@@ -110,38 +101,34 @@ public class SwerveModule {
         steerConfig.Slot0.kV = Constants.Swerve.STEER_kV;
         steerConfig.Slot0.kA = Constants.Swerve.STEER_kA;
         steerConfig.Slot0.kP = Constants.Swerve.STEER_kP;
-        steerConfig.Slot0.kI = Constants.Swerve.STEER_kI; 
-        steerConfig.Slot0.kD = Constants.Swerve.STEER_kD; 
+        steerConfig.Slot0.kI = Constants.Swerve.STEER_kI;
+        steerConfig.Slot0.kD = Constants.Swerve.STEER_kD;
 
         steerConfig.Feedback.SensorToMechanismRatio = 1;
+
         steerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         steerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         steerConfig.CurrentLimits.StatorCurrentLimit = 60; //40
-
         steerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         steerConfig.CurrentLimits.SupplyCurrentLimit = 60;
 
-        steerConfig.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID(); 
+        steerConfig.Feedback.FeedbackRemoteSensorID = analogEncoder.getDeviceID();
         steerConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-
         steerConfig.ClosedLoopGeneral.ContinuousWrap = true;
-
         steerControllerConfig.apply(steerConfig);
 
         steerController.getPosition().refresh();
         analogEncoder.getAbsolutePosition().refresh();
-
         powerController.setPosition(0);
 
         Rotation2d initialStartingAngle = new Rotation2d(0);
+
         initialState = new SwerveModuleState(0, initialStartingAngle);
         this.setState(initialState);
 
-        //TODO: why?
         powerController.stopMotor();
         steerController.stopMotor();
-
         configDashboard(container);
         publisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
     }
@@ -156,7 +143,7 @@ public class SwerveModule {
     public double getEncoderPosition() {
         return powerController.getRotorPosition().getValueAsDouble();
     }
-    
+
     /** @return the state of the module (regarding the velocity and angle) */
     public SwerveModuleState getState() {
         return new SwerveModuleState(powerController.getVelocity().getValueAsDouble()*Constants.Swerve.WHEEL_CIRCUMFERENCE,
@@ -172,6 +159,7 @@ public class SwerveModule {
      */
     public SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
       var delta = desiredState.angle.minus(currentAngle);
+
       if (Math.abs(delta.getDegrees()) > 90.0) {
         return new SwerveModuleState(
             -desiredState.speedMetersPerSecond,
@@ -193,7 +181,7 @@ public class SwerveModule {
     public void resetEncoder() {
         powerController.setPosition(0);
     }
-    
+
     /** Sets motors to brake mode */
     public void brakeMode() {
         powerController.setNeutralMode(NeutralModeValue.Brake);
@@ -241,20 +229,14 @@ public class SwerveModule {
         container.addNumber("Current Angle in Deg", () -> this.getState().angle.getDegrees());
         //container.addDouble("Get Position", () -> backlegetPosition().getValueAsDouble());
     }
-   
     public void periodic() {
         publisher.set(getStates());
-
     }
-    
 }
-
 // public SwerveModulePosition getSteerRotation() {
 //     return new SwerveModulePosition(
 //         (steerController.getRotorPosition().getValueAsDouble()/Constants.Swerve.DRIVE_GEAR_RATIO)*Constants.Swerve.WHEEL_CIRCUMFERENCE, getState().angle);
 // }
-
 //public double getSteerPosition(){
 //return steerController.getPosition().getValue();
 //}
-

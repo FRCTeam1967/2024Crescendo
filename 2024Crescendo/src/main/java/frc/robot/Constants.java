@@ -53,10 +53,11 @@ public final class Constants {
     public static final int BL_POWER = 5, BL_STEER = 6, BL_ENCODER = 3;
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
-    public static final double FL_OFFSET = -132.275390625/360; //-134.560546875/360;
-    public static final double FR_OFFSET = 2.197265625/360;//107.40234375/360;
-    public static final double BL_OFFSET = 116.630859375/360; //116.630859375/360;
-    public static final double BR_OFFSET = -18.544921875/360; //-17.40234375/360;
+    public static final double FL_OFFSET = -131.3059375/360; //-132.275390625/360;
+    public static final double FR_OFFSET = 3.427734375/360;//2.197265625/360;
+    public static final double BL_OFFSET = 117.59765625/360; //117.59765625360;
+    public static final double BR_OFFSET = -17.138671875/360; //-18.544921875/360;
+    public static final int PIGEON_GYRO = 9;
 
     // public static final double FL_OFFSET = -132.01171875/360; //-134.560546875/360;
     // public static final double FR_OFFSET = 4.39453125/360;//107.40234375/360;

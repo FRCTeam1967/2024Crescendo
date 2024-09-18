@@ -18,22 +18,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Center Speaker to Note 2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "pivotDown"
-                }
-              }
-            ]
+            "name": "pivotDown"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Speaker to Note 2"
           }
         },
         {
