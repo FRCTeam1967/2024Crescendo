@@ -7,13 +7,12 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Shooter;
 
 public class ShootSpeaker extends Command {
   private Shooter shooter;
-  private Feeder feeder;
-  private double topVelocity, topAcceleration, bottomVelocity, bottomAcceleration;
+  private double velocity;
+  // private double acceleration;
   private boolean reachedShooterSpeed = false;
   
   /**
@@ -21,15 +20,12 @@ public class ShootSpeaker extends Command {
    * @param shooter - Shooter object
    * @param feeder - Feeder object
    */
-  public ShootSpeaker(Shooter shooter, Feeder feeder) {
+  public ShootSpeaker(Shooter shooter) {
     this.shooter = shooter;
-    this.feeder = feeder;
-    addRequirements(this.shooter, this.feeder);
+    addRequirements(this.shooter);
 
-    topVelocity = Constants.Shooter.SPEAKER_TOP_VELOCITY;
-    topAcceleration = Constants.Shooter.SPEAKER_TOP_ACCELERATION;
-    bottomVelocity = Constants.Shooter.SPEAKER_BOTTOM_VELOCITY;
-    bottomAcceleration = Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION;
+    velocity = Constants.Shooter.SPEAKER_VELOCITY;//change constants
+    // acceleration = Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION;
   }
 
   @Override
@@ -37,18 +33,16 @@ public class ShootSpeaker extends Command {
 
   @Override
   public void execute() {
-    shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
-    if (reachedShooterSpeed || shooter.getAverageTopVelocity() >= Constants.Shooter.THRESHOLD_SPEED*0.9) {
+    shooter.runShooter(velocity);
+    if (reachedShooterSpeed || Constants.Shooter.SPEAKER_VELOCITY >= Constants.Shooter.THRESHOLD_SPEED*0.9) {
       reachedShooterSpeed = true;
-      shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
-      feeder.feedFeeder(Constants.Feeder.FEED_SPEED);
+      shooter.runShooter(velocity);
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    shooter.stopMotors();
-    feeder.stopFeeder();
+    shooter.stop();
   }
 
   @Override
