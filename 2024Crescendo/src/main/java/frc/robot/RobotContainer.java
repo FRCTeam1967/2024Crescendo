@@ -68,7 +68,8 @@ public class RobotContainer {
   public static boolean redAlliance;
 
   public RobotContainer() {
-    NamedCommands.registerCommand("pivotDown", new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
+    NamedCommands.registerCommand("pivotSequence", new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
+    NamedCommands.registerCommand("pivotDown", new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
     NamedCommands.registerCommand("pivotUp", new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE).withTimeout(Constants.Auto.PIVOT_UP_TIMEOUT));
     NamedCommands.registerCommand("shootSpeaker", new ShootSpeaker(shooter, feeder).withTimeout(2.0));
     
@@ -116,6 +117,10 @@ public class RobotContainer {
     ampBar.setpoint.position = 0;
     ampBar.goal.velocity = 0;
     ampBar.goal.position = 0;
+  }
+
+  public void movePivotSafe() {
+    new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE);
   }
   
   private void configureBindings() {

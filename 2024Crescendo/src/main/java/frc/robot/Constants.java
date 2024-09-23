@@ -138,7 +138,7 @@ public final class Constants {
   }
 
   public static class Auto {
-    public static final double PIVOT_INTAKE_TIMEOUT = 1.0, PIVOT_UP_TIMEOUT = 2.0, SHOOT_SPEAKER_TIMEOUT = 3.0; //pivot timeout: 2
+    public static final double PIVOT_INTAKE_TIMEOUT = 2.0, PIVOT_UP_TIMEOUT = 2.0, SHOOT_SPEAKER_TIMEOUT = 3.0; //pivot timeout: 2
     public static final double kMaxSpeedMetersPerSecond = 0.5;
     public static final double kMaxAccelerationMetersPerSecondSquared = 0.25;
     public static final double kMaxAngularSpeedDegreesPerSecond = 180;

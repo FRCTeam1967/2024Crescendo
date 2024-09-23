@@ -12,19 +12,13 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Center Speaker to Note 2"
+                  "name": "shootSpeaker"
                 }
               },
               {
@@ -43,7 +37,26 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "pivotUp"
+                  "name": "pivotSequence"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center Speaker to Note 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotSequence"
                 }
               },
               {
@@ -74,7 +87,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "pivotDown"
+                  "name": "pivotSequence"
                 }
               }
             ]
@@ -85,15 +98,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Note 1 to Center Speaker"
+                  "name": "pivotSequence"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "pivotUp"
+                  "pathName": "Note 1 to Center Speaker"
                 }
               }
             ]
@@ -108,6 +121,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "3 Notes",
   "choreoAuto": false
 }

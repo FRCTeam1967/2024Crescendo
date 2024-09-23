@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import com.reduxrobotics.canand.CanandEventLoop;
+import frc.robot.commands.MovePivot;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -85,6 +86,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // m_robotContainer.resetSwerveGyro();
     // m_robotContainer.resetSensors();
+    m_robotContainer.movePivotSafe();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     m_robotContainer.swerve.setNeutralMode(true);

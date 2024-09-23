@@ -12,21 +12,22 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "shootSpeaker"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pivotDown"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Speaker to Note 2"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotDown"
+                }
+              }
+            ]
           }
         },
         {
@@ -36,7 +37,26 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "pivotUp"
+                  "name": "pivotSequence"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center Speaker to Note 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotSequence"
                 }
               },
               {
@@ -67,7 +87,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "pivotDown"
+                  "name": "pivotSequence"
                 }
               }
             ]
@@ -78,15 +98,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Note 3 to Center Speaker"
+                  "name": "pivotSequence"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "pivotUp"
+                  "pathName": "Note 3 to Center Speaker"
                 }
               }
             ]
@@ -101,6 +121,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "3 Notes",
   "choreoAuto": false
 }
