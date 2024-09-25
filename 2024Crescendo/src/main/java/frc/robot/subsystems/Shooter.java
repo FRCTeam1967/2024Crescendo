@@ -15,22 +15,23 @@ public class Shooter extends SubsystemBase {
 
   /** Creates a new Shooter. */
   public Shooter() {
-    topMotor.restoreFactoryDefaults();
-    bottomMotor.restoreFactoryDefaults();
-
     topMotor = new CANSparkMax(Constants.Shooter.TOP_MOTOR_ID, MotorType.kBrushed);
     bottomMotor = new CANSparkMax(Constants.Shooter.BOTTOM_MOTOR_ID, MotorType.kBrushed);
 
-  }
+    topMotor.restoreFactoryDefaults();
+    bottomMotor.restoreFactoryDefaults();
+
+  } 
 
   /**
    * Run all shooter motors at inputted velocities/accelerations
-   * @param topSpeed - percentage of full power (1.0)
-   * @param bottomSpeed - percentage of full power (1.0)
+   * @param topVelocity - velocity for top wheels
+   * @param bottomVelocity - velocity for bottom wheels
    */
-  public void runShooter(double speed) {
-    topMotor.set(speed);
-    bottomMotor.set(speed);
+  public void runShooter(double topVelocity, double bottomVelocity) {
+    topMotor.set(topVelocity);
+    bottomMotor.set(bottomVelocity);
+    
   }
 
   /*public void runTopPID(double topVelocity, double topAcceleration, double bottomSpeed) {

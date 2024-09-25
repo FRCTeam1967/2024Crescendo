@@ -13,7 +13,7 @@ public final class Constants {
   }
 
   public static class Shooter {
-    public static final int TOP_MOTOR_ID = 20, BOTTOM_MOTOR_ID = 22; //change
+    public static final int TOP_MOTOR_ID = 13, BOTTOM_MOTOR_ID = 14; 
     
     public static final double SPEAKER_VELOCITY = 90.0;
     public static final double THRESHOLD_SPEED = 80;

@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
-import com.pathplanner.lib.auto.NamedCommands;
-
 import com.reduxrobotics.canand.CanandEventLoop;
 
 import frc.robot.commands.*;
@@ -36,8 +34,6 @@ public class RobotContainer {
 
 
   public RobotContainer() {
-    NamedCommands.registerCommand("shootSpeaker", new ShootSpeaker(shooter).withTimeout(2.0));
-    
 
     CanandEventLoop.getInstance();
 
@@ -49,7 +45,8 @@ public class RobotContainer {
   
   private void configureBindings() {
     //DEFAULT COMMANDS
-    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new RunShooter(shooter));
+    operatorController.leftTrigger().or(operatorController.rightTrigger()).whileTrue(new RunShooter(shooter, Constants.Shooter.SPEAKER_VELOCITY));
+    operatorController.leftBumper().or(operatorController.rightBumper()).whileTrue(new RunShooter(shooter, -Constants.Shooter.SPEAKER_VELOCITY));
     //shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
   }
 }
