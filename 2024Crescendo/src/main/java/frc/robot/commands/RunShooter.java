@@ -34,13 +34,13 @@ public class RunShooter extends Command {
 
   @Override
   public void execute() { 
-    /*shooter.runShooter(velocity, 0); //change second to negative if inverted after testing
+    shooter.runShooter(velocity, 0); //change second to negative if inverted after testing
     if (reachedShooterSpeed || Constants.Shooter.SPEAKER_VELOCITY >= Constants.Shooter.THRESHOLD_SPEED*0.9) {
       reachedShooterSpeed = true;
       shooter.runShooter(velocity, velocity);
-    }*/
+    }
 
-    shooter.runShooter(velocity, velocity);
+    //shooter.runShooter(velocity, velocity);
 
   }
 
