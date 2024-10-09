@@ -37,19 +37,19 @@ public final class Constants {
     public static final double BR_OFFSET = -153.45703125/360; //-175.78125/360;
 
     //pid values
-    public static final double POWER_kS = 0.14;//0.14; 
-    public static final double POWER_kV = 12/(100/8.14); //1.25; 
+    public static final double POWER_kS = 0.14;//0.14; //TODO: redo this it didnt save
+    public static final double POWER_kV = 0.33;//12/(100/8.14); //1.25; 
     public static final double POWER_kA = 0; 
-    public static final double POWER_kP = POWER_kV * 0.8; //0.25;
+    public static final double POWER_kP = 0;//0.01;//POWER_kV * 0.8; //0.25;
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
     public static final double STEER_kS = 0; //0.1
     public static final double STEER_kV = 0; //30
     public static final double STEER_kA = 0; // 15
-    public static final double STEER_kP = 12; //100
+    public static final double STEER_kP = 0;//12; //100
     public static final double STEER_kI = 0;
-    public static final double STEER_kD = 0.5;
+    public static final double STEER_kD = 0;//0.5;
 
     //gear ratios + meter conversions
     public static final double STEER_GEAR_RATIO = 150.0/7.0;
@@ -106,8 +106,8 @@ public final class Constants {
     public static final double RADIANS_TO_DEGREES = 180.0/Math.PI;
   } 
   public static class Shooter {
-    public static final int TOP_LEFT_MOTOR_ID = 20, TOP_RIGHT_MOTOR_ID = 21;
-    public static final int BOTTOM_LEFT_MOTOR_ID = 19, BOTTOM_RIGHT_MOTOR_ID = 22;
+    public static final int TOP_MOTOR_ID = 13;
+    public static final int BOTTOM_MOTOR_ID = 14;
 
     public static final double kP = 0.32, kI = 0, kD = 0, kV = 0.07, kA = 0.06;
     

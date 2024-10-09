@@ -11,7 +11,7 @@ import frc.robot.subsystems.Shooter;
 public class RunShooter extends Command {
   private Shooter shooter;
   private double topVelocity, topAcceleration,  bottomVelocity, bottomAcceleration;
-  
+  private boolean reachedShooterSpeed;
   /**
    * Creates a new RunShooter
    * @param shooter - Shooter object
@@ -40,6 +40,10 @@ public class RunShooter extends Command {
   @Override
   public void execute() {
     shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
+    if (reachedShooterSpeed || shooter.getTopVelocity() >= Constants.Shooter.THRESHOLD_SPEED*0.9) {
+      reachedShooterSpeed = true;
+      shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
+    }
   }
 
   @Override

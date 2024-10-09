@@ -13,14 +13,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
-  private TalonFX topLeftMotor, topRightMotor, bottomLeftMotor, bottomRightMotor;
+  private TalonFX topMotor, bottomMotor;
 
   /** Creates a new Shooter. */
   public Shooter() {
-    topLeftMotor = new TalonFX(Constants.Shooter.TOP_LEFT_MOTOR_ID);
-    topRightMotor = new TalonFX(Constants.Shooter.TOP_RIGHT_MOTOR_ID);
-    bottomLeftMotor = new TalonFX(Constants.Shooter.BOTTOM_LEFT_MOTOR_ID);
-    bottomRightMotor = new TalonFX(Constants.Shooter.BOTTOM_RIGHT_MOTOR_ID);
+    topMotor = new TalonFX(Constants.Shooter.TOP_MOTOR_ID);
+    bottomMotor = new TalonFX(Constants.Shooter.BOTTOM_MOTOR_ID);
 
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.Slot0.kP = Constants.Shooter.kP;
@@ -36,10 +34,8 @@ public class Shooter extends SubsystemBase {
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-    topLeftMotor.getConfigurator().apply(config);
-    topRightMotor.getConfigurator().apply(config);
-    bottomLeftMotor.getConfigurator().apply(config);
-    bottomRightMotor.getConfigurator().apply(config);
+    topMotor.getConfigurator().apply(config);
+    bottomMotor.getConfigurator().apply(config);
   }
 
   /**
@@ -48,17 +44,13 @@ public class Shooter extends SubsystemBase {
    * @param bottomSpeed - percentage of full power (1.0)
    */
   public void runNoPID(double topSpeed, double bottomSpeed) {
-    topLeftMotor.set(-topSpeed);
-    topRightMotor.set(topSpeed);
-    bottomLeftMotor.set(-bottomSpeed);
-    bottomRightMotor.set(bottomSpeed);
+    topMotor.set(topSpeed);
+    bottomMotor.set(topSpeed);
   }
 
   public void runShooter(double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration) {
-    topLeftMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
-    topRightMotor.setControl(new VelocityVoltage(topVelocity, topAcceleration, false, 0.0, 0, false, false, false));
-    bottomLeftMotor.setControl(new VelocityVoltage(-bottomVelocity, -bottomAcceleration, false, 0.0, 0, false, false, false));
-    bottomRightMotor.setControl(new VelocityVoltage(bottomVelocity, bottomAcceleration, false, 0.0, 0, false, false, false));
+    topMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
+    bottomMotor.setControl(new VelocityVoltage(topVelocity, topAcceleration, false, 0.0, 0, false, false, false));
   }
 
   /*public void runTopPID(double topVelocity, double topAcceleration, double bottomSpeed) {
@@ -72,26 +64,22 @@ public class Shooter extends SubsystemBase {
    * Stops all shooter motors
    */
   public void stopMotors() {
-    topLeftMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
-    topRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
-    bottomLeftMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
-    bottomRightMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
+    topMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
+    bottomMotor.setControl(new VelocityVoltage(0, 0, false, 0.0, 0, false, false, false));
   }
 
   public void configDashboard(ShuffleboardTab tab) {
     tab.addDouble("Average Velocity", ()->getAverageVelocity());
-    tab.addDouble("Top Left", ()->getMotorVelocity(topLeftMotor));
-    tab.addDouble("Top Right", ()->getMotorVelocity(topRightMotor));
-    tab.addDouble("Bottom Left", ()->getMotorVelocity(bottomLeftMotor));
-    tab.addDouble("Bottom Right", ()->getMotorVelocity(bottomRightMotor));
+    tab.addDouble("Top Left", ()->getMotorVelocity(topMotor));
+    tab.addDouble("Top Right", ()->getMotorVelocity(bottomMotor));
   }
 
   public double getAverageVelocity(){
-    return (getMotorVelocity(topLeftMotor) + getMotorVelocity(topRightMotor) + getMotorVelocity(bottomLeftMotor) + getMotorVelocity(bottomRightMotor))/4.0;
+    return (getMotorVelocity(topMotor) + getMotorVelocity(bottomMotor))/4.0;
   }
 
-  public double getAverageTopVelocity(){
-    return (getMotorVelocity(topLeftMotor) + getMotorVelocity(topRightMotor))/2.0;
+  public double getTopVelocity(){
+    return getMotorVelocity(topMotor);
   }
 
   public double getMotorVelocity(TalonFX motor){
