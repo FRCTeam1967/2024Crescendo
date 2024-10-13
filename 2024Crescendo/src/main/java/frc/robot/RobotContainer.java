@@ -57,7 +57,7 @@ public class RobotContainer {
   private final Intake intake = new Intake();  
   private final Shooter shooter = new Shooter();
   private final Feeder feeder = new Feeder();
-  private final Vision vision = new Vision();
+  private final Vision vision = new Vision(swerve);
   private SendableChooser<Command> autoChooserLOL;
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
@@ -226,7 +226,7 @@ public class RobotContainer {
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();
     swerve.backRight.resetEncoder();
-    swerve.m_poseEstimator.update(swerve.getRotation2d(), new SwerveModulePosition[] {
+    swerve.poseEstimator.update(swerve.getRotation2d(), new SwerveModulePosition[] {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;
   }
