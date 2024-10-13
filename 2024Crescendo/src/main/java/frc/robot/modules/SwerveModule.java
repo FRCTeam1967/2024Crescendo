@@ -3,6 +3,7 @@ import java.util.Map;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.EmptyControl;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -12,6 +13,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import edu.wpi.first.math.MathUtil;
 // import statements
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -25,7 +28,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.MathHelper;
 import frc.robot.subsystems.Swerve;
+
 public class SwerveModule {
     private TalonFX powerController;
     private TalonFX steerController;
@@ -39,6 +44,10 @@ public class SwerveModule {
     ShuffleboardTab tuningTab = Shuffleboard.getTab("Tuning");
 
     String name;
+
+    // Phoenix suggests that control requests be created statically, and then use the builder pattern to modify them
+    // as needed.
+    private final EmptyControl idleControlRequest = new EmptyControl();
 
     public SwerveModule(String name, int powerIdx, int steerIdx, int encoderIdx, ShuffleboardLayout container) {
         this.name = name;
@@ -86,8 +95,13 @@ public class SwerveModule {
 
         powerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
+        // Stator current limits limit acceleration because it's measured at the voltage the motor
+        // is operating at. 40A @ 12V is the same power as 80A @ 6V.
         powerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         powerConfig.CurrentLimits.StatorCurrentLimit = 40; //60
+
+        // Supply current limits limit power draw from the battery and help prevent brownouts. They are 
+        // always relative to the supply voltage, nominally 12V.
         powerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         powerConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
@@ -171,9 +185,28 @@ public class SwerveModule {
 
     /** Sets modules to optimized state */
     public void setState(SwerveModuleState state) {
-        var optimized = optimize(state, (this.getState().angle));
+        Rotation2d currentAngle = this.getState().angle;
+        var optimized = optimize(state, currentAngle);
         double velocityToSet = optimized.speedMetersPerSecond;
-        steerController.setControl(new PositionVoltage(optimized.angle.getRotations(), 0.0, false, 0.0, 0, false, false, false));
+        if (Constants.ExperimentalFeatures.disableRotationWhenNotMoving && MathHelper.epsilonEquals(velocityToSet, 0.0)) {
+            // Only command the steer controller to move if the robot is trying to move
+            // Maybe we should be commanding it to keep it's current position instead in this case? 
+            steerController.setControl(idleControlRequest);
+        } else {
+            steerController.setControl(new PositionVoltage(optimized.angle.getRotations(), 0.0, false, 0.0, 0, false, false, false));
+        }
+
+        if (Constants.ExperimentalFeatures.useCosineCompensation) {
+            double compensationFactor = optimized.angle.minus(currentAngle).getCos();
+            velocityToSet *= compensationFactor;
+        }
+
+        // Rather than creating new objects here and above, Phoenix's recommendation would be to have a final value in the class
+        // definition above like:
+        //     private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0);
+        // And then use the builder pattern here to adjust it like so:
+        //     powerController.setControl(velocityRequest.withVelocity(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE));
+        // That saves on creating new objects every iteration, which Java isn't particular great with.
         powerController.setControl(new VelocityVoltage(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE, 0.0, false, 0.0, 0, false, false, false));
     }
 
