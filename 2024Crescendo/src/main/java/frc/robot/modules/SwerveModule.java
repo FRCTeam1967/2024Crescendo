@@ -188,8 +188,10 @@ public class SwerveModule {
         Rotation2d currentAngle = this.getState().angle;
         var optimized = optimize(state, currentAngle);
         double velocityToSet = optimized.speedMetersPerSecond;
+
         if (Constants.ExperimentalFeatures.disableRotationWhenNotMoving && MathHelper.epsilonEquals(velocityToSet, 0.0)) {
-            // Only command the steer controller to move if the robot is trying to move
+            // Only command the steer controller to move if the robot is trying to move. It's important that this
+            // be checked *before* adjusting the speed of the wheel based on cosine compensation.
             // Maybe we should be commanding it to keep it's current position instead in this case? 
             steerController.setControl(idleControlRequest);
         } else {
