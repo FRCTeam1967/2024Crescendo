@@ -1,5 +1,4 @@
 package frc.robot.modules;
-import java.util.Map;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -14,26 +13,25 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import edu.wpi.first.math.MathUtil;
 // import statements
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.MathHelper;
-import frc.robot.subsystems.Swerve;
 
 public class SwerveModule {
     private TalonFX powerController;
     private TalonFX steerController;
+
+    private final PositionVoltage positionRequest = new PositionVoltage(0.0);
+    private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0);
 
     public CANcoder analogEncoder;
 
@@ -181,7 +179,7 @@ public class SwerveModule {
       } else {
         return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
       }
-    }
+    }    
 
     /** Sets modules to optimized state */
     public void setState(SwerveModuleState state) {
@@ -190,26 +188,20 @@ public class SwerveModule {
         double velocityToSet = optimized.speedMetersPerSecond;
 
         if (Constants.ExperimentalFeatures.disableRotationWhenNotMoving && MathHelper.epsilonEquals(velocityToSet, 0.0)) {
-            // Only command the steer controller to move if the robot is trying to move. It's important that this
-            // be checked *before* adjusting the speed of the wheel based on cosine compensation.
-            // Maybe we should be commanding it to keep it's current position instead in this case? 
+            /* Only command the steer controller to move if the robot is trying to move. It's important that this
+            be checked *before* adjusting the speed of the wheel based on cosine compensation.
+            Maybe we should be commanding it to keep it's current position instead in this case? */
             steerController.setControl(idleControlRequest);
+            // steerController.setControl(positionRequest.withPosition(currentAngle.getRotations()));
         } else {
-            steerController.setControl(new PositionVoltage(optimized.angle.getRotations(), 0.0, false, 0.0, 0, false, false, false));
+            steerController.setControl(positionRequest.withPosition(optimized.angle.getRotations()));
         }
 
         if (Constants.ExperimentalFeatures.useCosineCompensation) {
             double compensationFactor = optimized.angle.minus(currentAngle).getCos();
             velocityToSet *= compensationFactor;
         }
-
-        // Rather than creating new objects here and above, Phoenix's recommendation would be to have a final value in the class
-        // definition above like:
-        //     private final VelocityVoltage velocityRequest = new VelocityVoltage(0.0);
-        // And then use the builder pattern here to adjust it like so:
-        //     powerController.setControl(velocityRequest.withVelocity(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE));
-        // That saves on creating new objects every iteration, which Java isn't particular great with.
-        powerController.setControl(new VelocityVoltage(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE, 0.0, false, 0.0, 0, false, false, false));
+        powerController.setControl(velocityRequest.withVelocity(velocityToSet/Constants.Swerve.WHEEL_CIRCUMFERENCE));
     }
 
     /** Resets power encoder to zero rotations */

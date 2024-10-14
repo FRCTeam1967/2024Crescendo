@@ -1,37 +1,32 @@
 package frc.robot.subsystems;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.math.filter.SlewRateLimiter;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.modules.SwerveModule;
 public class Swerve extends SubsystemBase{
   public final SwerveModule frontLeft, frontRight, backLeft, backRight;
-
-  private final ADIS16470_IMU gyro;
-  private final Pigeon2 pGyro;
+  private final Pigeon2 gyro;
 
   private Pose2d pose;
 
   public final SwerveDriveOdometry odometry;
-  public final SwerveDriveOdometry pOdometry;
 
   private Field2d field = new Field2d();
 
@@ -51,16 +46,11 @@ public class Swerve extends SubsystemBase{
       .withSize(2, 4)
       .withPosition(6, 0));
 
-    gyro = new ADIS16470_IMU();
-    pGyro = new Pigeon2(Constants.Swerve.PIGEON_GYRO, "Canivore");
+    gyro = new Pigeon2(Constants.Swerve.PIGEON_GYRO, "Canivore");
     //TODO: make sure to update canivore
 
     //driveTrainTab.add("field", field).withSize(8, 5).withPosition(1, 1);
     odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(),
-    new SwerveModulePosition[] {
-        frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
-    });
-    pOdometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, pGetRotation2d(),
     new SwerveModulePosition[] {
         frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
     });
@@ -69,7 +59,7 @@ public class Swerve extends SubsystemBase{
     AutoBuilder.configureHolonomic(
       this::getPose, // Robot pose supplier
       // this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-      this::resetpOdometry,
+      this::resetOdometry,
       this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       this::driveRobotRelative , // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
@@ -98,14 +88,9 @@ public class Swerve extends SubsystemBase{
     return pose;
   }
 
-  /** @return Rotation2d object with desired angle based on degrees from gyro */
-  public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(gyro.getAngle(gyro.getYawAxis()));
-  }
-
   /** @return The degrees of pigeon gyro (heading of the robot) as a Rotation2d */
-  public Rotation2d pGetRotation2d() {
-    return pGyro.getRotation2d();
+  public Rotation2d getRotation2d() {
+    return gyro.getRotation2d();
   }
 
   public SwerveModuleState[] getModuleStates() {
@@ -151,19 +136,9 @@ public class Swerve extends SubsystemBase{
     odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
   }
 
-  /** Resets robot position on the field (with pigeon gyro) */
-  public void resetpOdometry (Pose2d pose) {
-    pOdometry.resetPosition(pGetRotation2d(), getModulePositions(), pose);
-  }
-
-  /** Sets gyro angle to 0 */
-  public void resetGyro () {
-    gyro.setGyroAngle(gyro.getYawAxis(), 0);
-  }
-
   /** Resets pigeon gyro to 0 */
-  public void resetpGyro () {
-    pGyro.reset();
+  public void resetGyro () {
+    gyro.reset();
   }
 
   /** Turns wheels inwards and sets to brake mode for defense */
@@ -215,9 +190,8 @@ public class Swerve extends SubsystemBase{
     tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
     tab.addDouble("Pose position x", () -> getPose().getX());
     tab.addDouble("Pose position y", () -> getPose().getY());
-    tab.addDouble("Gyro Yaw Axis", () -> gyro.getAngle(gyro.getYawAxis()));
     tab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());
-    tab.addDouble("Pigeon Gyro Angle", () -> pGyro.getAngle());
+    tab.addDouble("Pigeon Gyro Angle", () -> gyro.getAngle());
     tab.addDouble("Encoder Meters Moved", () -> getEncoderPosition() * Constants.Swerve.METERS_TO_ENC_COUNT);
     tab.addDouble("FR Distance Meters", ()-> frontRight.getPosition().distanceMeters);
     tab.addDouble("FL Distance Meters", ()-> frontLeft.getPosition().distanceMeters);
@@ -240,12 +214,12 @@ public class Swerve extends SubsystemBase{
     // pose = odometry.update(getRotation2d(), new SwerveModulePosition[] {
     //   frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
     // });
-    pose = pOdometry.update(pGetRotation2d(), new SwerveModulePosition[] {
+    pose = odometry.update(getRotation2d(), new SwerveModulePosition[] {
       frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
     });
     //System.out.println(pose);
     SmartDashboard.putData("Field", field);
     // field.setRobotPose(odometry.getPoseMeters());
-    field.setRobotPose(pOdometry.getPoseMeters());
+    field.setRobotPose(odometry.getPoseMeters());
   }
 }

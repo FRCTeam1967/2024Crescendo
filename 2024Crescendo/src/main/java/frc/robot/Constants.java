@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public final class Constants {
   public static class Xbox { 
@@ -197,14 +196,14 @@ public final class Constants {
   }
 
   public static class ExperimentalFeatures {
-    public static final boolean useCosineCompensation = false;
-    public static final boolean disableRotationWhenNotMoving = false;
+    public static final boolean useCosineCompensation = true;
+    public static final boolean disableRotationWhenNotMoving = true;
     public static final boolean applyDriverDeadband = false;
 
     // Setting this to true because that's how the code works, but there's no reason to do this AFAICT, and
     // it causes unnecessary CAN traffic. Each call to the 4 modules is BLOCKING. CTRE says:
     // "We recommend that users avoid calling this API periodically"
     // So this should really be set to FALSE.
-    public static final boolean applyNeutralModeConstantlyInAuto = true;
+    public static final boolean applyNeutralModeConstantlyInAuto = false;
   }
 }

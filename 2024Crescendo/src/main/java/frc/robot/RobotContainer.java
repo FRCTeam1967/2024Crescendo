@@ -4,48 +4,49 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import java.util.Optional;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.reduxrobotics.canand.CanandEventLoop;
+
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.DoubleSupplier;
-
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-
-import com.reduxrobotics.canand.CanandEventLoop;
-
-import frc.robot.commands.*;
-import frc.robot.Constants.*;
+import frc.robot.Constants.Xbox;
+import frc.robot.commands.AmpReverse;
+import frc.robot.commands.LowerClimbUntilLatch;
+import frc.robot.commands.ManualClimb;
+import frc.robot.commands.MoveAmpBar;
+import frc.robot.commands.MovePivot;
+import frc.robot.commands.ReverseBeamFeeder;
+import frc.robot.commands.RumbleController;
+import frc.robot.commands.RunFeeder;
+import frc.robot.commands.RunIntake;
+import frc.robot.commands.RunPivotIntakeBeam;
+import frc.robot.commands.RunShooter;
+import frc.robot.commands.ShootSpeaker;
+import frc.robot.commands.SwerveDrive;
+import frc.robot.commands.VisionAlign;
+import frc.robot.commands.VisionAlignZ;
+import frc.robot.commands.WallSnapDrive;
 import frc.robot.subsystems.AmpBar;
 import frc.robot.subsystems.Climb;
-import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
@@ -71,7 +72,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("pivotSequence", new RunPivotIntakeBeam(pivot, intake, feeder).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
     NamedCommands.registerCommand("pivotDown", new MovePivot(pivot, Constants.Pivot.INTAKE_DOWN).withTimeout(Constants.Auto.PIVOT_INTAKE_TIMEOUT));
     NamedCommands.registerCommand("pivotUp", new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE).withTimeout(Constants.Auto.PIVOT_UP_TIMEOUT));
-    NamedCommands.registerCommand("shootSpeaker", new ShootSpeaker(shooter, feeder).withTimeout(2.0));
+    NamedCommands.registerCommand("shootSpeaker", new ShootSpeaker(shooter, feeder).withTimeout(1.0));
     
     resetSensors();
 
@@ -136,7 +137,7 @@ public class RobotContainer {
     //shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
     //CHASSIS
-    driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
+    driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
     driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
     
@@ -144,9 +145,19 @@ public class RobotContainer {
 
     driverController.y().onTrue(new VisionAlignZ(swerve, vision));
 
-    driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
+    driverController.povLeft().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
     //adjust for blue alliance
-    driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
+    driverController.povRight().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
+
+     //INTAKE + PIVOT + FEEDER - testing with one joystick
+    driverController.leftTrigger().or(driverController.rightTrigger()).whileTrue(new SequentialCommandGroup(
+      new RunPivotIntakeBeam(pivot, intake, feeder),
+      new ReverseBeamFeeder(feeder),
+      new RumbleController(driverController, operatorController).withTimeout(2)
+    ));
+    
+    driverController.leftTrigger().or(driverController.rightTrigger()).whileFalse(new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE));
+    driverController.rightBumper().whileTrue(new ParallelCommandGroup(new RunIntake(intake, -Constants.Intake.INTAKE_ROLLER_SPEED), new RunFeeder(feeder, -Constants.Feeder.FEED_SPEED)));
 
     // driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
 
@@ -188,13 +199,13 @@ public class RobotContainer {
 
   public void resetSensors() {
     // swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
-    swerve.resetpOdometry(new Pose2d(0.0, 0.0, swerve.pGetRotation2d()));
+    swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
 
     swerve.frontLeft.resetEncoder();
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();
     swerve.backRight.resetEncoder();
-    swerve.pOdometry.update(swerve.pGetRotation2d(), new SwerveModulePosition[] {
+    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;
     // swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {

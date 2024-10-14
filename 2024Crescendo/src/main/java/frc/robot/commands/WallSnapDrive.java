@@ -32,7 +32,7 @@ public class WallSnapDrive extends Command {
 
   private double currentHeading() {
     // return swerve.getRotation2d().getDegrees();
-    return swerve.pGetRotation2d().getDegrees();
+    return swerve.getRotation2d().getDegrees();
   }
 
   public void initialize() {
@@ -56,7 +56,7 @@ public class WallSnapDrive extends Command {
         double desiredHeading = headingSupplier.getAsDouble() != -1 ? (headingSupplier.getAsDouble()-180) : lastHeading;
         double rotSpeed = angleController.calculate(currentHeading(), desiredHeading);
 
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, swerve.pGetRotation2d());
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, swerve.getRotation2d());
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
         swerve.setModuleStates(moduleState);
@@ -67,7 +67,7 @@ public class WallSnapDrive extends Command {
         double desiredHeading = headingSupplier.getAsDouble() != -1 ? headingSupplier.getAsDouble() : lastHeading;
         double rotSpeed = angleController.calculate(currentHeading(), desiredHeading);
 
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, swerve.pGetRotation2d());
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, swerve.getRotation2d());
         SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
         swerve.setModuleStates(moduleState);
