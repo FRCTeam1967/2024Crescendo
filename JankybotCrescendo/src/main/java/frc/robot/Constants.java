@@ -37,17 +37,17 @@ public final class Constants {
     public static final double BR_OFFSET = -153.45703125/360; //-175.78125/360;
 
     //pid values
-    public static final double POWER_kS = 0.14;//0.14; //TODO: redo this it didnt save
-    public static final double POWER_kV = 0.33;//12/(100/8.14); //1.25; 
+    public static final double POWER_kS = 0.14;//0.14; 
+    public static final double POWER_kV = 0.7157;//12/(100/8.14); //1.25; 
     public static final double POWER_kA = 0; 
-    public static final double POWER_kP = 0;//0.01;//POWER_kV * 0.8; //0.25;
+    public static final double POWER_kP = 0.1;//0.01;//POWER_kV * 0.8; //0.25; //add a really big p and decrease until its just under where it jitters
     public static final double POWER_kI = 0;
     public static final double POWER_kD = 0;
 
-    public static final double STEER_kS = 0; //0.1
+    public static final double STEER_kS = 0.1; //0.1
     public static final double STEER_kV = 0; //30
     public static final double STEER_kA = 0; // 15
-    public static final double STEER_kP = 0;//12; //100
+    public static final double STEER_kP = 10;//12; //100
     public static final double STEER_kI = 0;
     public static final double STEER_kD = 0;//0.5;
 
@@ -114,16 +114,17 @@ public final class Constants {
     public static final double A_TOP_SPEED = 0.162;
     public static final double A_BOTTOM_SPEED = 0.162;
     
-    public static final double AMP_TOP_VELOCITY = 12, AMP_TOP_ACCELERATION = 14;
-    public static final double AMP_BOTTOM_VELOCITY = 12, AMP_BOTTOM_ACCELERATION = 14;
+    public static final double AMP_TOP_VELOCITY = 28, AMP_TOP_ACCELERATION = 24;
+    public static final double AMP_BOTTOM_VELOCITY = 28, AMP_BOTTOM_ACCELERATION = 24;
     
     public static final double S_TOP_SPEED = 1;
     public static final double S_BOTTOM_SPEED = 1;
     
-    public static final double SPEAKER_TOP_VELOCITY = 80, SPEAKER_TOP_ACCELERATION = 70;
-    public static final double SPEAKER_BOTTOM_VELOCITY = 60, SPEAKER_BOTTOM_ACCELERATION = 50;
+    public static final double SPEAKER_TOP_VELOCITY = 120, SPEAKER_TOP_ACCELERATION = 120;
+    public static final double SPEAKER_BOTTOM_VELOCITY = 90, SPEAKER_BOTTOM_ACCELERATION = 100;
     
-    public static final double THRESHOLD_SPEED = 80;
+    public static final double THRESHOLD_SPEED = 120;
+    public static final double TIME = 1.0;
   }
   public static class AmpBar { //TODO: change values!
     public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;

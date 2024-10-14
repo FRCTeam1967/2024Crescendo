@@ -45,6 +45,7 @@ import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
   public final Swerve swerve = new Swerve();
+  public final Shooter shooter = new Shooter();
   private SendableChooser<Command> autoChooserLOL;
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
@@ -76,38 +77,34 @@ public class RobotContainer {
 
   private void configureBindings() {
     //DEFAULT COMMANDS
-    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
-      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
+   swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
+     () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
 
     //CHASSIS
     // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
-    //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
+    driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
     // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
     
     // driverController.b().onTrue(new VisionAlign(swerve, vision));
 
     // driverController.y().onTrue(new VisionAlignZ(swerve, vision));
 
-    driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
+    //driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
     //adjust for blue alliance
-    driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
+    // driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
 
-    driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
+    // driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
 
-    driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
+    // driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
 
-    driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
+    // driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
 
-    driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
+    // driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
   // //SHOOTER
-  // operatorController.y().whileTrue(new ShootSpeaker(shooter, feeder));
-  // operatorController.b().whileTrue(new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1.5));
-  // operatorController.a().onTrue(new SequentialCommandGroup(
-  //   new AmpReverse(swerve,redAlliance),
-  //   new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new RunShooter(shooter, false)).withTimeout(1)
-  // ));
-  // operatorController.start().whileTrue(new RunShooter(shooter, false));
+    // operatorController.y().whileTrue(new RunShooter(shooter, true));
+    // operatorController.a().whileTrue(new RunShooter(shooter, false));
+    // operatorController.rightTrigger().whileTrue(new RunIntake(-Constants.Shooter.SPEAKER_TOP_ACCELERATION, shooter));
   
   }
 

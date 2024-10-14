@@ -4,14 +4,22 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
+
+
 
 public class RunShooter extends Command {
   private Shooter shooter;
   private double topVelocity, topAcceleration,  bottomVelocity, bottomAcceleration;
   private boolean reachedShooterSpeed;
+  private Timer timer;
+  private boolean speaker;
+
+
+
   /**
    * Creates a new RunShooter
    * @param shooter - Shooter object
@@ -19,7 +27,9 @@ public class RunShooter extends Command {
    */
   public RunShooter(Shooter shooter, boolean speaker) {
     this.shooter = shooter;
+    this.speaker = speaker;
     addRequirements(this.shooter);
+    timer = new Timer();
 
     if(speaker){
       topVelocity = Constants.Shooter.SPEAKER_TOP_VELOCITY;
@@ -35,16 +45,23 @@ public class RunShooter extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer.reset();
+    timer.start();
+  }
 
   @Override
   public void execute() {
-    shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
-    if (reachedShooterSpeed || shooter.getTopVelocity() >= Constants.Shooter.THRESHOLD_SPEED*0.9) {
-      reachedShooterSpeed = true;
-      shooter.runShooter(topVelocity, topAcceleration, bottomVelocity, bottomAcceleration);
+    if (speaker) {
+      shooter.runTop(Constants.Shooter.SPEAKER_TOP_VELOCITY, Constants.Shooter.SPEAKER_TOP_ACCELERATION);
+      if(timer.get()>Constants.Shooter.TIME){
+        shooter.runBottom(Constants.Shooter.SPEAKER_BOTTOM_VELOCITY, Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION);
+    } 
+    } else {
+        shooter.runShooter(Constants.Shooter.AMP_TOP_VELOCITY, Constants.Shooter.AMP_TOP_ACCELERATION, Constants.Shooter.AMP_BOTTOM_VELOCITY, Constants.Shooter.AMP_BOTTOM_ACCELERATION);
     }
   }
+
 
   @Override
   public void end(boolean interrupted) {

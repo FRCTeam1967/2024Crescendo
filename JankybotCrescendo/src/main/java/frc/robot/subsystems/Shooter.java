@@ -48,10 +48,17 @@ public class Shooter extends SubsystemBase {
     bottomMotor.set(topSpeed);
   }
 
-  public void runShooter(double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration) {
+  public void runTop(double topVelocity, double topAcceleration){
     topMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
-    bottomMotor.setControl(new VelocityVoltage(topVelocity, topAcceleration, false, 0.0, 0, false, false, false));
   }
+  public void runBottom(double bottomVelocity, double bottomAcceleration){
+    bottomMotor.setControl(new VelocityVoltage(-bottomVelocity, -bottomAcceleration, false, 0.0, 0, false, false, false));
+  }
+  public void runShooter(double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration){
+    topMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
+    bottomMotor.setControl(new VelocityVoltage(-bottomVelocity, -bottomAcceleration, false, 0.0, 0, false, false, false));
+  }
+    
 
   /*public void runTopPID(double topVelocity, double topAcceleration, double bottomSpeed) {
     topLeftMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
