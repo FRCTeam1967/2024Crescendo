@@ -101,7 +101,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     //TODO: apparently slows autos down excessively, have to test
-    m_robotContainer.swerve.setNeutralMode(true);
+    // There's no reason to do this. We setup neutral mode in auto init above.
+    if (Constants.ExperimentalFeatures.applyNeutralModeConstantlyInAuto) {
+      m_robotContainer.swerve.setNeutralMode(true);
+    }
   }
 
   @Override

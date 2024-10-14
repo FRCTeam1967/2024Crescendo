@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 public final class Constants {
   public static class Xbox { 
     public static final int DRIVER_CONTROLLER_PORT = 0, OPERATOR_CONTROLLER_PORT = 1;
+    public static final double DRIVER_DEADBAND = 0.02;
   }
 
   public static class AmpBar { //TODO: change values!
@@ -193,5 +194,17 @@ public final class Constants {
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
     public static final double INTAKE_SAFE = 110 * Constants.Pivot.DEGREES_TO_REVOLUTIONS;
     public static final double INTAKE_DOWN = 6 * Constants.Pivot.DEGREES_TO_REVOLUTIONS;
+  }
+
+  public static class ExperimentalFeatures {
+    public static final boolean useCosineCompensation = false;
+    public static final boolean disableRotationWhenNotMoving = false;
+    public static final boolean applyDriverDeadband = false;
+
+    // Setting this to true because that's how the code works, but there's no reason to do this AFAICT, and
+    // it causes unnecessary CAN traffic. Each call to the 4 modules is BLOCKING. CTRE says:
+    // "We recommend that users avoid calling this API periodically"
+    // So this should really be set to FALSE.
+    public static final boolean applyNeutralModeConstantlyInAuto = true;
   }
 }
