@@ -246,11 +246,6 @@ public class SwerveModule {
         publisher.set(getStates());
 
     }
-
-    public SwerveModulePosition getModulePositions() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getModulePositions'");
-    }
     
 }
 

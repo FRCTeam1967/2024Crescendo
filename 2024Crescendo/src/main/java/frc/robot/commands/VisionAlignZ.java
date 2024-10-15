@@ -61,7 +61,7 @@ public class VisionAlignZ extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return limelightGoalToInches < 19 //stops detecting the limelight around 18 inches
+    return vision.limelightToGoalInches < 19 //stops detecting the limelight around 18 inches
     ;
   }
 }

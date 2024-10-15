@@ -31,20 +31,8 @@
   },
   "NetworkTables": {
     "transitory": {
-      "Pose": {
-        "open": true
-      },
       "Shuffleboard": {
         "Drivetrain": {
-          "open": true
-        },
-        "open": true
-      },
-      "SmartDashboard": {
-        "Field": {
-          "double[]##v_/SmartDashboard/Field/Robot": {
-            "open": true
-          },
           "open": true
         },
         "open": true
@@ -52,6 +40,9 @@
     }
   },
   "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
     "Server": {
       "open": true
     },
