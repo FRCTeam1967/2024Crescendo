@@ -114,8 +114,8 @@ public final class Constants {
     public static final double A_TOP_SPEED = 0.162;
     public static final double A_BOTTOM_SPEED = 0.162;
     
-    public static final double AMP_TOP_VELOCITY = 28, AMP_TOP_ACCELERATION = 24;
-    public static final double AMP_BOTTOM_VELOCITY = 28, AMP_BOTTOM_ACCELERATION = 24;
+    public static final double AMP_TOP_VELOCITY = 15, AMP_TOP_ACCELERATION = 11;
+    public static final double AMP_BOTTOM_VELOCITY = 15, AMP_BOTTOM_ACCELERATION = 11;
     
     public static final double S_TOP_SPEED = 1;
     public static final double S_BOTTOM_SPEED = 1;
@@ -124,7 +124,7 @@ public final class Constants {
     public static final double SPEAKER_BOTTOM_VELOCITY = 90, SPEAKER_BOTTOM_ACCELERATION = 100;
     
     public static final double THRESHOLD_SPEED = 120;
-    public static final double TIME = 1.0;
+    public static final double TIME = 1.5;
   }
   public static class AmpBar { //TODO: change values!
     public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;

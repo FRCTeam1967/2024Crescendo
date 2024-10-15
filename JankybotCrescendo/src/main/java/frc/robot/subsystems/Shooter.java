@@ -30,7 +30,7 @@ public class Shooter extends SubsystemBase {
     config.CurrentLimits.SupplyCurrentLimit = 60;
 
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = 60;
+    config.CurrentLimits.StatorCurrentLimit = 80;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
@@ -49,14 +49,14 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runTop(double topVelocity, double topAcceleration){
-    topMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
+    topMotor.setControl(new VelocityVoltage(topVelocity, topAcceleration, false, 0.0, 0, false, false, false));
   }
   public void runBottom(double bottomVelocity, double bottomAcceleration){
-    bottomMotor.setControl(new VelocityVoltage(-bottomVelocity, -bottomAcceleration, false, 0.0, 0, false, false, false));
+    bottomMotor.setControl(new VelocityVoltage(bottomVelocity, bottomAcceleration, false, 0.0, 0, false, false, false));
   }
   public void runShooter(double topVelocity, double topAcceleration, double bottomVelocity, double bottomAcceleration){
-    topMotor.setControl(new VelocityVoltage(-topVelocity, -topAcceleration, false, 0.0, 0, false, false, false));
-    bottomMotor.setControl(new VelocityVoltage(-bottomVelocity, -bottomAcceleration, false, 0.0, 0, false, false, false));
+    topMotor.setControl(new VelocityVoltage(topVelocity, topAcceleration, false, 0.0, 0, false, false, false));
+    bottomMotor.setControl(new VelocityVoltage(bottomVelocity, bottomAcceleration, false, 0.0, 0, false, false, false));
   }
     
 
