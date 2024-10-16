@@ -1,17 +1,21 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-
+import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.Optional;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Swerve;
 
 public class Vision extends SubsystemBase {
   //https://readthedocs.org/projects/limelight/downloads/pdf/latest/
@@ -21,10 +25,12 @@ public class Vision extends SubsystemBase {
   private boolean isRedAlliance;
   public double verticalOffset, angleToGoalDegrees, angleToGoalRadians;
   public double limelightToGoalInches = 0.0;
+  private String limelightHostname;
 
   /** Creates new Vision */
-  public Vision() {
-    limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+  public Vision(String hostname) {
+    limelightHostname = hostname;
+    limelightTable = NetworkTableInstance.getDefault().getTable(limelightHostname);
     updateValues();
   }
 

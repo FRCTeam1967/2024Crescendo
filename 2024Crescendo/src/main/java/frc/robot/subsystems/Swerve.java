@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -36,13 +37,12 @@ import frc.robot.Constants;
 import frc.robot.modules.SwerveModule;
 
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class Swerve extends SubsystemBase{
   //swerve, gyro, etc
   public final SwerveModule frontLeft, frontRight, backLeft, backRight;
-  private final ADIS16470_IMU gyro;
+  private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   public final SwerveDrivePoseEstimator m_poseEstimator;
   //private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
 
@@ -53,10 +53,18 @@ public class Swerve extends SubsystemBase{
   private SwerveModulePosition[] modulePositions;
   private Pose2d initialPoseMeters;
 
+  //desired location for modules //TODO: update these values
+  private final Translation2d m_frontLeftLocation = new Translation2d(0, 0);
+  private final Translation2d m_frontRightLocation = new Translation2d(0, 0);
+  private final Translation2d m_backLeftLocation = new Translation2d(0, 0);
+  private final Translation2d m_backRightLocation = new Translation2d(0, 0);
+
   //publishing to network table
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable table = inst.getTable("Pose");
   private final DoubleArrayPublisher publishField = table.getDoubleArrayTopic("robotPose").publish();
+  private StructArrayPublisher<Pose3d> arrayPublisher = NetworkTableInstance.getDefault()
+    .getStructArrayTopic("Pose3d", Pose3d.struct).publish();
 
   //extra
   //private Math geometry;
@@ -65,7 +73,15 @@ public class Swerve extends SubsystemBase{
 
   public Swerve() {
     ShuffleboardTab driveTrainTab = Shuffleboard.getTab("Drivetrain");
+    
+    //pose estimator as odometry object + to get vision values
+    m_poseEstimator = new SwerveDrivePoseEstimator(
+      Constants.Swerve.SWERVE_DRIVE_KINEMATICS, 
+      getRotation2d(), 
+      getModulePositions(), 
+      new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
 
+    //initializing actual swerve modules
     frontLeft = new SwerveModule("FrontLeft", Constants.Swerve.FL_POWER, Constants.Swerve.FL_STEER, Constants.Swerve.FL_ENCODER, driveTrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
       .withSize(2, 4)
       .withPosition(0, 0));
@@ -78,23 +94,11 @@ public class Swerve extends SubsystemBase{
     backRight = new SwerveModule("BackRight", Constants.Swerve.BR_POWER, Constants.Swerve.BR_STEER, Constants.Swerve.BR_ENCODER, driveTrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
       .withSize(2, 4)
       .withPosition(6, 0));
-    gyro = new ADIS16470_IMU();
 
     driveTrainTab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());        
     //driveTrainTab.add("field", field).withSize(8, 5).withPosition(1, 1);
-    //odometry = new SwerveDriveOdometry(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, getRotation2d(), 
 
     SmartDashboard.putData("Field", field);
-
-
-
-    //TODO: finish vision simulation
-
-    //creating pose estimator
-    m_poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.SWERVE_DRIVE_KINEMATICS, gyroAngle, modulePositions, initialPoseMeters);
-    
-    
-
 
     //took autobuilder from pathplanner - might need to be used in the auto file (driveRobotRelative not coded yet)
     AutoBuilder.configureHolonomic(
@@ -117,7 +121,7 @@ public class Swerve extends SubsystemBase{
       else return false;
     }, this);
   }
-  
+
   public void stopModules() {
     frontLeft.stop();
     frontRight.stop();
@@ -127,11 +131,11 @@ public class Swerve extends SubsystemBase{
 
   /** @return Rotation2d object with desired angle based on degrees from gyro */
   public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(gyro.getAngle(gyro.getYawAxis()));
+    return Rotation2d.fromDegrees(m_gyro.getAngle(m_gyro.getYawAxis()));
   }
 
   public double getYaw() {
-    return gyro.getAngle(gyro.getYawAxis());
+    return m_gyro.getAngle(m_gyro.getYawAxis());
   }
   
   public SwerveModuleState[] getModuleStates() {
@@ -181,19 +185,19 @@ public class Swerve extends SubsystemBase{
   }
 
   public Pose2d getPose() {
-    return pose;
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   public void resetOdometry (Pose2d pose) {
-    m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), pose);
+    m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), getPose());
   }
 
   public void resetGyro () {
-    gyro.setGyroAngle(gyro.getYawAxis(), 0);
+    m_gyro.setGyroAngle(m_gyro.getYawAxis(), 0);
   }
 
   public double getGyro () {
-    return gyro.getAngle(gyro.getYawAxis());
+    return m_gyro.getAngle(m_gyro.getYawAxis());
   }
 
   public void defenseMode(){
@@ -229,7 +233,7 @@ public class Swerve extends SubsystemBase{
   }
 
   public void setGyroAngle(double degrees){
-    gyro.setGyroAngleZ(degrees);
+    m_gyro.setGyroAngleZ(degrees);
   }
 
   public void configDashboard(ShuffleboardTab tab){

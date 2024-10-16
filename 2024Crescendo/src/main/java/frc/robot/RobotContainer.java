@@ -57,7 +57,7 @@ public class RobotContainer {
   private final Intake intake = new Intake();  
   private final Shooter shooter = new Shooter();
   private final Feeder feeder = new Feeder();
-  private final Vision vision = new Vision();
+  private final Vision vision = new Vision("new vision");
   private SendableChooser<Command> autoChooserLOL;
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);

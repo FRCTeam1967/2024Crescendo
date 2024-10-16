@@ -120,9 +120,13 @@ public final class Constants {
     public static Translation2d m_backLeftLocation = new Translation2d(-LENGTH / 2, WIDTH / 2);
     public static Translation2d m_backRightLocation = new Translation2d(-LENGTH / 2, -WIDTH / 2);
 
-    public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = new SwerveDriveKinematics(
-      m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
-    );
+    public static final SwerveDriveKinematics SWERVE_DRIVE_KINEMATICS = 
+      new SwerveDriveKinematics(
+        m_frontLeftLocation, 
+        m_frontRightLocation, 
+        m_backLeftLocation, 
+        m_backRightLocation
+      );
     
     public static final double SWERVE_ROTATION_TOLERANCE = 5;
 
