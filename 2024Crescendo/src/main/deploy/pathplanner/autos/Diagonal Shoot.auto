@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.54,
+      "y": 6.58
+    },
+    "rotation": -60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "diagonal shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "3 Notes",
+  "choreoAuto": false
+}

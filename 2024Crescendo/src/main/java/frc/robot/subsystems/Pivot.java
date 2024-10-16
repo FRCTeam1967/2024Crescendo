@@ -3,19 +3,17 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.reduxrobotics.sensors.canandcoder.Canandcoder;
-
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Pivot extends SubsystemBase {
@@ -35,7 +33,7 @@ public class Pivot extends SubsystemBase {
   public Pivot() {
     pivotMotor = new CANSparkMax(Constants.Pivot.PIVOT_ID, MotorType.kBrushless);
     pivotMotor.setInverted(true); 
-    pivotMotor.setSmartCurrentLimit(50);
+    pivotMotor.setSmartCurrentLimit(35);
     
     pidController = pivotMotor.getPIDController();
     pidController.setP(Constants.Pivot.kP);
@@ -103,5 +101,8 @@ public class Pivot extends SubsystemBase {
     SmartDashboard.putNumber("revs", revs); 
     SmartDashboard.putNumber("Rel Pos Degrees", (relativeEncoder.getPosition()*360)/50);
     SmartDashboard.putNumber("Abs Encoder Degrees", absEncoder.getAbsPosition()*360);
+    SmartDashboard.putNumber("Pivot Voltage motorcontroller Output Current in Amps", pivotMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Pivot Voltage into motorcontroller", pivotMotor.getBusVoltage());
+
   }
 }
