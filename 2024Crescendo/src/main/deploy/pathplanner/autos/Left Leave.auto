@@ -2,30 +2,24 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6,
-      "y": 4.4
+      "x": 0.8603926189333863,
+      "y": 6.516841644794401
     },
-    "rotation": -60.0
+    "rotation": 60.019539661780996
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Right Leave"
+            "pathName": "Left Leave"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "3 Notes",
   "choreoAuto": false
 }
