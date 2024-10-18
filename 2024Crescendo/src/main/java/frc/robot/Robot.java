@@ -114,9 +114,6 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.swerve.setNeutralMode(true);
     // m_robotContainer.resetSensors();
-    m_robotContainer.maintainPivotPosition();
-    m_robotContainer.maintainAmpBarPosition();
-    m_robotContainer.setClimbEncoderOffset();
   }
 
   /** This function is called periodically during operator control. */

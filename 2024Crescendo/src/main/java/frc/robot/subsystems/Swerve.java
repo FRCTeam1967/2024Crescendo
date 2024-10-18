@@ -40,11 +40,11 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class Swerve extends SubsystemBase{
-  //swerve, gyro, etc
-  public final SwerveModule frontLeft, frontRight, backLeft, backRight;
-  private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
+  
+  //swerve modules, pose estimator (odometry) object, gyro
+  public SwerveModule frontLeft, frontRight, backLeft, backRight;
+  public ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   public final SwerveDrivePoseEstimator m_poseEstimator;
-  //private SlewRateLimiter xLimiter, yLimiter, rotationLimiter;
 
   //vision fields
   private Pose2d pose;
@@ -53,27 +53,22 @@ public class Swerve extends SubsystemBase{
   private SwerveModulePosition[] modulePositions;
   private Pose2d initialPoseMeters;
 
-  //desired location for modules //TODO: update these values
-  private final Translation2d m_frontLeftLocation = new Translation2d(0, 0);
-  private final Translation2d m_frontRightLocation = new Translation2d(0, 0);
-  private final Translation2d m_backLeftLocation = new Translation2d(0, 0);
-  private final Translation2d m_backRightLocation = new Translation2d(0, 0);
-
   //publishing to network table
   private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private final NetworkTable table = inst.getTable("Pose");
   private final DoubleArrayPublisher publishField = table.getDoubleArrayTopic("robotPose").publish();
-  private StructArrayPublisher<Pose3d> arrayPublisher = NetworkTableInstance.getDefault()
-    .getStructArrayTopic("Pose3d", Pose3d.struct).publish();
+  private StructArrayPublisher<Pose2d> arrayPublisher = NetworkTableInstance.getDefault()
+    .getStructArrayTopic("Pose2d", Pose2d.struct).publish();
 
   //extra
-  //private Math geometry;
   private boolean isInRange = false;
-
 
   public Swerve() {
     ShuffleboardTab driveTrainTab = Shuffleboard.getTab("Drivetrain");
     
+    //gyro
+    m_gyro = new ADIS16470_IMU();
+
     //pose estimator as odometry object + to get vision values
     m_poseEstimator = new SwerveDrivePoseEstimator(
       Constants.Swerve.SWERVE_DRIVE_KINEMATICS, 
@@ -120,7 +115,11 @@ public class Swerve extends SubsystemBase{
       if (alliance.isPresent()) return alliance.get() == DriverStation.Alliance.Red;
       else return false;
     }, this);
+
+    resetGyro();
   }
+
+
 
   public void stopModules() {
     frontLeft.stop();
@@ -129,14 +128,20 @@ public class Swerve extends SubsystemBase{
     backRight.stop();
   }
 
+
+
   /** @return Rotation2d object with desired angle based on degrees from gyro */
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(m_gyro.getAngle(m_gyro.getYawAxis()));
   }
 
+
+
   public double getYaw() {
     return m_gyro.getAngle(m_gyro.getYawAxis());
   }
+
+
   
   public SwerveModuleState[] getModuleStates() {
     return new SwerveModuleState[] {
@@ -147,6 +152,8 @@ public class Swerve extends SubsystemBase{
     };
   }
 
+
+
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
       frontLeft.getPosition(), 
@@ -156,6 +163,8 @@ public class Swerve extends SubsystemBase{
     };
   }
 
+
+
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toChassisSpeeds(frontLeft.getState(),
     frontRight.getState(),
@@ -163,19 +172,27 @@ public class Swerve extends SubsystemBase{
     backRight.getState());
   }
 
+
+
   public void driveRobotRelative(ChassisSpeeds speeds) {
     SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
     this.setModuleStates(moduleState);
   }
+
+
 
   public static double signedSquare(double a) {
     if (a < 0) return -(a * a);
     else return a * a;
   }
 
+  
+
   public double getEncoderPosition(){
     return frontRight.getEncoderPosition();
   }
+
+
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     frontLeft.setState(desiredStates[0]);
@@ -184,21 +201,31 @@ public class Swerve extends SubsystemBase{
     backRight.setState(desiredStates[3]);
   }
 
+
+
   public Pose2d getPose() {
     return m_poseEstimator.getEstimatedPosition();
   }
+
+
 
   public void resetOdometry (Pose2d pose) {
     m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), getPose());
   }
 
+
+
   public void resetGyro () {
     m_gyro.setGyroAngle(m_gyro.getYawAxis(), 0);
   }
 
+
+
   public double getGyro () {
     return m_gyro.getAngle(m_gyro.getYawAxis());
   }
+
+
 
   public void defenseMode(){
     SwerveModuleState fLDefenseState= new SwerveModuleState(0, Rotation2d.fromDegrees(45));
@@ -218,6 +245,8 @@ public class Swerve extends SubsystemBase{
     backRight.brakeMode();
   }
 
+
+
   public void setNeutralMode(boolean brake) {
     if (brake){
       frontLeft.brakeMode();
@@ -232,9 +261,12 @@ public class Swerve extends SubsystemBase{
     }
   }
 
+
+
   public void setGyroAngle(double degrees){
     m_gyro.setGyroAngleZ(degrees);
   }
+
 
   public void configDashboard(ShuffleboardTab tab){
     tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
