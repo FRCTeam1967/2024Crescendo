@@ -27,10 +27,10 @@ public class Shooter extends SubsystemBase {
     config.Slot0.kV = Constants.Shooter.kV;
     config.Slot0.kA = Constants.Shooter.kA;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.SupplyCurrentLimit = 60;
+    config.CurrentLimits.SupplyCurrentLimit = 90;
 
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.CurrentLimits.StatorCurrentLimit = 80;
+    config.CurrentLimits.StatorCurrentLimit = 90;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
@@ -58,6 +58,7 @@ public class Shooter extends SubsystemBase {
     topMotor.setControl(new VelocityVoltage(topVelocity, topAcceleration, false, 0.0, 0, false, false, false));
     bottomMotor.setControl(new VelocityVoltage(bottomVelocity, bottomAcceleration, false, 0.0, 0, false, false, false));
   }
+
     
 
   /*public void runTopPID(double topVelocity, double topAcceleration, double bottomSpeed) {

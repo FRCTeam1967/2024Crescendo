@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -58,6 +61,8 @@ public class RobotContainer {
   public static boolean redAlliance;
 
   public RobotContainer() {
+  NamedCommands.registerCommand("intake", new RunIntake(-Constants.Shooter.SPEAKER_TOP_ACCELERATION, shooter).withTimeout(1.0));
+  NamedCommands.registerCommand("shootSpeaker", new RunShooter(shooter, true).withTimeout(5.0));
     resetSensors();
     CanandEventLoop.getInstance();
 
@@ -77,13 +82,14 @@ public class RobotContainer {
 
   private void configureBindings() {
     //DEFAULT COMMANDS
-   //swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
-     //() -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
+   swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
+     () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
 
     //CHASSIS
-    // driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
-    //driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
-    //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
+     driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
+    driverController.leftTrigger().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
+    driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
+    
     // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
     
     // driverController.b().onTrue(new VisionAlign(swerve, vision));
@@ -102,9 +108,10 @@ public class RobotContainer {
 
     // driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
   // //SHOOTER
-     operatorController.y().whileTrue(new RunShooter(shooter, true));
-     operatorController.a().whileTrue(new RunShooter(shooter, false));
-     operatorController.rightTrigger().whileTrue(new RunIntake(-Constants.Shooter.SPEAKER_TOP_ACCELERATION, shooter));
+      operatorController.y().whileTrue(new RunShooter(shooter, true));
+      operatorController.a().whileTrue(new RunShooter(shooter, false));
+      operatorController.rightTrigger().whileTrue(new RunIntake(-Constants.Shooter.SPEAKER_TOP_ACCELERATION, shooter));
+      operatorController.x().whileTrue(new ShootAcrossField(shooter));
   
   }
 

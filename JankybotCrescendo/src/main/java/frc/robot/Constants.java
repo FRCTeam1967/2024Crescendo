@@ -122,6 +122,9 @@ public final class Constants {
     
     public static final double SPEAKER_TOP_VELOCITY = 120, SPEAKER_TOP_ACCELERATION = 120;
     public static final double SPEAKER_BOTTOM_VELOCITY = 90, SPEAKER_BOTTOM_ACCELERATION = 100;
+
+    public static final double FEEDER_SPEED = 160;
+    public static final double FEEDER_ACCELERATION = 150;
     
     public static final double THRESHOLD_SPEED = 120;
     public static final double TIME = 1.5;
