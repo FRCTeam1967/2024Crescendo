@@ -3,11 +3,14 @@
   "robotLength": 0.71,
   "holonomicMode": true,
   "pathFolders": [
-    "Going to Notes"
+    "CSpeaker-Notes",
+    "LSpeaker-Notes",
+    "RSpeaker-Notes"
   ],
   "autoFolders": [
     "3 Notes",
-    "4 Note"
+    "4 Note",
+    "2 Notes"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

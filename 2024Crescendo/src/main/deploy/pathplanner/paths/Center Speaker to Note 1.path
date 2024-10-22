@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6,
-        "y": 5.6000000000000005
+        "x": 1.7000000000000006,
+        "y": 5.5
       },
       "isLocked": false,
       "linkedName": null
@@ -59,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Going to Notes",
+  "folder": "CSpeaker-Notes",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

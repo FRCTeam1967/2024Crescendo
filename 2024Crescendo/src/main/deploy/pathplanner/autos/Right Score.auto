@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.54,
-      "y": 6.58
+      "x": 0.65,
+      "y": 4.45
     },
     "rotation": -60.0
   },
@@ -12,14 +12,14 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "diagonal shoot"
+            "name": "shootSpeaker"
           }
         }
       ]
     }
   },
-  "folder": "3 Notes",
+  "folder": null,
   "choreoAuto": false
 }

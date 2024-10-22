@@ -196,8 +196,8 @@ public final class Constants {
   }
 
   public static class ExperimentalFeatures {
-    public static final boolean useCosineCompensation = true;
-    public static final boolean disableRotationWhenNotMoving = true;
+    public static final boolean useCosineCompensation = true; //TODO: test on tuesday if driving is okay with this true
+    public static final boolean disableRotationWhenNotMoving = false;
     public static final boolean applyDriverDeadband = false;
 
     // Setting this to true because that's how the code works, but there's no reason to do this AFAICT, and

@@ -3,47 +3,56 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3,
-        "y": 7.0
+        "x": 0.65,
+        "y": 4.45
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3934228834542015,
-        "y": 7.016472974968559
+        "x": 0.7000000000000001,
+        "y": 4.363397459621557
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.6,
-        "y": 6.7
+        "x": 2.8,
+        "y": 4.1
       },
       "prevControl": {
-        "x": 0.5444555141201834,
-        "y": 6.690206008509808
+        "x": 2.6999999999999997,
+        "y": 4.1
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 950.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -120.87473746206118,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
-  "previewStartingState": null,
+  "folder": "RSpeaker-Notes",
+  "previewStartingState": {
+    "rotation": -60.0,
+    "velocity": 0.0
+  },
   "useDefaultConstraints": false
 }

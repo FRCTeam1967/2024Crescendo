@@ -12,7 +12,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -39,7 +39,8 @@ public class Pivot extends SubsystemBase {
     pidController.setP(Constants.Pivot.kP);
     pidController.setI(Constants.Pivot.kI);
     pidController.setD(Constants.Pivot.kD);
-    pidController.setOutputRange(-0.4, 0.3); //negative is going down, pos going up (both og at 0.2)
+    pidController.setOutputRange(-0.4, 0.5); //negative is going down, pos going up (both og at 0.2), pos at 0.3
+    // TODO: ^test
 
     relativeEncoder = pivotMotor.getEncoder();
     
@@ -89,20 +90,20 @@ public class Pivot extends SubsystemBase {
     pivotMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
   }
 
+  public void configDashboard(ShuffleboardTab tab) {
+    tab.addDouble("Rel Pos", () -> relativeEncoder.getPosition());
+    tab.addDouble("Abs Encoder", () -> absEncoder.getAbsPosition());
+    tab.addDouble("Set Point", () -> setpoint.position); 
+    tab.addDouble("Rel Pos Degrees", () -> (relativeEncoder.getPosition()*360)/50);
+    tab.addDouble("Abs Encoder Degrees", () -> absEncoder.getAbsPosition()*360);
+    tab.addDouble("Pivot Voltage motorcontroller Output Current in Amps", () -> pivotMotor.getOutputCurrent());
+    tab.addDouble("Pivot Voltage into motorcontroller", () -> pivotMotor.getBusVoltage());
+  }
+
   @Override
   public void periodic() {
     setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
     double revs = (setpoint.position) * Constants.Pivot.GEAR_RATIO;
     pidController.setReference(revs, CANSparkBase.ControlType.kPosition);
-
-    SmartDashboard.putNumber("Rel Pos", relativeEncoder.getPosition());
-    SmartDashboard.putNumber("Abs Encoder", absEncoder.getAbsPosition());
-    SmartDashboard.putNumber("Set Point", setpoint.position); 
-    SmartDashboard.putNumber("revs", revs); 
-    SmartDashboard.putNumber("Rel Pos Degrees", (relativeEncoder.getPosition()*360)/50);
-    SmartDashboard.putNumber("Abs Encoder Degrees", absEncoder.getAbsPosition()*360);
-    SmartDashboard.putNumber("Pivot Voltage motorcontroller Output Current in Amps", pivotMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Pivot Voltage into motorcontroller", pivotMotor.getBusVoltage());
-
   }
 }

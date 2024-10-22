@@ -8,30 +8,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Shooter;
 
-public class RunShooter extends Command {
+public class ShootAmp extends Command {
   private Shooter shooter;
   private double topVelocity, topAcceleration,  bottomVelocity, bottomAcceleration;
   
   /**
-   * Creates a new RunShooter
+   * Creates a new ShootAmp
    * @param shooter - Shooter object
-   * @param speaker - true if shooting into speaker, false if shooting into amp
    */
-  public RunShooter(Shooter shooter, boolean speaker) {
+  public ShootAmp(Shooter shooter) {
     this.shooter = shooter;
     addRequirements(this.shooter);
 
-    if(speaker){
-      topVelocity = Constants.Shooter.SPEAKER_TOP_VELOCITY;
-      topAcceleration = Constants.Shooter.SPEAKER_TOP_ACCELERATION;
-      bottomVelocity = Constants.Shooter.SPEAKER_BOTTOM_VELOCITY;
-      bottomAcceleration = Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION;
-    } else {
-      topVelocity = Constants.Shooter.AMP_TOP_VELOCITY;
-      topAcceleration = Constants.Shooter.AMP_TOP_ACCELERATION;
-      bottomVelocity = Constants.Shooter.AMP_BOTTOM_VELOCITY;
-      bottomAcceleration = Constants.Shooter.AMP_BOTTOM_ACCELERATION;
-    }
+    topVelocity = Constants.Shooter.SPEAKER_TOP_VELOCITY;
+    topAcceleration = Constants.Shooter.SPEAKER_TOP_ACCELERATION;
+    bottomVelocity = Constants.Shooter.SPEAKER_BOTTOM_VELOCITY;
+    bottomAcceleration = Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION;
   }
 
   @Override
@@ -52,3 +44,4 @@ public class RunShooter extends Command {
     return false;
   }
 }
+

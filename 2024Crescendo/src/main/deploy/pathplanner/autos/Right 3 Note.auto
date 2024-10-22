@@ -73,10 +73,54 @@
           "data": {
             "name": "shootSpeaker"
           }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RSpeaker to Note 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotSequence"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotSequence"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Note 2 to CSpeaker"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
         }
       ]
     }
   },
-  "folder": "2 Notes",
+  "folder": "3 Notes",
   "choreoAuto": false
 }

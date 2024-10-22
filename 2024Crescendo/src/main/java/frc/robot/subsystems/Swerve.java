@@ -190,7 +190,6 @@ public class Swerve extends SubsystemBase{
     tab.addDouble("Power Encoder Position", ()-> getEncoderPosition());
     tab.addDouble("Pose position x", () -> getPose().getX());
     tab.addDouble("Pose position y", () -> getPose().getY());
-    tab.addDouble("Gyro Angle", () -> getRotation2d().getDegrees());
     tab.addDouble("Pigeon Gyro Angle", () -> gyro.getAngle());
     tab.addDouble("Encoder Meters Moved", () -> getEncoderPosition() * Constants.Swerve.METERS_TO_ENC_COUNT);
     tab.addDouble("FR Distance Meters", ()-> frontRight.getPosition().distanceMeters);

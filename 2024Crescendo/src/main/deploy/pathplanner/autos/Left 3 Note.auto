@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.65,
-      "y": 4.45
+      "x": 0.7,
+      "y": 6.65
     },
-    "rotation": -60.0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RSpeaker to Note 3"
+                  "pathName": "LSpeaker to Note 1"
                 }
               }
             ]
@@ -62,7 +62,51 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note 3 to RSpeaker"
+                  "pathName": "Note 1 to LSpeaker"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSpeaker to Note 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotSequence"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotSequence"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Note 2 to CSpeaker"
                 }
               }
             ]
@@ -77,6 +121,6 @@
       ]
     }
   },
-  "folder": "2 Notes",
+  "folder": "3 Notes",
   "choreoAuto": false
 }

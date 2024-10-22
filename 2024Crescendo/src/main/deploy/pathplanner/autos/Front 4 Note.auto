@@ -62,7 +62,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "From Note 2 to Center Speaker"
+                  "pathName": "Note 2 to CSpeaker"
                 }
               }
             ]
@@ -150,7 +150,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Note 1 to Center Speaker"
+                  "pathName": "Note 1 to CSpeaker"
                 }
               }
             ]

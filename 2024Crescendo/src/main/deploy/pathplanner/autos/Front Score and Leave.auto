@@ -12,9 +12,15 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "LeaveZone"
+            "pathName": "Front Leave"
           }
         }
       ]

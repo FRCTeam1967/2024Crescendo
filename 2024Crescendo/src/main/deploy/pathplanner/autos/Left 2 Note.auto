@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6,
-      "y": 6.7
+      "x": 0.7,
+      "y": 6.65
     },
     "rotation": 60.0
   },
@@ -12,25 +12,38 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSpeaker"
+                }
+              },
               {
                 "type": "named",
                 "data": {
                   "name": "pivotDown"
                 }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotSequence"
+                }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Leave"
+                  "pathName": "LSpeaker to Note 1"
                 }
               }
             ]
@@ -41,23 +54,29 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Left Return"
+                  "name": "pivotSequence"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "pivotUp"
+                  "pathName": "Note 1 to LSpeaker"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "2 Notes",
   "choreoAuto": false
 }

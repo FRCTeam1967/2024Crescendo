@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -59,16 +60,6 @@ public class AmpBar extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
-  public void runSecond(){
-    timer.start();
-    while (timer.get() <= 2){
-      ampBarMotor.set(-0.2);
-    }
-    ampBarMotor.set(0);
-    timer.stop();
-    timer.reset();
-  }
-
   /** Set encoder position to desired revolutions
   * @param rev
   */
@@ -81,14 +72,15 @@ public class AmpBar extends SubsystemBase {
    * @param revolutions
    */
   public void moveTo(double revolutions) {
-    goal = new TrapezoidProfile.State(revolutions, 0);
+    if (revolutions == Constants.AmpBar.AMP_SAFE) ampBarMotor.set(1); //TODO: test
+    else goal = new TrapezoidProfile.State(revolutions, 0);
   }
 
   /**
    * @return whether profile has been finished
    */
   public boolean isReached(){
-    return(profile.isFinished(profile.timeLeftUntil(goal.position)));
+    return (profile.isFinished(profile.timeLeftUntil(goal.position)));
   }
 
   /** Sets amp bar motor to brake mode */
@@ -96,15 +88,26 @@ public class AmpBar extends SubsystemBase {
     ampBarMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
   }
 
+  public void configDashboard(ShuffleboardTab tab) {
+    tab.addDouble("Amp Rel Pos", () -> relativeEncoder.getPosition());
+    tab.addDouble("Amp Set Point", () -> setpoint.position);
+    tab.addDouble("Amp Rel Pos Degrees", () -> (relativeEncoder.getPosition()*360)/100);
+  }
+
   @Override
   public void periodic() {
     setpoint = profile.calculate(Constants.Pivot.kD_TIME, setpoint, goal);
     double revs = (setpoint.position) * Constants.AmpBar.GEAR_RATIO;
     pidController.setReference(revs, CANSparkBase.ControlType.kPosition);
-
-    SmartDashboard.putNumber("Amp Rel Pos", relativeEncoder.getPosition());
-    SmartDashboard.putNumber("Amp Set Point", setpoint.position); 
-    SmartDashboard.putNumber("Amp revs", revs); 
-    SmartDashboard.putNumber("Amp Rel Pos Degrees", (relativeEncoder.getPosition()*360)/100);
   }
 }
+
+  // public void runSecond(){
+  //   timer.start();
+  //   while (timer.get() <= 2){
+  //     ampBarMotor.set(-0.2);
+  //   }
+  //   ampBarMotor.set(0);
+  //   timer.stop();
+  //   timer.reset();
+  // }

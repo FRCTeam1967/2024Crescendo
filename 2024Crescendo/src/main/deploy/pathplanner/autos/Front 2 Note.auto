@@ -1,26 +1,20 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.15,
-      "y": 5.5
-    },
-    "rotation": 0
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
-          }
-        },
-        {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSpeaker"
+                }
+              },
               {
                 "type": "named",
                 "data": {
@@ -34,25 +28,19 @@
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pivotSequence"
+                }
+              },
               {
                 "type": "path",
                 "data": {
                   "pathName": "Center Speaker to Note 2"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "pivotDown"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pivotDown"
           }
         },
         {
@@ -62,13 +50,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "pivotUp"
+                  "name": "pivotSequence"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "From Note 2 to Center Speaker"
+                  "pathName": "Note 2 to CSpeaker"
                 }
               }
             ]
@@ -83,6 +71,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "2 Notes",
   "choreoAuto": false
 }

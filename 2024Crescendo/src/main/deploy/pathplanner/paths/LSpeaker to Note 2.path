@@ -3,41 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6,
-        "y": 5.5
+        "x": 0.8,
+        "y": 6.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6999999999999997,
-        "y": 5.5
+        "x": 0.8500000000000001,
+        "y": 6.836602540378444
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7,
-        "y": 4.1
+        "x": 1.5,
+        "y": 6.75
       },
       "prevControl": {
-        "x": 1.5974593140975328,
-        "y": 4.1
+        "x": 1.5,
+        "y": 6.85
       },
       "nextControl": {
-        "x": 1.713230388460407,
-        "y": 4.1
+        "x": 1.5,
+        "y": 6.65
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8,
-        "y": 4.1
+        "x": 1.6,
+        "y": 5.5
       },
       "prevControl": {
-        "x": 2.6999999999999997,
-        "y": 4.1
+        "x": 1.55,
+        "y": 5.586602540378444
+      },
+      "nextControl": {
+        "x": 1.6500000000000001,
+        "y": 5.413397459621557
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7,
+        "y": 5.5
+      },
+      "prevControl": {
+        "x": 2.5999999999999996,
+        "y": 5.5
       },
       "nextControl": null,
       "isLocked": false,
@@ -51,15 +67,18 @@
     "maxVelocity": 3.5,
     "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 950.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
-    "rotateFast": false
+    "rotation": 0.0,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "CSpeaker-Notes",
-  "previewStartingState": null,
+  "folder": "LSpeaker-Notes",
+  "previewStartingState": {
+    "rotation": 60.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }
