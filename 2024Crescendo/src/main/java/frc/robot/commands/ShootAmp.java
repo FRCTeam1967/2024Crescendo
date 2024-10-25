@@ -20,10 +20,10 @@ public class ShootAmp extends Command {
     this.shooter = shooter;
     addRequirements(this.shooter);
 
-    topVelocity = Constants.Shooter.SPEAKER_TOP_VELOCITY;
-    topAcceleration = Constants.Shooter.SPEAKER_TOP_ACCELERATION;
-    bottomVelocity = Constants.Shooter.SPEAKER_BOTTOM_VELOCITY;
-    bottomAcceleration = Constants.Shooter.SPEAKER_BOTTOM_ACCELERATION;
+    topVelocity = Constants.Shooter.AMP_TOP_VELOCITY;
+    topAcceleration = Constants.Shooter.AMP_TOP_ACCELERATION;
+    bottomVelocity = Constants.Shooter.AMP_BOTTOM_VELOCITY;
+    bottomAcceleration = Constants.Shooter.AMP_BOTTOM_ACCELERATION;
   }
 
   @Override

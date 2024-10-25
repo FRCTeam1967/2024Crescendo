@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.MathHelper;
 import frc.robot.subsystems.*;
 
 public class MoveAmpBar extends Command {
@@ -39,8 +40,7 @@ public class MoveAmpBar extends Command {
 
   @Override
   public boolean isFinished() {
-    if (desiredRev == Constants.AmpBar.AMP_SAFE) return ampBar.getPosition() == Constants.AmpBar.AMP_SAFE; //TODO: test (with ampbar subsystem)
-    else return ampBar.isReached();
+    return ampBar.isReached();
   }
 
   public void initSendable(SendableBuilder builder) {

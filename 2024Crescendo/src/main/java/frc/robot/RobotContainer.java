@@ -79,12 +79,12 @@ public class RobotContainer {
     configureBindings();
 
     // vision.configDashboard(matchTab);
-    // shooter.configDashboard(matchTab);
+    shooter.configDashboard(matchTab);
     // feeder.configDashboard(matchTab);
     swerve.configDashboard(matchTab);
     leftClimb.configDashboard(matchTab);
     rightClimb.configDashboard(matchTab);
-    // ampBar.configDashboard(matchTab);
+    ampBar.configDashboard(matchTab);
 
     autoChooserLOL = AutoBuilder.buildAutoChooser();
     matchTab.add("Auto Chooser lol", autoChooserLOL); //TODO: check if this shows on match tab

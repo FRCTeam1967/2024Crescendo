@@ -30,7 +30,7 @@ public class Feeder extends SubsystemBase {
    * @param rightSpeed
    */
   public void feedFeeder(double speed){
-    leftMotor.set(speed);
+    leftMotor.set(-speed);
     rightMotor.set(speed);
   }
 

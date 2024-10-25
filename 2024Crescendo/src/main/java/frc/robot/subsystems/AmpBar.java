@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 
 import frc.robot.Constants;
+import frc.robot.MathHelper;
 
 public class AmpBar extends SubsystemBase {
   private CANSparkMax ampBarMotor;
@@ -72,20 +73,24 @@ public class AmpBar extends SubsystemBase {
    * @param revolutions
    */
   public void moveTo(double revolutions) {
-    if (revolutions == Constants.AmpBar.AMP_SAFE) ampBarMotor.set(1); //TODO: test
-    else goal = new TrapezoidProfile.State(revolutions, 0);
+    goal = new TrapezoidProfile.State(revolutions, 0);
   }
 
   /**
    * @return whether profile has been finished
    */
   public boolean isReached(){
-    return (profile.isFinished(profile.timeLeftUntil(goal.position)));
+    return profile.timeLeftUntil(goal.position) <= 0;
   }
 
   /** Sets amp bar motor to brake mode */
   public void setBrakeMode(){
     ampBarMotor.setIdleMode(CANSparkBase.IdleMode.kBrake);
+  }
+
+  /** Sets amp bar motor to coast mode */
+  public void setCoastMode(){
+    ampBarMotor.setIdleMode(CANSparkBase.IdleMode.kCoast);
   }
 
   public void configDashboard(ShuffleboardTab tab) {

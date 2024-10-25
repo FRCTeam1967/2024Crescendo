@@ -16,7 +16,7 @@ public final class Constants {
   }
 
   public static class AmpBar { //TODO: change values!
-    public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;
+    public static final int AMP_BAR_ID = 24;
     public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02; 
     public static final double GEAR_RATIO = 10/1.0;
 
