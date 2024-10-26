@@ -193,7 +193,7 @@ public class RobotContainer {
 
     //AMP
     //TODO: test timing
-    operatorController.a().whileTrue(new SequentialCommandGroup(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP), new WaitCommand(0.2), new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new ShootAmp(shooter)).withTimeout(1.5))); // waitcommand was 0.7
+    operatorController.a().whileTrue(new SequentialCommandGroup(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP), new WaitCommand(0.7), new ParallelCommandGroup(new RunFeeder(feeder, Constants.Feeder.FEED_SPEED), new ShootAmp(shooter)).withTimeout(1.5))); // waitcommand was 0.2
     operatorController.a().whileFalse(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
 
     //CLIMB
