@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     
-    m_robotContainer.resetSensors();
+    // This is already called in RobotContainer.init(): m_robotContainer.resetSensors();
     //CanandEventLoop.getInstance();
 
     // Turn brake mode off shortly after the robot is disabled

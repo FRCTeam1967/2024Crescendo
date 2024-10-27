@@ -88,9 +88,32 @@ public class Swerve extends SubsystemBase{
     return pose;
   }
 
-  /** @return The degrees of pigeon gyro (heading of the robot) as a Rotation2d */
-  public Rotation2d getRotation2d() {
+  /**
+   * Returns the reading of the gyroscope. We use this for updating odometry. Code that wants to know what direction the
+   * robot is facing should use getHeading() instead.
+   * @return The degrees of pigeon gyro (heading of the robot) as a Rotation2d 
+   */
+  private Rotation2d getRotation2d() {
     return gyro.getRotation2d();
+  }
+
+  /**
+   * Returns the heading of the robot relative to the field. We use this for calculating robot relative fields. Odometry updates
+   * should call getRotation2d() instead.
+   * @return The degrees of rotation relative to the field. 
+   */
+  public Rotation2d getHeading() {
+    return getPose().getRotation();
+  }
+
+  /**
+   * Sets the heading of the robot. It does this by resetting odometry with a new pose at the same location, but with the corrected
+   * heading. It does not reset module positions or the gyroscope angle. Odometry handles that for us.
+   * @param fieldRelativeRotation The degrees of rotation relative to the field. 
+   */
+  public void setHeading(Rotation2d fieldRelativeRotation) {
+    Pose2d newPose = new Pose2d(pose.getTranslation(), fieldRelativeRotation);
+    resetOdometry(newPose);
   }
 
   public SwerveModuleState[] getModuleStates() {
@@ -131,13 +154,37 @@ public class Swerve extends SubsystemBase{
     this.setModuleStates(moduleState);
   }
 
+  /**
+   * Instructs the swerve subsystem to drive using the given field-relative speeds. Field-relative speeds are
+   * relative to the blue alliance origin. So +x is in the direction of the red alliance wall. +y is toward the
+   * left wall when standing at a blue driver station.
+   * @param speeds Desired field-relative speeds
+   */
+  public void driveFieldRelative(ChassisSpeeds speeds) {
+    ChassisSpeeds robotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getHeading());
+    driveRobotRelative(robotRelative);
+  }
+
+  /**
+   * Instructs the swerve subsystem to drive using the given field-relative speeds. Field-relative speeds are
+   * relative to the blue alliance origin. So +x is in the direction of the red alliance wall. +y is toward the
+   * left wall when standing at a blue driver station.
+   * @param x Desired speed in the x direction
+   * @param y Desired speed in the y direction
+   * @param theta Desired rotation speed (counter-clockwise positive)
+   */
+  public void driveFieldRelative(double x, double y, double theta) {
+    ChassisSpeeds fieldRelativeSpeeds = new ChassisSpeeds(x, y, theta);
+    driveFieldRelative(fieldRelativeSpeeds);
+  }
+
   /** Resets robot position on the field */
   public void resetOdometry(Pose2d pose) {
     odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
   }
 
   /** Resets pigeon gyro to 0 */
-  public void resetGyro () {
+  private void resetGyro () {
     gyro.reset();
   }
 
