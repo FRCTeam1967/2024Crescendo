@@ -86,7 +86,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // m_robotContainer.resetSwerveGyro();
     // m_robotContainer.resetSensors();
-    m_robotContainer.movePivotSafe();
+    // m_robotContainer.movePivotSafe();
+    m_robotContainer.maintainPivotPosition();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     m_robotContainer.swerve.setNeutralMode(true);
