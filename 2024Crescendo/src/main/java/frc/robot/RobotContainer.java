@@ -177,8 +177,8 @@ public class RobotContainer {
     //shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
     //CHASSIS
-    // Tell the Swerve system that it's facing forward
-    driverController.start().onTrue(new InstantCommand(() -> swerve.setHeading(new Rotation2d()), swerve));
+    // Tell the Swerve system that it's facing forward. For blue alliance, that's 0 degrees. For red alliance, that's 180 degrees.
+    driverController.start().onTrue(new InstantCommand(() -> swerve.setHeading(Rotation2d.fromDegrees(redAlliance ? 180 : 0)), swerve));
 
     // MDS: TODO: If everything is blue-alliance-relative, we probably want 90 degrees in both cases now,but I'm not entirely
     // sure what's going on this command.
