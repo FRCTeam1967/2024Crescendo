@@ -159,13 +159,13 @@ public class RobotContainer {
     // driverController.b().onTrue(new VisionAlign(swerve, vision));
     // driverController.y().onTrue(new VisionAlignZ(swerve, vision));
 
-    // driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
+    driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
 
-    // driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
+    driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
 
-    // driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
+    driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
 
-    // driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
+    driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
 
     //testing with one joystick
     // driverController.leftTrigger().or(driverController.rightTrigger()).whileTrue(new SequentialCommandGroup(
@@ -203,7 +203,13 @@ public class RobotContainer {
     operatorController.x().whileTrue(new ParallelCommandGroup(new LowerClimbUntilLatch(leftClimb), new LowerClimbUntilLatch(rightClimb)));
   }
 
-  public Command getAutonomousCommand() {
-    return autoChooserLOL.getSelected();
+  public Command Leave() {
+    return new SwerveDrive(swerve, () -> 0.5, () -> 0, () -> 0).withTimeout(2.5);
   }
+
+  public Command getAutonomousCommand() {
+    // return autoChooserLOL.getSelected();
+    return Leave();
+  }
+  
 }
