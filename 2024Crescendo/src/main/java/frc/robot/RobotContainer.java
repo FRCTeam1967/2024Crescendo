@@ -4,45 +4,32 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.reduxrobotics.canand.CanandEventLoop;
+
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.DoubleSupplier;
-
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-
-import com.reduxrobotics.canand.CanandEventLoop;
-
-import frc.robot.commands.*;
-import frc.robot.Constants.*;
+import frc.robot.Constants.Xbox;
+import frc.robot.commands.SwerveDrive;
+import frc.robot.commands.VisionAlign;
+import frc.robot.commands.VisionAlignZ;
+import frc.robot.commands.WallSnapDrive;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
-import frc.robot.LimelightHelpers;
 
 public class RobotContainer {
   public final Swerve swerve = new Swerve();
@@ -73,6 +60,10 @@ public class RobotContainer {
   String autoPath;
   boolean doRejectUpdate;
 
+  private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
+  private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
+  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
+
   public RobotContainer() { 
     resetSensors();
 
@@ -85,54 +76,26 @@ public class RobotContainer {
 
     autoChooserLOL = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser lol", autoChooserLOL);
-    
-    // autoPathChooser2.setDefaultOption(redFourNote, redFourNote);
-    // autoPathChooser2.addOption(BlueCenterDisrupt, BlueCenterDisrupt);
-    // autoPathChooser2.addOption(RedCenterDisrupt, RedCenterDisrupt);
-    // autoPathChooser2.addOption(redThreeNote, redThreeNote);
-    // autoPathChooser2.addOption(blueThreeNote, blueThreeNote);
-    // autoPathChooser2.addOption(blueFourNote, blueFourNote);
-    // autoPathChooser2.addOption(twoNote, twoNote);
-    // autoPathChooser2.addOption(leave, leave);
-    // autoPathChooser2.addOption(frontShootSit, frontShootSit);
-    // autoPathChooser2.addOption(leftSideSit, leftSideSit);
-    // autoPathChooser2.addOption(rightSideSit, rightSideSit);
-    // autoPathChooser2.addOption(leftSideLeave, leftSideSit);
-    // autoPathChooser2.addOption(rightSideLeave, rightSideSit);
-    // autoPathChooser2.addOption(doNothing, doNothing);
-    // matchTab.add("Auto Path Chooser 2", autoPathChooser2).withWidget(BuiltInWidgets.kComboBoxChooser);
   }
 
   public void onEnable(Optional<Alliance> alliance){
     if (alliance.get() == Alliance.Red) redAlliance = true;
     else redAlliance = false;
   }
-  
+
   private void configureBindings() {
     //DEFAULT COMMANDS
-    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
-      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
+    //swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
+      //() -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
     
-    //CHASSIS
+      //CHASSIS
     driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
-    //driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
-    //driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
-    
-    driverController.b().onTrue(new VisionAlign(swerve, vision));
+    // driverController.b().onTrue(new VisionAlign(swerve, vision));
+    // driverController.y().onTrue(new VisionAlignZ(swerve, vision));
 
-    driverController.y().onTrue(new VisionAlignZ(swerve, vision));
-
-    driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
-    //adjust for blue alliance
-    driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
-
-    driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
-
-    driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
-
-    driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
-
-    driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
+    //wall-snap-drive
+    // driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
+    // driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
   }
 
   public void resetSensors() {
@@ -155,22 +118,50 @@ public class RobotContainer {
     return autoChooserLOL.getSelected();
   }
 
-  //megatag localization from limelight docs  //TODO: figure this out
-  LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
-  LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-  if(Math.abs(m_gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-  {
-    doRejectUpdate = true;
+  //**************************************************************//
+
+  //limelight methods for alignment
+  //for X alignment (how rotational it should align)
+  private double limelight_aim_proportional() {
+    double kP = 0.035; //test
+    
+    //TX -> x-axis offset in degrees, multiply by angular speed to be radians/second
+    double targetingAngularVelocity = (LimelightHelpers.getTX("limelight") * kP) * Swerve.kMaxAngularSpeed;
+    
+    targetingAngularVelocity *= -1.0; //invert because of some positive/negative thing
+    return targetingAngularVelocity;
   }
-  if(mt2.tagCount == 0)
-  {
-    doRejectUpdate = true;
+
+  //for Y alignment (how forward/backward it should go)
+  private double limelight_range_proportional() {    
+    double kP = 0.1; //test
+
+    //TY -> y-axis offset in degrees, multiply by angular speed to be raidans/second
+    double targetingForwardSpeed = (LimelightHelpers.getTY("limelight") * kP) * Swerve.kMaxSpeed;
+
+    targetingForwardSpeed *= -1.0; //invert because of some positive/negative thing //TODO: udnerstand this
+    return targetingForwardSpeed;
   }
-  if(!doRejectUpdate)
-  {
-    swerve.m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-    swerve.m_poseEstimator.addVisionMeasurement(
-        mt2.pose,
-        mt2.timestampSeconds);
+
+  //drive for robot container
+  public void drive(boolean fieldRelative) {
+    var xSpeed = -m_xspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getLeftY(), 0.02)) * Swerve.kMaxSpeed;
+    var ySpeed = -m_yspeedLimiter.calculate(MathUtil.applyDeadband(driverController.getLeftX(), 0.02)) * Swerve.kMaxSpeed;
+    var rot = -m_rotLimiter.calculate(MathUtil.applyDeadband(driverController.getRightX(), 0.02)) * Swerve.kMaxAngularSpeed;
+
+    // while the left-bumper is pressed, overwrite some of the driving values with the output of limelight override method
+    if (driverController.leftBumper().getAsBoolean()){
+      final var rot_limelight = limelight_aim_proportional();
+      rot = rot_limelight;
+
+      final var forward_limelight = limelight_range_proportional();
+      xSpeed = forward_limelight;
+
+      //turn off field relative
+      fieldRelative = false;
+    }
+
+    swerve.drive(xSpeed, ySpeed, rot, fieldRelative, 10); //TODO: figure the seconds out?
+
   }
 }

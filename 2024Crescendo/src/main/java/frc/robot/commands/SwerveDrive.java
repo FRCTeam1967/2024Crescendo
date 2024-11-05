@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+//import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.Swerve;
 
 public class SwerveDrive extends Command {
@@ -40,66 +41,61 @@ public class SwerveDrive extends Command {
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, swerve.getRotation2d());
     SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     swerve.setModuleStates(moduleState);
-    
-    
-    
-    //megaTag use to estimate
-    boolean useMegaTag2 = true; //set to false to use MegaTag1
-    boolean doRejectUpdate = false;
-    if(useMegaTag2 == false)
-    {
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-      
-      if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
-      {
-        if(mt1.rawFiducials[0].ambiguity > .7)
-        {
-          doRejectUpdate = true;
-        }
-        if(mt1.rawFiducials[0].distToCamera > 3)
-        {
-          doRejectUpdate = true;
-        }
-      }
-      if(mt1.tagCount == 0)
-      {
-        doRejectUpdate = true;
-      }
-
-      if(!doRejectUpdate)
-      {
-        swerve.m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
-        swerve.m_poseEstimator.addVisionMeasurement(
-            mt1.pose,
-            mt1.timestampSeconds);
-      }
-    }
-    else if (useMegaTag2 == true)
-    {
-      LimelightHelpers.SetRobotOrientation("limelight", swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-      if(Math.abs(swerve.m_gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-      {
-        doRejectUpdate = true;
-      }
-      if(mt2.tagCount == 0)
-      {
-        doRejectUpdate = true;
-      }
-      if(!doRejectUpdate)
-      {
-        swerve.m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-        swerve.m_poseEstimator.addVisionMeasurement(
-            mt2.pose,
-            mt2.timestampSeconds);
-      }
-    }
-
-
-
-
 
   }
+    
+  //   //megaTag use to estimate
+  //   boolean useMegaTag2 = true; //set to false to use MegaTag1
+  //   boolean doRejectUpdate = false;
+  //   if(useMegaTag2 == false)
+  //   {
+  //     LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+      
+  //     if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
+  //     {
+  //       if(mt1.rawFiducials[0].ambiguity > .7)
+  //       {
+  //         doRejectUpdate = true;
+  //       }
+  //       if(mt1.rawFiducials[0].distToCamera > 3)
+  //       {
+  //         doRejectUpdate = true;
+  //       }
+  //     }
+  //     if(mt1.tagCount == 0)
+  //     {
+  //       doRejectUpdate = true;
+  //     }
+
+  //     if(!doRejectUpdate)
+  //     {
+  //       swerve.m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+  //       swerve.m_poseEstimator.addVisionMeasurement(
+  //           mt1.pose,
+  //           mt1.timestampSeconds);
+  //     }
+  //   }
+  //   else if (useMegaTag2 == true)
+  //   {
+  //     LimelightHelpers.SetRobotOrientation("limelight", swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+  //     LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+  //     if(Math.abs(swerve.m_gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+  //     {
+  //       doRejectUpdate = true;
+  //     }
+  //     if(mt2.tagCount == 0)
+  //     {
+  //       doRejectUpdate = true;
+  //     }
+  //     if(!doRejectUpdate)
+  //     {
+  //       swerve.m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+  //       swerve.m_poseEstimator.addVisionMeasurement(
+  //           mt2.pose,
+  //           mt2.timestampSeconds);
+  //     }
+  //   }
+  // 
 
   @Override
   public void end (boolean interrupted) {
@@ -111,7 +107,7 @@ public class SwerveDrive extends Command {
     return false;
   }
 
-  public static double signedSquare(double a) { //TODO: where are we using this?
+  public static double signedSquare(double a) {
     if (a < 0) return -(a * a);
     else return a * a;
   }

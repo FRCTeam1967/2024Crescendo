@@ -98,8 +98,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    //TODO: apparently slows autos down excessively, have to test
     m_robotContainer.swerve.setNeutralMode(true);
+    m_robotContainer.drive(false);
   }
 
   @Override
@@ -118,7 +118,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_robotContainer.drive(true);
+  }
 
   @Override
   public void testInit() {

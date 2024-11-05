@@ -13,10 +13,12 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics.SwerveDriveWheelStates;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
@@ -34,6 +36,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.commands.SwerveDrive;
 import frc.robot.modules.SwerveModule;
 
 import edu.wpi.first.math.geometry.Transform3d;
@@ -62,6 +65,10 @@ public class Swerve extends SubsystemBase{
 
   //extra
   private boolean isInRange = false;
+
+  //pid
+  public static double kMaxSpeed = 3.0; // 3 meters per second
+  public static double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
   public Swerve() {
     ShuffleboardTab driveTrainTab = Shuffleboard.getTab("Drivetrain");
@@ -128,6 +135,25 @@ public class Swerve extends SubsystemBase{
     backRight.stop();
   }
 
+  //NEW DRIVE METHOD SO THE LIMELIGHT CODE CAN OVERRIDE JOYSTICK INPUT 
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double periodSeconds) {
+    var chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
+    
+    if (fieldRelative) {
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getRotation2d());
+    } else {
+      chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
+    }
+
+    //discretize -- smooths movement, prevents sudden acceleration        
+    var swerveModuleStates = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(ChassisSpeeds.discretize(chassisSpeeds, periodSeconds));
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+
+    frontLeft.setState(swerveModuleStates[0]);
+    frontRight.setState(swerveModuleStates[0]);
+    backLeft.setState(swerveModuleStates[0]);
+    backRight.setState(swerveModuleStates[0]);
+}
 
 
   /** @return Rotation2d object with desired angle based on degrees from gyro */
@@ -302,6 +328,7 @@ public class Swerve extends SubsystemBase{
 
     var gyroAngle = getRotation2d();
 
+    //pose stuff
     pose = m_poseEstimator.update(gyroAngle, new SwerveModulePosition[] {
       frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()
     });
