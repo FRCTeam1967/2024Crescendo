@@ -127,7 +127,7 @@ public final class Constants {
     public static final double FEEDER_ACCELERATION = 150;
     
     public static final double THRESHOLD_SPEED = 120;
-    public static final double TIME = 1.5;
+    public static final double TIME = 0.5;
   }
   public static class AmpBar { //TODO: change values!
     public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;

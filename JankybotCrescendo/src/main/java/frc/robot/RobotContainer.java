@@ -88,7 +88,11 @@ public class RobotContainer {
     //CHASSIS
      driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
     driverController.leftTrigger().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
-    driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve)); 
+    driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve));
+    
+    driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
+    //adjust for blue alliance
+    driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->120));
     
     // driverController.a().onTrue(new AmpReverse(swerve, redAlliance));
     
@@ -96,9 +100,6 @@ public class RobotContainer {
 
     // driverController.y().onTrue(new VisionAlignZ(swerve, vision));
 
-    //driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
-    //adjust for blue alliance
-    // driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
 
     // driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
 
