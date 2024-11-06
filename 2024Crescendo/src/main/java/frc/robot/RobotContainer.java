@@ -88,7 +88,6 @@ public class RobotContainer {
 
     autoChooserLOL = AutoBuilder.buildAutoChooser();
     matchTab.add("Auto Chooser lol", autoChooserLOL); //TODO: check if this shows on match tab
-    SmartDashboard.putData("Auto Chooser lol", autoChooserLOL);
   }
 
   public void onEnable(Optional<Alliance> alliance){
@@ -208,8 +207,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // return autoChooserLOL.getSelected();
-    return Leave();
+    return autoChooserLOL.getSelected();
   }
   
 }
