@@ -2,19 +2,25 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5,
-      "y": 4.0
+      "x": 1.0,
+      "y": 6.8
     },
-    "rotation": 0.0
+    "rotation": -1.8214546198780788
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Left Leave heehee"
+            "pathName": "Left Leave"
           }
         }
       ]

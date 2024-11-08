@@ -151,6 +151,10 @@ public class RobotContainer {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;
   }
+  
+  public Command Leave() {
+    return new SwerveDrive(swerve, () -> 0.5, () -> 0, () -> 0).withTimeout(2.5);
+  }
 
   public Command getAutonomousCommand() {
     return autoChooserLOL.getSelected();

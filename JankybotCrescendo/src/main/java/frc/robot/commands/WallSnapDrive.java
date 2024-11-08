@@ -49,11 +49,11 @@ public class WallSnapDrive extends Command {
   }
 
   public void execute() {
-    if(RobotContainer.redAlliance && headingSupplier.getAsDouble()!=120){//previously 270
+    if(RobotContainer.redAlliance && headingSupplier.getAsDouble()==120){//previously 270
         double xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
         double ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
 
-        double desiredHeading = headingSupplier.getAsDouble() != -1 ? (headingSupplier.getAsDouble()-180) : lastHeading;
+        double desiredHeading = headingSupplier.getAsDouble() != -1 ? (headingSupplier.getAsDouble()) : lastHeading;
         double rotSpeed = angleController.calculate(currentHeading(), desiredHeading);
 
         //ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, swerve.getRotation2d());
@@ -65,7 +65,7 @@ public class WallSnapDrive extends Command {
         double xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
         double ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
 
-        double desiredHeading = headingSupplier.getAsDouble() != -1 ? headingSupplier.getAsDouble() : lastHeading;
+        double desiredHeading = headingSupplier.getAsDouble() != -1 ? headingSupplier.getAsDouble()-240 : lastHeading;
         double rotSpeed = angleController.calculate(currentHeading(), desiredHeading);
 
         //ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, swerve.getRotation2d());
