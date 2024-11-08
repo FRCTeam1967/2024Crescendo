@@ -113,6 +113,7 @@ public class Robot extends TimedRobot {
     }
 
     m_robotContainer.swerve.setNeutralMode(true);
+    m_robotContainer.maintainAmpBarPosition();
     // m_robotContainer.resetSensors();
   }
 

@@ -49,7 +49,7 @@ public class WallSnapDrive extends Command {
   }
 
   public void execute() {
-    if(RobotContainer.redAlliance && headingSupplier.getAsDouble()==270){
+    if(RobotContainer.redAlliance && headingSupplier.getAsDouble()!=120){//previously 270
         double xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
         double ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
 

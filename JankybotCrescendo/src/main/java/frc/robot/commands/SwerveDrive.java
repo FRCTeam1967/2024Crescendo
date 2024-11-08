@@ -32,8 +32,8 @@ public class SwerveDrive extends Command {
 
   @Override
   public void execute() {
-    double xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-    double ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+    double xSpeed = cleanAndScaleInput(0.01, xSupplier.getAsDouble(), xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+    double ySpeed = cleanAndScaleInput(0.01, ySupplier.getAsDouble(), yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
     double rotationSpeed = cleanAndScaleInput(0.02, rotationSupplier.getAsDouble(), rotationLimiter, Constants.Swerve.SWERVE_ROTATION_MAX_SPEED_IN_RAD);
     //ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, swerve.getRotation2d());
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, swerve.pGetRotation2d());

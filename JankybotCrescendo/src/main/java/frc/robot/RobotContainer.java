@@ -45,10 +45,12 @@ import frc.robot.commands.*;
 import frc.robot.Constants.*;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.AmpBar;
 
 public class RobotContainer {
   public final Swerve swerve = new Swerve();
   public final Shooter shooter = new Shooter();
+  public final AmpBar ampBar = new AmpBar();
   private SendableChooser<Command> autoChooserLOL;
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
@@ -79,6 +81,14 @@ public class RobotContainer {
     if (alliance.get() == Alliance.Red) redAlliance = true;
     else redAlliance = false;
   }
+  public void maintainAmpBarPosition(){
+    ampBar.setPosition(0);
+
+    ampBar.setpoint.velocity = 0;
+    ampBar.setpoint.position = 0;
+    ampBar.goal.velocity = 0;
+    ampBar.goal.position = 0;
+  }
 
   private void configureBindings() {
     //DEFAULT COMMANDS
@@ -87,7 +97,7 @@ public class RobotContainer {
 
     //CHASSIS
      driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
-    driverController.leftTrigger().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
+    //driverController.leftTrigger().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
     driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve));
     
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
@@ -110,12 +120,20 @@ public class RobotContainer {
     // driverController.povLeft().whileTrue(new SwerveDrive(swerve, () -> 0, () -> -0.2, () -> 0));
   // //SHOOTER
       operatorController.y().whileTrue(new RunShooter(shooter, true));
-      operatorController.a().whileTrue(new RunShooter(shooter, false));
       operatorController.rightTrigger().whileTrue(new RunIntake(-Constants.Shooter.SPEAKER_TOP_ACCELERATION, shooter));
       operatorController.x().whileTrue(new ShootAcrossField(shooter));
   
-  }
+  // AMP
+    operatorController.a().whileTrue(new SequentialCommandGroup((new RunShooter(shooter, false)).withTimeout(0.5), 
+    //new WaitCommand(0.2), 
+    new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP))); // waitcommand was 0.2
+    operatorController.a().whileFalse(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
 
+    operatorController.a().whileTrue(new ParallelCommandGroup(new SequentialCommandGroup(new WaitCommand(0.05).withTimeout(0.05), new RunShooter(shooter, false)).withTimeout(1.0), 
+    //new WaitCommand(0.2), 
+    new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP))); // waitcommand was 0.2
+    operatorController.a().whileFalse(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
+  }
   public void resetSensors() {
     // swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
     swerve.resetpOdometry(new Pose2d(0.0, 0.0, swerve.pGetRotation2d()));

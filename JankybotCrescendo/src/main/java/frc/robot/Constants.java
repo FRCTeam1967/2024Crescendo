@@ -114,8 +114,8 @@ public final class Constants {
     public static final double A_TOP_SPEED = 0.162;
     public static final double A_BOTTOM_SPEED = 0.162;
     
-    public static final double AMP_TOP_VELOCITY = 15, AMP_TOP_ACCELERATION = 11;
-    public static final double AMP_BOTTOM_VELOCITY = 15, AMP_BOTTOM_ACCELERATION = 11;
+    public static final double AMP_TOP_VELOCITY = 27, AMP_TOP_ACCELERATION = 22;
+    public static final double AMP_BOTTOM_VELOCITY = 27, AMP_BOTTOM_ACCELERATION = 22;
     
     public static final double S_TOP_SPEED = 1;
     public static final double S_BOTTOM_SPEED = 1;
@@ -127,17 +127,17 @@ public final class Constants {
     public static final double FEEDER_ACCELERATION = 150;
     
     public static final double THRESHOLD_SPEED = 120;
-    public static final double TIME = 0.5;
+    public static final double TIME = 1.0;
   }
   public static class AmpBar { //TODO: change values!
-    public static final int AMP_BAR_ID = 24, ENCODER_ID = 9999;
+    public static final int AMP_BAR_ID = 14;
     public static final double kP = 1, kI = 0, kD = 0, kD_TIME = 0.02;
     public static final double GEAR_RATIO = 10/1.0;
-    public static final double MAX_VELOCITY = 165;
-    public static final double MAX_ACCELERATION = 180;
+    public static final double MAX_VELOCITY = 120;
+    public static final double MAX_ACCELERATION = 175;
     public static final double DEGREES_TO_REVOLUTIONS = 1.0/360.0;
     public static final double AMP_SAFE = 4 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS;
-    public static final double AMP_UP = 98 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; // 94
+    public static final double AMP_UP = 195 * Constants.AmpBar.DEGREES_TO_REVOLUTIONS; // 94
   }
   public static class Climb {
     public static final int LEFT_MOTOR_ID = 30, RIGHT_MOTOR_ID = 31;
