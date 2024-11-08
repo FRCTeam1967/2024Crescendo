@@ -4,6 +4,7 @@
   "holonomicMode": true,
   "pathFolders": [
     "CSpeaker-Notes",
+    "Center Line Disrupt Paths",
     "LSpeaker-Notes",
     "RSpeaker-Notes"
   ],
