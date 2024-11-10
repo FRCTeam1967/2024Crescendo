@@ -7,37 +7,18 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.function.DoubleSupplier;
-
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 import com.reduxrobotics.canand.CanandEventLoop;
 
@@ -72,8 +53,8 @@ public class RobotContainer {
     swerve.configDashboard(matchTab);
 
     autoChooserLOL = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser lol", autoChooserLOL);
-
+    matchTab.add("auto chooser lol", autoChooserLOL);
+    
     pdh.setSwitchableChannel(true);
   }
 
@@ -96,8 +77,7 @@ public class RobotContainer {
      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
 
     //CHASSIS
-     driverController.start().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
-    //driverController.leftTrigger().onTrue(new InstantCommand(() -> swerve.resetpGyro(), swerve));
+     driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
     driverController.x().onTrue(new InstantCommand(() -> swerve.defenseMode(), swerve));
     
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
@@ -111,9 +91,9 @@ public class RobotContainer {
     // driverController.y().onTrue(new VisionAlignZ(swerve, vision));
 
 
-    // driverController.povUp().whileTrue(new SwerveDrive(swerve, () -> 0.2, () -> 0, () -> 0));
+    driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> 0.4, () -> 0, () -> 0));
 
-    // driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.2, () -> 0, () -> 0));
+    // driverController.povDown().whileTrue(new SwerveDrive(swerve, () -> -0.4, () -> 0, () -> 0));
 
     // driverController.povRight().whileTrue(new SwerveDrive(swerve, () -> 0, () -> 0.2, () -> 0));
 
@@ -133,10 +113,12 @@ public class RobotContainer {
     //new WaitCommand(0.2), 
     new MoveAmpBar(ampBar, Constants.AmpBar.AMP_UP))); // waitcommand was 0.2
     operatorController.a().whileFalse(new MoveAmpBar(ampBar, Constants.AmpBar.AMP_SAFE));
+    
+    //operatorController.b().whileTrue(new RunShooter(shooter,  false));
   }
   public void resetSensors() {
     // swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
-    swerve.resetpOdometry(new Pose2d(0.0, 0.0, swerve.pGetRotation2d()));
+    swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
 
 
     swerve.frontLeft.resetEncoder();
@@ -147,7 +129,7 @@ public class RobotContainer {
     //   swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     // });;
 
-    swerve.pOdometry.update(swerve.pGetRotation2d(), new SwerveModulePosition[] {
+    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
       swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
     });;
   }

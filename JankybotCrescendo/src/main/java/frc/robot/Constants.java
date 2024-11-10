@@ -66,7 +66,7 @@ public final class Constants {
     public static final double SWERVE_MAX_SPEED = 4.1695; //m/s
     public static final double WIDTH = Units.inchesToMeters(23), LENGTH = Units.inchesToMeters(23);
     public static final double SWERVE_AMP_OFFSET = 0.3083496; //rotations of encoder
-    public static final double AMP_REVERSE_JS_INPUT = 0.4; //joystick input
+    public static final double SPEAKER_REVERSE_JS_INPUT = 0.8; //joystick input
 
     //max speeds
     public static final double ROTATION_CIRCLE_CIRCUMFERENCE = (WIDTH / Math.sqrt(2.0)) * 2.0 * Math.PI;
@@ -127,7 +127,7 @@ public final class Constants {
     public static final double FEEDER_ACCELERATION = 150;
     
     public static final double THRESHOLD_SPEED = 120;
-    public static final double TIME = 1.0;
+    public static final double TIME = 1.2;
   }
   public static class AmpBar { //TODO: change values!
     public static final int AMP_BAR_ID = 14;
