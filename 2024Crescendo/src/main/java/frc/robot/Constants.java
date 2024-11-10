@@ -54,7 +54,8 @@ public final class Constants {
     public static final int BR_POWER = 3, BR_STEER = 4, BR_ENCODER = 2;
 
     public static final double FL_OFFSET = -135.439453125/360; //-136.40625/360;
-    public static final double FR_OFFSET = 1.0546875/360;//-0.3515625/360;
+    //public static final double FR_OFFSET = 1.0546875/360;//-0.3515625/360;
+    public static final double FR_OFFSET = (177.099609375+180)/360;//-0.3515625/360;
     public static final double BL_OFFSET = 117.158203125/360; //115.048828125;
     public static final double BR_OFFSET = -14.150390625/360; //-17.05078125/360;
     public static final int PIGEON_GYRO = 9;
@@ -175,8 +176,8 @@ public final class Constants {
     public static final double S_TOP_SPEED = 1;
     public static final double S_BOTTOM_SPEED = 1;
     
-    public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 90; // 90, 80
-    public static final double SPEAKER_BOTTOM_VELOCITY = 70, SPEAKER_BOTTOM_ACCELERATION = 60; // 60, 50
+    public static final double SPEAKER_TOP_VELOCITY = 100, SPEAKER_TOP_ACCELERATION = 95; // 90, 90
+    public static final double SPEAKER_BOTTOM_VELOCITY = 90, SPEAKER_BOTTOM_ACCELERATION = 85; // 70, 60
     
     public static final double THRESHOLD_SPEED = 80;
   }
