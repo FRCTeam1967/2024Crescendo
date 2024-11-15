@@ -185,6 +185,16 @@ public final class Constants {
     
     public static final double THRESHOLD_SPEED = 80;
   }
+
+  public static class Turret {
+    public static final int ROTATE_MOTOR_ID = 30, TOP_MOTOR_ID = 31, BOTTOM_MOTOR_ID = 32; //TODO: fix the motor ids
+    public static final double kP = 0.32, kI = 0, kD = 0, kV = 0.07, kA = 0.06; //TODO:tune this
+
+    public static final double TURRET_MAX_SPEED = 4; //TODO: test this
+    public static final double TURRET_VELOCITY = (LimelightHelpers.getTX("limelight") * Constants.Turret.kP) * Constants.Turret.TURRET_MAX_SPEED;
+    public static final double TURRET_ACCELERATION = 12; //TODO: test this
+
+  }
   
   public static class Pivot {
     public static final int PIVOT_ID = 14, ENCODER_ID = 23;

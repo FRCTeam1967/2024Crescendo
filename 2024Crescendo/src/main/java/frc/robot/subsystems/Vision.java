@@ -76,7 +76,8 @@ public class Vision extends SubsystemBase {
       SmartDashboard.putString("Range", "yes");
     }
   }
-public void alignAngleZ(){
+
+  public void alignAngleZ(){
     updateValues();
     angleToGoalDegrees = Constants.Vision.LIMELIGHT_ANGLE_DEGREES + verticalOffset;
     angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180);
