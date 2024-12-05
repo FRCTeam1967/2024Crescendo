@@ -33,7 +33,7 @@ import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
   public final Swerve swerve = new Swerve();
-  private final Vision vision = new Vision("new vision");
+  private final Vision vision = new Vision("limelight");
   private SendableChooser<Command> autoChooserLOL;
 
   private final CommandXboxController driverController = new CommandXboxController(Xbox.DRIVER_CONTROLLER_PORT);
@@ -123,23 +123,25 @@ public class RobotContainer {
   //limelight methods for alignment
   //for X alignment (how rotational it should align)
   private double limelight_aim_proportional() {
-    double kP = 0.035; //test
+    double kP = 0.1; //test -> fix large errors
+    double kI = 0.2; //test -> reduce steady-state error (+ oscillation)
+    double kD = 0.2; //test -> slow down when reaching target (stability)
     
     //TX -> x-axis offset in degrees, multiply by angular speed to be radians/second
     double targetingAngularVelocity = (LimelightHelpers.getTX("limelight") * kP) * Swerve.kMaxAngularSpeed;
     
-    targetingAngularVelocity *= -1.0; //invert because of some positive/negative thing
+    targetingAngularVelocity *= 1.0;
     return targetingAngularVelocity;
   }
 
   //for Y alignment (how forward/backward it should go)
   private double limelight_range_proportional() {    
-    double kP = 0.1; //test
+    double kP = 0.02; //test
 
     //TY -> y-axis offset in degrees, multiply by angular speed to be raidans/second
     double targetingForwardSpeed = (LimelightHelpers.getTY("limelight") * kP) * Swerve.kMaxSpeed;
 
-    targetingForwardSpeed *= -1.0; //invert because of some positive/negative thing //TODO: udnerstand this
+    targetingForwardSpeed *= -1.0;
     return targetingForwardSpeed;
   }
 
