@@ -1,33 +1,28 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.Optional;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.Swerve;
 
 public class Vision extends SubsystemBase {
   //https://readthedocs.org/projects/limelight/downloads/pdf/latest/
   private NetworkTable limelightTable;
-  private double xOffset = -100000;
+  private double xOffset = -100000; 
   private boolean isInRange = false;
   private boolean isRedAlliance;
   public double verticalOffset, angleToGoalDegrees, angleToGoalRadians;
   public double limelightToGoalInches = 0.0;
   private String limelightHostname;
 
-  /** Creates new Vision */
   public Vision(String hostname) {
     limelightHostname = hostname;
     limelightTable = NetworkTableInstance.getDefault().getTable(limelightHostname);
@@ -76,13 +71,15 @@ public class Vision extends SubsystemBase {
       SmartDashboard.putString("Range", "yes");
     }
   }
-
-  public void alignAngleZ(){
+public void alignAngleZ(){
     updateValues();
     angleToGoalDegrees = Constants.Vision.LIMELIGHT_ANGLE_DEGREES + verticalOffset;
     angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180);
     limelightToGoalInches = (Constants.Vision.TARGET_HEIGHT_INCHES - Constants.Vision.LIMELIGHT_HEIGHT_INCHES) / Math.tan(angleToGoalRadians);
+    
   }
+
+
 
   /** @return whether limelight is in range */
   public boolean getIsInRange(){
