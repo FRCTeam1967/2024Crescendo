@@ -18,13 +18,18 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.AmpBar;
+import frc.robot.Constants.Climb;
+import frc.robot.Constants.Feeder;
+import frc.robot.Constants.Intake;
+import frc.robot.Constants.Pivot;
+import frc.robot.Constants.Shooter;
 import frc.robot.Constants.Xbox;
 // import frc.robot.commands.AmpReverse;
 import frc.robot.commands.LowerClimbUntilLatch;
@@ -39,15 +44,6 @@ import frc.robot.commands.RunPivotIntakeBeam;
 import frc.robot.commands.ShootAmp;
 import frc.robot.commands.ShootSpeaker;
 import frc.robot.commands.SwerveDrive;
-// import frc.robot.commands.VisionAlign;
-// import frc.robot.commands.VisionAlignZ;
-import frc.robot.commands.WallSnapDrive;
-import frc.robot.subsystems.AmpBar;
-import frc.robot.subsystems.Climb;
-import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 // import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision;
@@ -104,23 +100,25 @@ public class RobotContainer {
   //limelight methods for alignment
   //for X alignment (how rotational it should align)
   private double limelight_aim_proportional() {
-    double kP = 0.2; //test
+    double kP = 0.1;
+    double kI = 0.2;
+    double kD = 0.2;
     
     //TX -> x-axis offset in degrees, multiply by angular speed to be radians/second
     double targetingAngularVelocity = (LimelightHelpers.getTX("limelight") * kP) * Swerve.kMaxAngularSpeed;
     
-    targetingAngularVelocity *= -1.0; //invert because of some positive/negative thing
+    targetingAngularVelocity *= 1.0;
     return targetingAngularVelocity;
   }
 
   //for Y alignment (how forward/backward it should go)
   private double limelight_range_proportional() {    
-    double kP = 0.1; //test
+    double kP = 0.02; //test
 
     //TY -> y-axis offset in degrees, multiply by angular speed to be raidans/second
     double targetingForwardSpeed = (LimelightHelpers.getTY("limelight") * kP) * Swerve.kMaxSpeed;
 
-    targetingForwardSpeed *= -1.0; //invert because of some positive/negative thing //TODO: udnerstand this
+    targetingForwardSpeed *= -1.0;
     return targetingForwardSpeed;
   }
 
