@@ -51,7 +51,7 @@ public class SwerveDrive extends Command {
     return false;
   }
 
-  public static double signedSquare(double a) { //TODO: where are we using this?
+  public static double signedSquare(double a) { 
     if (a < 0) return -(a * a);
     else return a * a;
   }
