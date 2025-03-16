@@ -32,7 +32,7 @@ public class WallSnapDrive extends Command {
 
   private double currentHeading() {
     // return swerve.getRotation2d().getDegrees();
-    return swerve.getRotation2d().getDegrees();
+    return swerve.getHeading().getDegrees();
   }
 
   public void initialize() {
@@ -49,30 +49,23 @@ public class WallSnapDrive extends Command {
   }
 
   public void execute() {
+    double xSpeed, ySpeed, desiredHeading, rotSpeed;
+
     if(RobotContainer.redAlliance && headingSupplier.getAsDouble()==270){
-        double xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
-        double ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
+        xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
+        ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
 
-        double desiredHeading = headingSupplier.getAsDouble() != -1 ? (headingSupplier.getAsDouble()-180) : lastHeading;
-        double rotSpeed = angleController.calculate(currentHeading(), desiredHeading);
-
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, swerve.getRotation2d());
-        SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
-        swerve.setModuleStates(moduleState);
+        desiredHeading = headingSupplier.getAsDouble() != -1 ? (headingSupplier.getAsDouble()-180) : lastHeading;
+        rotSpeed = angleController.calculate(currentHeading(), desiredHeading);
     }else{
-        double xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
-        double ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
+        xSpeed = cleanAndScaleInput(0.00, xSupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
+        ySpeed = cleanAndScaleInput(0.00, ySupplier.getAsDouble(), Constants.Swerve.SWERVE_MAX_SPEED);
 
-        double desiredHeading = headingSupplier.getAsDouble() != -1 ? headingSupplier.getAsDouble() : lastHeading;
-        double rotSpeed = angleController.calculate(currentHeading(), desiredHeading);
-
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, swerve.getRotation2d());
-        SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleState, Constants.Swerve.SWERVE_MAX_SPEED);
-        swerve.setModuleStates(moduleState);
+        desiredHeading = headingSupplier.getAsDouble() != -1 ? headingSupplier.getAsDouble() : lastHeading;
+        rotSpeed = angleController.calculate(currentHeading(), desiredHeading);
     }
-    
+
+    swerve.driveFieldRelative(xSpeed, ySpeed, rotSpeed);
   }
 
   public void end (boolean interrupted) {

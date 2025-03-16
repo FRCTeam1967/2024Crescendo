@@ -36,17 +36,13 @@ public class VisionAlign extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double xSpeed;
     if (vision. getOffset() > 0){
-      double xSpeed = cleanAndScaleInput(0, 0.35, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, 0.0, 0.0, swerve.getRotation2d());
-      SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-      swerve.setModuleStates(moduleState);
+      xSpeed = cleanAndScaleInput(0, 0.35, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
     }else{
-      double xSpeed = cleanAndScaleInput(0, -0.35, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, 0.0, 0.0, swerve.getRotation2d());
-      SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-      swerve.setModuleStates(moduleState);
+      xSpeed = cleanAndScaleInput(0, -0.35, xLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
     }
+    swerve.driveFieldRelative(xSpeed, 0, 0);
   }
 
   // Called once the command ends or is interrupted.

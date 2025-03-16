@@ -43,17 +43,9 @@ public class AmpReverse extends Command {
   public void execute() {
     SmartDashboard.putNumber("Initial Position", initialEncPosition);
 
-    if(RobotContainer.redAlliance){
-      double ySpeed = cleanAndScaleInput(0.00, Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0, swerve.getRotation2d());
-      SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-      swerve.setModuleStates(moduleState);
-    }else{
-      double ySpeed = cleanAndScaleInput(0.00, -Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0, swerve.getRotation2d());
-      SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-      swerve.setModuleStates(moduleState);
-    }
+    // Swerve now operates blue-relative all the time, so backing up is always negative Y movement regardless of the alliance we're on
+    double ySpeed = cleanAndScaleInput(0.00, -Constants.Swerve.AMP_REVERSE_JS_INPUT, yLimiter, (Constants.Swerve.SWERVE_MAX_SPEED)/2);
+    swerve.driveFieldRelative(0, ySpeed, 0);
 
     SmartDashboard.putBoolean("What Alliance", RobotContainer.redAlliance);
     

@@ -39,17 +39,9 @@ public class VisionAlignZ extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (vision.getAlliance()){
-      double ySpeed = cleanAndScaleInput(0, -0.35, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, ySpeed, 0.0, swerve.getRotation2d());
-      SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-      swerve.setModuleStates(moduleState);
-    }else{
-      double ySpeed = cleanAndScaleInput(0, 0.35, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0.0, ySpeed, 0.0, swerve.getRotation2d());
-      SwerveModuleState[] moduleState = Constants.Swerve.SWERVE_DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-      swerve.setModuleStates(moduleState);
-    }
+    // The Swerve subsystem always operates blue-alliance-relative, so we're always moving in forward Y direction
+    double ySpeed = cleanAndScaleInput(0, 0.35, yLimiter, Constants.Swerve.SWERVE_MAX_SPEED);
+    swerve.driveFieldRelative(0, ySpeed, 0);
   }
 
   // Called once the command ends or is interrupted.

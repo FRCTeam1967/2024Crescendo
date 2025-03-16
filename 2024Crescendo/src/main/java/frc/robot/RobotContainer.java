@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.reduxrobotics.canand.CanandEventLoop;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -122,22 +123,50 @@ public class RobotContainer {
     new MovePivot(pivot, Constants.Pivot.INTAKE_SAFE);
   }
 
-  public void resetSensors() {
-    swerve.resetOdometry(new Pose2d(0.0, 0.0, swerve.getRotation2d()));
+  /**
+   * Return the driver joystick value for X input. This will be positive towards the red
+   * alliance, regardless of which alliance station we're using.
+   * @return X value
+   */
+  public double driverInputXBlueRelative() {
+    double rawValue = driverController.getRawAxis(1);
+    return redAlliance ? rawValue : -rawValue;
+  }
+
+  /**
+   * Return the driver joystick value for Y input. This will be positive towards the left
+   * wall relative to the blue alliance, regardless of which alliance station we're using.
+   * @return Y value
+   */
+  public double driverInputYBlueRelative() {
+    double rawValue = driverController.getRawAxis(0);
+    return redAlliance ? rawValue : -rawValue;
+  }
+
+  /**
+   * Return the driver joystick value for theta input. This will be positive for counterclockwise 
+   * rotation when the joystick is pushed left regardless of which alliance station we're on.
+   * @return theta value
+   */
+  public double driverInputThetaBlueRelative() {
+    double rawValue = driverController.getRawAxis(4);
+    return redAlliance ? rawValue : -rawValue;
+  }
+
+  private void resetSensors() {
+    // Reset odometry to reflect that the robot is facing the red alliance wall. Odometry will be 
+    // reset when auto starts with the correct pose.
+    swerve.resetOdometry(new Pose2d(0.0, 0.0, new Rotation2d()));
 
     swerve.frontLeft.resetEncoder();
     swerve.frontRight.resetEncoder();
     swerve.backLeft.resetEncoder();
     swerve.backRight.resetEncoder();
-    swerve.odometry.update(swerve.getRotation2d(), new SwerveModulePosition[] {
-      swerve.frontLeft.getPosition(), swerve.frontRight.getPosition(), swerve.backLeft.getPosition(), swerve.backRight.getPosition()
-    });;
   }
-  
+
   private void configureBindings() {
     //DEFAULT COMMANDS
-    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> -driverController.getRawAxis(1),
-      () -> -driverController.getRawAxis(0), () -> -driverController.getRawAxis(4)));
+    swerve.setDefaultCommand(new SwerveDrive(swerve, () -> driverInputXBlueRelative(), () -> driverInputYBlueRelative(), () -> driverInputThetaBlueRelative()));
     
     leftClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getRightY(), leftClimb));
     rightClimb.setDefaultCommand(new ManualClimb(() -> operatorController.getLeftY(), rightClimb));
@@ -147,8 +176,11 @@ public class RobotContainer {
     //shooter.setDefaultCommand(new InstantCommand(() -> shooter.stopMotors()));
     
     //CHASSIS
-    driverController.start().onTrue(new InstantCommand(() -> swerve.resetGyro(), swerve));
+    // Tell the Swerve system that it's facing forward. For blue alliance, that's 0 degrees. For red alliance, that's 180 degrees.
+    driverController.start().onTrue(new InstantCommand(() -> swerve.setHeading(Rotation2d.fromDegrees(redAlliance ? 180 : 0)), swerve));
 
+    // MDS: TODO: If everything is blue-alliance-relative, we probably want 90 degrees in both cases now,but I'm not entirely
+    // sure what's going on this command.
     driverController.leftTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->0));
     //adjust for blue alliance
     driverController.rightTrigger().whileTrue(new WallSnapDrive(swerve, () -> -driverController.getRawAxis(1), () -> -driverController.getRawAxis(0), ()->270));
